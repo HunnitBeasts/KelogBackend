@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://localhost:3306/kelog?serverTimezone=Asia/Seoul"
+    username: "root"
+    password: "0000"
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+spring-doc:
+  packages-to-scan: com.hunnit_beasts.kelog.controller
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+    path: /swagger-ui.html
+    display-query-params-without-oauth2: true
+  api-docs:
+    path: /api-docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json

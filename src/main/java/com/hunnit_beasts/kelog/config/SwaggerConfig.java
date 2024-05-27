@@ -7,15 +7,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+
         @Bean
         public OpenAPI openAPI() {
                 return new OpenAPI()
                         .info(apiInfo());
         }
+
         private Info apiInfo() {
                 return new Info()
                         .title("Kelog API Documentaion")
                         .description("Kelogs Swagger UI APIs")
                         .version("v1.0.0");
         }
+
 }

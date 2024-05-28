@@ -41,7 +41,7 @@ public class User extends BaseEntity{
     private Boolean alarmSetting;
 
     @Column(length = 64,nullable = false) //default email앞부분.log
-    private String velogName;
+    private String kelogName;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private UserIntro userIntro;

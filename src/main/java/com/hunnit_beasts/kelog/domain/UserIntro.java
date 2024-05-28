@@ -12,8 +12,8 @@ public class UserIntro {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "user_id") //오류나면 값 user_id 로 바꿔볼것
-    User user;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
 }

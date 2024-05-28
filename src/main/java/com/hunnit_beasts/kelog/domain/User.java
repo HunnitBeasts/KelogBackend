@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class User {
+public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,12 +42,6 @@ public class User {
 
     @Column(length = 64,nullable = false) //default email앞부분.log
     private String velogName;
-
-    @Column(nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(nullable = false)
-    private LocalDateTime modDate;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private UserIntro userIntro;

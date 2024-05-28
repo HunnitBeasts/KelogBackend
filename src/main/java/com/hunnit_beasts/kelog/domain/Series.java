@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Series {
+public class Series extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,12 +15,6 @@ public class Series {
 
     @Column(length = 64,nullable = false)
     private String seriesName;
-
-    @Column(nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(nullable = false)
-    private LocalDateTime modDate;
 
     @ManyToOne
     private User user;

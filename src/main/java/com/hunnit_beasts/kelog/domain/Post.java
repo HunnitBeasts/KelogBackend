@@ -1,33 +1,31 @@
 package com.hunnit_beasts.kelog.domain;
 
+import com.hunnit_beasts.kelog.enumeration.PostType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Post {
+public class Post extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
+    @ColumnDefault("0")
     private Long views;
 
-    @Column(nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(nullable = false)
-    private LocalDateTime modDate;
-
-    @Column(nullable = false)
+    @Column(length = 256,nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Long type;
+    private PostType type;
 
-    @Column
+    @Column(length = 256)
     private String thumbImage;
 
     @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)

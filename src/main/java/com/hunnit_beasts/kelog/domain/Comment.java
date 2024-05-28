@@ -8,16 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Comment {
+public class Comment extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(nullable = false)
-    private LocalDateTime modDate;
 
     @OneToOne(mappedBy = "comment", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private CommentContent commentContent;

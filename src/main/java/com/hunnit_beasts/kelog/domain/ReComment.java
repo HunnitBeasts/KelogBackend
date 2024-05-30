@@ -1,12 +1,11 @@
 package com.hunnit_beasts.kelog.domain;
 
 import com.hunnit_beasts.kelog.compositekey.ReCommentId;
+import com.hunnit_beasts.kelog.superclass.RegEntity;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-
 @Entity
-public class ReComment extends RegEntity{
+public class ReComment extends RegEntity {
 
     @EmbeddedId
     private ReCommentId id;

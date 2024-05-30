@@ -1,13 +1,11 @@
 package com.hunnit_beasts.kelog.domain;
 
 import com.hunnit_beasts.kelog.compositekey.AlarmId;
+import com.hunnit_beasts.kelog.superclass.RegEntity;
 import jakarta.persistence.*;
-import com.hunnit_beasts.kelog.domain.User;
-
-import java.time.LocalDateTime;
 
 @Entity
-public class Alarm extends RegEntity{
+public class Alarm extends RegEntity {
 
     @EmbeddedId
     private AlarmId id;

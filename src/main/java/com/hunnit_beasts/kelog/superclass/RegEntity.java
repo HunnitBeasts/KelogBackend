@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.domain;
+package com.hunnit_beasts.kelog.superclass;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

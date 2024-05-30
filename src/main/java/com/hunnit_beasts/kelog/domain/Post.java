@@ -1,15 +1,13 @@
 package com.hunnit_beasts.kelog.domain;
 
+import com.hunnit_beasts.kelog.converter.PostTypeConverter;
 import com.hunnit_beasts.kelog.enumeration.PostType;
+import com.hunnit_beasts.kelog.superclass.BaseEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
-public class Post extends BaseEntity{
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +19,7 @@ public class Post extends BaseEntity{
     @Column(length = 256,nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
+//    @Convert(converter = PostTypeConverter.class)
     @Column(nullable = false)
     private PostType type;
 

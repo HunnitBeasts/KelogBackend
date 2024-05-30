@@ -4,7 +4,7 @@ import com.hunnit_beasts.kelog.compositekey.FollowerId;
 import jakarta.persistence.*;
 
 @Entity
-public class Follower {
+public class Follower extends RegEntity{
 
     @EmbeddedId
     private FollowerId id;

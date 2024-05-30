@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.domain;
+package com.hunnit_beasts.kelog.superclass;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(value = {AuditingEntityListener.class})
 @Getter
-abstract class BaseEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
     @Column(name = "regDate",updatable = false,nullable = false)

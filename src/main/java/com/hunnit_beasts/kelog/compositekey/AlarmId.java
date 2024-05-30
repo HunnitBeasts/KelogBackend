@@ -23,7 +23,6 @@ public class AlarmId implements Serializable {
     @Column(nullable = false)
     private Long targetId;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TargetType targetType;
 

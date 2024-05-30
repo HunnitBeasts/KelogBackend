@@ -6,13 +6,10 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class ReComment {
+public class ReComment extends RegEntity{
 
     @EmbeddedId
     private ReCommentId id;
-
-    @Column(nullable = false)
-    private LocalDateTime regDate; //regDate 하나만 사용되므로 baseEntity 사용하지 않음
 
     @MapsId("parentCommentId")
     @OneToOne

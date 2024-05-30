@@ -4,10 +4,10 @@ import com.hunnit_beasts.kelog.compositekey.LikedPostId;
 import jakarta.persistence.*;
 
 @Entity
-public class LikedPost {
+public class LikedPost extends RegEntity{
 
-   @EmbeddedId
-   private LikedPostId likedPostId;
+    @EmbeddedId
+    private LikedPostId likedPostId;
 
     @MapsId("userId")
     @ManyToOne

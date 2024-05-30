@@ -1,14 +1,14 @@
 package com.hunnit_beasts.kelog.domain;
 
 
+import com.hunnit_beasts.kelog.superclass.BaseEntity;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Comment extends BaseEntity{
+public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

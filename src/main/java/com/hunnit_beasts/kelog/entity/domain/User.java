@@ -23,13 +23,13 @@ public class User extends BaseEntity {
     private String nickname;
 
     @Column(length = 256)
-    private String thumbImage; //default 이름+바탕색
+    private String thumbImage; // default 이름+바탕색
 
     @Column(length = 256)
     private String briefIntro;
 
-    @Column
-    private Long theme;
+//    @Column
+//    private Long theme; 아마 테마 하나로 쓸 것 같긴함
 
     @Column(length = 128,nullable = false)
     private String email;
@@ -47,7 +47,7 @@ public class User extends BaseEntity {
     private UserIntro userIntro;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Post> posts = new ArrayList<>();;
+    private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
@@ -55,8 +55,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Series> seriesList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private SocialInfo socialInfo;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<SocialInfo> socialInfos = new ArrayList<>();
 
     //복합키를 사용하는 클래스들과의 매핑(alarm, follwer 등등)
 

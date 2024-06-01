@@ -10,6 +10,9 @@ public class SeriesPost {
     @EmbeddedId
     private SeriesPostId id;
 
+    @Column(nullable = false)
+    private Long seriesOrder;
+
     @MapsId("seriesId")
     @ManyToOne
     @JoinColumn(name = "series_id")

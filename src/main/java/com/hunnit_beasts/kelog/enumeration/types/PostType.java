@@ -5,14 +5,21 @@ import lombok.Getter;
 
 @Getter
 public enum PostType {
-    NORMAL(0), //일반게시물
-    INCOMPLETE(1), //임시 게시물
-    NOTICE(2); //공지사항
+    NORMAL(0, "NORMAL", "일반 게시물"),
+    INCOMPLETE(1, "INCOMPLETE", "임시 게시물"),
+    NOTICE(2, "NOTICE", "공지사항"),
+    ;
 
     //enum이 가지고있는 값 반환
     private final Integer typeNum;
+    private final String code;
+    private final String type;
 
-    PostType(Integer typeNum) {this.typeNum = typeNum;}
+    PostType(Integer typeNum,String code, String type) {
+        this.typeNum = typeNum;
+        this.code = code;
+        this.type = type;
+    }
 
     public static PostType ofNum(Integer typeNum) {
         for (PostType postType : PostType.values())

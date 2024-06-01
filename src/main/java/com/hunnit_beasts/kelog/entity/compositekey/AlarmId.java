@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.entity.compositekey;
 
-import com.hunnit_beasts.kelog.enumeration.types.TargetType;
+import com.hunnit_beasts.kelog.enumeration.types.AlarmType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,6 @@ public class AlarmId implements Serializable {
     private Long targetId;
 
     @Column(nullable = false)
-    private TargetType targetType;
+    private AlarmType alarmType;
 
 }

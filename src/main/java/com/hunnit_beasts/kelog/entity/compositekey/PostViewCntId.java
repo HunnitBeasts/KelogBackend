@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class PostViewCntId implements Serializable {
 
     @Column(nullable = false)
-    private Long commentId;
+    private Long postId;
 
     @Column(nullable = false)
     private LocalDateTime regDate;

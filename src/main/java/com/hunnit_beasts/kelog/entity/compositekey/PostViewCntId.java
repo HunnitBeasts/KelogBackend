@@ -7,16 +7,17 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class SeriesPostId implements Serializable {
-
-    @Column(nullable = false)
-    private Long seriesId;
+public class PostViewCntId implements Serializable {
 
     @Column(nullable = false)
     private Long postId;
+
+    @Column(nullable = false)
+    private LocalDateTime regDate;
 }

@@ -16,6 +16,9 @@ public class Series extends BaseEntity {
     @Column(length = 64,nullable = false)
     private String seriesName;
 
+    @Column(length = 128,nullable = false)
+    private String url;
+
     @ManyToOne
     private User user;
 

@@ -20,6 +20,10 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     //Recomment
     @OneToOne(mappedBy = "parentComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private ReComment parentComment;

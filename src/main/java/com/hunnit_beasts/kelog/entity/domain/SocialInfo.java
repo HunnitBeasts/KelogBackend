@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.entity.domain;
 
+import com.hunnit_beasts.kelog.enumeration.types.SocialType;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,22 +9,13 @@ public class SocialInfo {
     @Id
     private Long id;
 
-    @Column(length = 256)
-    private String email;
+    @Column(nullable = false)
+    private SocialType type;
 
-    @Column(length = 256)
-    private String github;
+    @Column(length = 512,nullable = false)
+    private String link;
 
-    @Column(length = 256)
-    private String insta;
-
-    @Column(length = 256)
-    private String facebook;
-
-    @Column(length = 256)
-    private String homepage;
-
-    @OneToOne
+    @ManyToOne
     @MapsId
     @JoinColumn(name = "id")
     private User user;

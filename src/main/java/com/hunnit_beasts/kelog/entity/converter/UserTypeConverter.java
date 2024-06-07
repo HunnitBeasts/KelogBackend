@@ -1,7 +1,6 @@
 package com.hunnit_beasts.kelog.entity.converter;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.enumeration.types.AlarmType;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

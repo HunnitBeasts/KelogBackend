@@ -2,7 +2,7 @@ package com.hunnit_beasts.kelog.controller;
 
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.user.TokenResponseDTO;
-import com.hunnit_beasts.kelog.service.UserService;
+import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class LoginController {
+public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDTO> login(@Valid @RequestBody UserLoginRequestDTO dto){
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.login(dto));
+                .body(authService.login(dto));
     }
 }

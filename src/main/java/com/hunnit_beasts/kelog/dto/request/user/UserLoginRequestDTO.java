@@ -1,11 +1,15 @@
 package com.hunnit_beasts.kelog.dto.request.user;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserLoginRequestDTO {
-    private final String userId;
-    private final String password;
+    private String userId;
+    private String password;
 }

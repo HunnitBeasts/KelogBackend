@@ -3,9 +3,9 @@ package com.hunnit_beasts.kelog.entity.domain;
 
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.entity.superclass.BaseEntity;
-import com.hunnit_beasts.kelog.enumeration.types.SocialType;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

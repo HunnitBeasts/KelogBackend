@@ -1,13 +1,19 @@
 package com.hunnit_beasts.kelog.entity.domain;
 
 
+import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.entity.superclass.BaseEntity;
+import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +36,9 @@ public class User extends BaseEntity {
 
 //    @Column
 //    private Long theme; 아마 테마 하나로 쓸 것 같긴함
+
+    @Column(nullable = false)
+    private UserType userType;
 
     @Column(length = 128,nullable = false)
     private String email;
@@ -85,5 +94,14 @@ public class User extends BaseEntity {
     //RecentPost
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<RecentPost> recentPostUsers = new ArrayList<>();
+
+    public CustomUserInfoDTO entityToCustomUserInfoDTO(){
+        return CustomUserInfoDTO.builder()
+                .id(id)
+                .userId(userId)
+                .password(password)
+                .userType(userType)
+                .build();
+    }
 
 }

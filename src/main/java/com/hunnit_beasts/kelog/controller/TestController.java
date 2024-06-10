@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 //@Hidden // 일단 숨겨놓고 필요에 따라 다시 올리자
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/api")
 public class TestController {
 

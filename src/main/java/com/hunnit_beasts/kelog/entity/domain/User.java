@@ -2,11 +2,11 @@ package com.hunnit_beasts.kelog.entity.domain;
 
 
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
+import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.entity.superclass.BaseEntity;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,8 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -94,6 +96,20 @@ public class User extends BaseEntity {
     //RecentPost
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<RecentPost> recentPostUsers = new ArrayList<>();
+
+    public User(UserCreateRequestDTO dto) {
+        this.userId = dto.getUserId();
+        this.password = dto.getPassword();
+        this.nickname = dto.getNickname();
+        this.thumbImage = "";
+        this.briefIntro = dto.getBriefIntro();
+        this.email = dto.getEmail();
+        this.emailSetting = Boolean.FALSE;
+        this.alarmSetting = Boolean.FALSE;
+        this.kelogName = dto.getUserId();
+        this.userType = UserType.USER;
+        this.userIntro = new UserIntro(this);
+    }
 
     public CustomUserInfoDTO entityToCustomUserInfoDTO(){
         return CustomUserInfoDTO.builder()

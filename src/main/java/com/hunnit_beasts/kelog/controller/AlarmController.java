@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/alarm")
 public class AlarmController {
 
-    @GetMapping()
-    public void alarm() {}
+    @GetMapping("/{userId}")
+    public void alarm(@PathVariable Long userId) {}
 }

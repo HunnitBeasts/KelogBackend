@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.*;
 public class CommentCotroller {
 
     @GetMapping("/{commentId}")
-    public void readComment(@PathVariable(value = "commentId") int commentId) {}
+    public void readComment(@PathVariable(value = "commentId") Long commentId) {}
 
     @GetMapping("/{postId}")
-    public void commentList(@PathVariable(value = "postId") int postId) {}
+    public void commentList(@PathVariable(value = "postId") Long postId) {}
 
-    @PostMapping()
+    @PostMapping
     public void addComment() {}
 
     @PutMapping("/{commentId}")
-    public void updateComment(@PathVariable(value = "commentId") int commentId) {}
+    public void updateComment(@PathVariable(value = "commentId") Long commentId) {}
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable(value = "commentId") int commentId) {}
+    public void deleteComment(@PathVariable(value = "commentId") Long commentId) {}
 
 }

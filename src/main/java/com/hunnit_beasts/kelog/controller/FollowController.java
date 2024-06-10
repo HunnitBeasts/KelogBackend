@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/following")
 public class FollowController {
 
-    @PostMapping()
+    @PostMapping
     public void addFollow() {}
 
     @DeleteMapping("/{followerId}/{followeeId}")
-    public void deleteFollow(@PathVariable(value = "followerId") int followerId, @PathVariable(value = "followeeId") int followeeId) {}
+    public void deleteFollow(@PathVariable(value = "followerId") Long followerId, @PathVariable(value = "followeeId") Long followeeId) {}
 
 }

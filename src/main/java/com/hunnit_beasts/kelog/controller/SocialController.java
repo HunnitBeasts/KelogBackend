@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/social")
 public class SocialController {
 
-    @PostMapping()
+    @PostMapping
     public void addSocial() {}
 
     @DeleteMapping("/{userId}")
-    public void deleteSocial(@PathVariable(value = "userId") int userId) {}
+    public void deleteSocial(@PathVariable(value = "userId") Long userId) {}
 }

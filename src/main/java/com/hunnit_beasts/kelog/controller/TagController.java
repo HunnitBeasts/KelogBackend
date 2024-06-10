@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tags")
 public class TagController {
     @GetMapping("/{userId}")
-    public void tagList(@PathVariable(value = "userId") int userId) {}
+    public void tagList(@PathVariable(value = "userId") Long userId) {}
 
-    @PostMapping()
+    @PostMapping
     public void addTag() {}
 
-    @GetMapping()
+    @GetMapping
     public void allTags() {}
 
 }

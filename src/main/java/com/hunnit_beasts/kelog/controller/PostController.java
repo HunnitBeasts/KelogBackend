@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     @GetMapping("/{postId}")
-    public void readPost(@PathVariable(value = "postId") int postId) {}
+    public void readPost(@PathVariable(value = "postId") Long postId) {}
 
-    @GetMapping()
+    @GetMapping
     public void getPostList() {}
 
-    @PostMapping()
+    @PostMapping
     public void addPost() {}
 
     @PostMapping("/like")
@@ -26,12 +26,12 @@ public class PostController {
     public void addrecentPost() {}
 
     @PatchMapping("/{postId}")
-    public void updatePost(@PathVariable(value = "postId") int postId) {}
+    public void updatePost(@PathVariable(value = "postId") Long postId) {}
 
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable(value = "postId") int postId) {}
+    public void deletePost(@PathVariable(value = "postId") Long postId) {}
 
     @DeleteMapping("/like/{postId}")
-    public void deletePostLike(@PathVariable(value = "postId") int postId) {}
+    public void deletePostLike(@PathVariable(value = "postId") Long postId) {}
 
 }

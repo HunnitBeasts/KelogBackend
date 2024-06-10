@@ -22,14 +22,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public void searchUser(@PathVariable(value = "userId") int userId) {}
+    public void searchUser(@PathVariable(value = "userId") Long userId) {}
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable(value = "userId") int userId) {}
+    public void deleteUser(@PathVariable(value = "userId") Long userId) {}
 
     @PatchMapping("/{userId}")
-    public void updateUserInfo(@PathVariable(value = "userId") int userId) {}
+    public void updateUserInfo(@PathVariable(value = "userId") Long userId) {}
 
     @DeleteMapping("/{userId}/thumbnail")
-    public void deleteThumbnail(@PathVariable(value = "userId") int userId){}
+    public void deleteThumbnail(@PathVariable(value = "userId") Long userId){}
 }

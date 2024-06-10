@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class EtcController {
 
     @GetMapping("/view-cnt/{postId}")
-    public void viewCount(@PathVariable(value = "postId") int postId) {}
+    public void viewCount(@PathVariable(value = "postId") Long postId) {}
 }

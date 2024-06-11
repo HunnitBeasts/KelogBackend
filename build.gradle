@@ -23,23 +23,6 @@ repositories {
 	mavenCentral()
 }
 
-sonarqube {
-	properties {
-		property "sonar.projectKey", "kelog"
-		property "sonar.projectName", "kelog"
-		property "sonar.host.url", "http://localhost:9000"
-		property "sonar.login", System.getenv("SONAR_TOKEN")
-		property "sonar.sources", "src" // 소스 경로
-		property "sonar.language", "java" // 언어
-		property "sonar.sourceEncoding", "UTF-8"
-		property "sonar.profile", "Sonar way" // 소나큐브에서 적용할 프로필(분석할 수준 설정)
-		property "sonar.java.binaries", "${buildDir}/classes" // 자바 클래스 파일위치
-		property "sonar.test.inclusions", "**/*Test.java" // 코드 분석에 사용할 테스트 소스
-		property "sonar.exclusions", "**/resources/static/**, **/Q*.class, **/test/**" // 테스트커버리지에서 제외할 파일, 예제에선 정적 js 파일과 queryDSL Q파일 제외
-		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml" // jacoco 플러그인의 결과파일
-	}
-}
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -73,22 +56,8 @@ dependencies {
 }
 
 tasks.withType(Test) {
-	enabled = false
+	enabled = true
 }
-
-jacoco {
-	toolVersion = "0.8.7"
-}
-
-jacocoTestReport {
-	reports {
-		xml.required = true // sonarqube 분석에 필요한 xml파일만 생성
-		csv.required = false
-		html.required = false
-	}
-}
-
-test.finalizedBy jacocoTestReport
 
 //querydsl 추가
 // Querydsl 빌드 옵션 (옵셔널)
@@ -108,3 +77,61 @@ sourceSets {
 clean {
 	delete file(generated)
 }
+
+// QueryDSL 끝
+
+// 소나 큐브 시작
+
+sonarqube {
+	properties {
+		property "sonar.projectKey", "kelog"
+		property "sonar.projectName", "kelog"
+		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.login", System.getenv("SONAR_TOKEN")
+		property "sonar.sources", "src" // 소스 경로
+		property "sonar.language", "java" // 언어
+		property "sonar.sourceEncoding", "UTF-8"
+		property "sonar.profile", "Sonar way" // 소나큐브에서 적용할 프로필(분석할 수준 설정)
+		property "sonar.java.binaries", "${buildDir}/classes" // 자바 클래스 파일위치
+		property "sonar.test.inclusions", "**/*Test.java" // 코드 분석에 사용할 테스트 소스
+		property "sonar.exclusions", "**/resources/static/**, **/Q*.class, **/test/**, **//**" // 테스트커버리지에서 제외할 파일, 예제에선 정적 js 파일과 queryDSL Q파일 제외
+		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml" // jacoco 플러그인의 결과파일
+	}
+}
+// 소나 큐브 끝
+
+// JaCoCo 시작
+test {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required.set(true)
+		csv.required.set(false)
+		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+		html.destination file("${buildDir}/jacocoHtml") as File
+	}
+}
+
+tasks.jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = "CLASS"
+
+			limit {
+				counter = "BRANCH"
+				value = "COVEREDRATIO"
+				minimum = "0.80".toBigDecimal()
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification

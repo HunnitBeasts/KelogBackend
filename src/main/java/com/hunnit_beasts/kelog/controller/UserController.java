@@ -6,10 +6,7 @@ import com.hunnit_beasts.kelog.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,4 +20,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(authService.signUp(dto));
     }
+    @GetMapping("/{user-id}")
+    public void searchUser(@PathVariable(value = "user-id") Long userId) {}
+
+    @DeleteMapping("/{user-id}")
+    public void deleteUser(@PathVariable(value = "user-id") Long userId) {}
+
+    @PatchMapping("/{user-id}")
+    public void updateUserInfo(@PathVariable(value = "user-id") Long userId) {}
+
+    @DeleteMapping("/{user-id}/thumbnail")
+    public void deleteThumbnail(@PathVariable(value = "user-id") Long userId){}
+
 }

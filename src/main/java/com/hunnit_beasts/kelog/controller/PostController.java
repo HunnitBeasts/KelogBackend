@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/posts")
 public class PostController {
 
-    @GetMapping("/{postId}")
-    public void readPost(@PathVariable(value = "postId") int postId) {}
+    @GetMapping("/{post-id}")
+    public void readPost(@PathVariable(value = "post-id") Long postId) {}
 
-    @GetMapping()
+    @GetMapping
     public void getPostList() {}
 
-    @PostMapping()
+    @PostMapping
     public void addPost() {}
 
     @PostMapping("/like")
@@ -25,13 +25,13 @@ public class PostController {
     @PostMapping("/recent")
     public void addrecentPost() {}
 
-    @PatchMapping("/{postId}")
-    public void updatePost(@PathVariable(value = "postId") int postId) {}
+    @PatchMapping("/{post-id}")
+    public void updatePost(@PathVariable(value = "post-id") Long postId) {}
 
-    @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable(value = "postId") int postId) {}
+    @DeleteMapping("/{post-id}")
+    public void deletePost(@PathVariable(value = "post-id") Long postId) {}
 
-    @DeleteMapping("/like/{postId}")
-    public void deletePostLike(@PathVariable(value = "postId") int postId) {}
+    @DeleteMapping("/like/{post-id}")
+    public void deletePostLike(@PathVariable(value = "post-id") Long postId) {}
 
 }

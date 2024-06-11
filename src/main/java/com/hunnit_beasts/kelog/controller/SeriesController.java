@@ -6,21 +6,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/series")
 public class SeriesController {
 
-    @GetMapping("/{postId}")
-    public void readSeries(@PathVariable(value = "postId") int postId) {}
+    @GetMapping("/{post-id}")
+    public void readSeries(@PathVariable(value = "post-id") Long postId) {}
 
-    @PostMapping()
+    @PostMapping
     public void addSeries() {}
 
-    @PostMapping("/series/post")
+    @PostMapping("/post")
     public void addSeriesPost() {}
 
-    @PutMapping("/{postId}")
-    public void updateSeries(@PathVariable(value = "postId") int postId) {}
+    @PutMapping("/{post-id}")
+    public void updateSeries(@PathVariable(value = "post-id") Long postId) {}
 
-    @DeleteMapping("/{postId}")
-    public void deleteSeries(@PathVariable(value = "postId") int postId) {}
+    @DeleteMapping("/{post-id}")
+    public void deleteSeries(@PathVariable(value = "post-id") Long postId) {}
 
-    @DeleteMapping("/series/post/{seriesId}/{postId}")
-    public void deleteSeriesPost(@PathVariable(value = "seriesId") int seriesId, @PathVariable(value = "postId") int postId) {}
+    @DeleteMapping("/post/{series-id}/{post-id}")
+    public void deleteSeriesPost(@PathVariable(value = "series-id") Long seriesId, @PathVariable(value = "post-id") Long postId) {}
 }

@@ -1,9 +1,15 @@
 package com.hunnit_beasts.kelog.entity.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserIntro {
+
     @Id
     private Long id;
 
@@ -15,5 +21,8 @@ public class UserIntro {
     @JoinColumn(name = "user_id")
     private User user;
 
-
+    public UserIntro(User user) {
+        this.user = user;
+        this.intro = "";
+    }
 }

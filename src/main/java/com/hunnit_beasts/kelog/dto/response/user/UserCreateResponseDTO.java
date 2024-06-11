@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCreateResponseDTO {
-    private Integer id;
+    private Long id;
     private String userId;
     private String nickname;
     private String thumbImage;
@@ -19,4 +21,7 @@ public class UserCreateResponseDTO {
     private Boolean alarmSetting;
     private UserType userType;
     private String kelogName;
+    private String userIntro;
+    private LocalDateTime regDate;
+    private LocalDateTime modDate;
 }

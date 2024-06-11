@@ -39,12 +39,8 @@ public class SignUpTest {
                 .userId("testUserId")
                 .password("testPassword")
                 .nickname("testNickname")
-                .thumbImage("testThumbImage")
                 .briefIntro("testBriefIntro")
                 .email("testEmail")
-                .emailSetting(Boolean.TRUE)
-                .alarmSetting(Boolean.TRUE)
-                .kelogName("testKelogName")
                 .build();
 
         String jsonContent = objectMapper.writeValueAsString(dto);

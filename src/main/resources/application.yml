@@ -41,4 +41,4 @@ spring-doc:
 
 jwt:
   expiration_time: 86400000
-  secret: demo-security-secret
+  secret: demo-security-secret-1q2w3e4r5t6y7u8i9o0p

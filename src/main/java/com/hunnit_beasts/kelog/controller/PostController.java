@@ -8,30 +8,48 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     @GetMapping("/{post-id}")
-    public void readPost(@PathVariable(value = "post-id") Long postId) {}
+    public void readPost(@PathVariable(value = "post-id") Long postId) {
+        throw new UnsupportedOperationException();
+    }
 
     @GetMapping
-    public void getPostList() {}
+    public void getPostList() {
+        throw new UnsupportedOperationException();
+    }
 
     @PostMapping
-    public void addPost() {}
+    public void addPost() {
+        throw new UnsupportedOperationException();
+    }
 
     @PostMapping("/like")
-    public void addPostLike() {}
+    public void addPostLike() {
+        throw new UnsupportedOperationException();
+    }
 
     @PostMapping("/count")
-    public void plusView() {}
+    public void plusView() {
+        throw new UnsupportedOperationException();
+    }
 
     @PostMapping("/recent")
-    public void addrecentPost() {}
+    public void addrecentPost() {
+        throw new UnsupportedOperationException();
+    }
 
     @PatchMapping("/{post-id}")
-    public void updatePost(@PathVariable(value = "post-id") Long postId) {}
+    public void updatePost(@PathVariable(value = "post-id") Long postId) {
+        throw new UnsupportedOperationException();
+    }
 
     @DeleteMapping("/{post-id}")
-    public void deletePost(@PathVariable(value = "post-id") Long postId) {}
+    public void deletePost(@PathVariable(value = "post-id") Long postId) {
+        throw new UnsupportedOperationException();
+    }
 
     @DeleteMapping("/like/{post-id}")
-    public void deletePostLike(@PathVariable(value = "post-id") Long postId) {}
+    public void deletePostLike(@PathVariable(value = "post-id") Long postId) {
+        throw new UnsupportedOperationException();
+    }
 
 }

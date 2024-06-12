@@ -45,4 +45,10 @@ public class AuthServiceImpl implements AuthService {
         return userQueryDSLRepository.findUserCreateResponseDTOById(signUpUser.getId());
     }
 
+    @Override
+    public Long withDraw(Long id) {
+        userJpaRepository.deleteById(id);
+        return id;
+    }
+
 }

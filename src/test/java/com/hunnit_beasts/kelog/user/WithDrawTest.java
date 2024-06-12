@@ -62,7 +62,7 @@ class WithDrawTest {
     }
 
     @Test
-    void 회원탈퇴() throws Exception {
+    void 회원탈퇴_성공() throws Exception {
         MvcResult withDrawResult = mockMvc.perform(delete("/users/{user-id}", userId)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token))

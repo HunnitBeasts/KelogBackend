@@ -13,25 +13,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final CustomUserInfoDTO user;
+    private final CustomUserInfoDTO customUserInfoDTO;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getUserType().getType().toUpperCase()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + customUserInfoDTO.getUserType().getType().toUpperCase()));
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return customUserInfoDTO.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUserId();
+        return customUserInfoDTO.getUserId();
     }
 
     public Long getId(){
-        return user.getId();
+        return customUserInfoDTO.getId();
     }
 
     @Override

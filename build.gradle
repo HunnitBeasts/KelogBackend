@@ -60,9 +60,6 @@ dependencies {
 	// test Log
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
-
-	// json 파서
-	implementation 'org.json:json:20240303'
 }
 
 tasks.withType(Test) {

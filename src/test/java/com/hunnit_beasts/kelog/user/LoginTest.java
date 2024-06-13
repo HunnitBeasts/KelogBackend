@@ -3,8 +3,12 @@ package com.hunnit_beasts.kelog.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
+import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,15 +32,17 @@ public class LoginTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @BeforeEach
     public void setup() throws Exception {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
+        UserCreateRequestDTO signUpDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
                 .nickname("testNickname")
@@ -43,21 +50,12 @@ public class LoginTest {
                 .email("testEmail")
                 .build();
 
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        MvcResult result = mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        System.out.println("회원가입 데이터 : " + content);
+        authService.signUp(signUpDto);
     }
 
     @Test
-    void 회원가입() throws Exception {
+    @DisplayName("로그인")
+    void login() throws Exception {
         UserLoginRequestDTO dto = UserLoginRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
@@ -73,6 +71,9 @@ public class LoginTest {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        System.out.println("로그인 반환 토큰: " + content);
+        JSONObject jsonObject = new JSONObject(content);
+        String token = jsonObject.getString("token");
+
+        assertThat(jwtUtil.getUserId(token)).isEqualTo("testUserId");
     }
 }

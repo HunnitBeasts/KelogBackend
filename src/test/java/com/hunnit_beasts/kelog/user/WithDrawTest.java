@@ -8,6 +8,7 @@ import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @Transactional
@@ -62,15 +63,14 @@ class WithDrawTest {
     }
 
     @Test
-    void 회원탈퇴_성공() throws Exception {
-        MvcResult withDrawResult = mockMvc.perform(delete("/users/{user-id}", userId)
+    @DisplayName("회원탈퇴 성공")
+    void withDrawSuccess() throws Exception {
+        mockMvc.perform(delete("/users/{user-id}", userId)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent())
+                .andExpect(content().string(String.valueOf(userId))) //assert 대용
                 .andReturn();
-
-        String content = withDrawResult.getResponse().getContentAsString();
-        System.out.println("회원 탈퇴한 회원 번호: " + content);
     }
 
 }

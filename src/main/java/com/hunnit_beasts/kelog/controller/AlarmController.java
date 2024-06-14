@@ -10,5 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlarmController {
 
     @GetMapping("/{user-id}")
-    public void alarm(@PathVariable(value = "user-id") Long userId) {}
+    public void alarm(@PathVariable(value = "user-id") Long userId) {
+        throw new UnsupportedOperationException();
+    }
 }

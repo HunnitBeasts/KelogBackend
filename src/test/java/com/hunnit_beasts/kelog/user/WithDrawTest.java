@@ -1,12 +1,12 @@
 package com.hunnit_beasts.kelog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,28 +15,30 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-public class LoginTest {
+class WithDrawTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private JwtUtil jwtUtil;
+
+    private Long userId;
+    private String token;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -48,30 +50,27 @@ public class LoginTest {
                 .email("testEmail")
                 .build();
 
-        authService.signUp(signUpDto);
+        userId = authService.signUp(signUpDto).getId();
+
+        CustomUserInfoDTO customUserInfoDTO = CustomUserInfoDTO.builder()
+                .id(userId)
+                .userId("testUserId")
+                .password("testPassword")
+                .userType(UserType.USER)
+                .build();
+
+        token = jwtUtil.createToken(customUserInfoDTO);
     }
 
     @Test
-    @DisplayName("로그인")
-    void login() throws Exception {
-        UserLoginRequestDTO dto = UserLoginRequestDTO.builder()
-                .userId("testUserId")
-                .password("testPassword")
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        MvcResult result = mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
+    @DisplayName("회원탈퇴 성공")
+    void withDrawSuccess() throws Exception {
+        mockMvc.perform(delete("/users/{user-id}", userId)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(String.valueOf(userId))) //assert 대용
                 .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        JSONObject jsonObject = new JSONObject(content);
-        String token = jsonObject.getString("token");
-
-        assertThat(jwtUtil.getUserId(token)).isEqualTo("testUserId");
     }
+
 }

@@ -8,4 +8,5 @@ import com.hunnit_beasts.kelog.dto.response.user.UserCreateResponseDTO;
 public interface AuthService {
     TokenResponseDTO login(UserLoginRequestDTO dto);
     UserCreateResponseDTO signUp(UserCreateRequestDTO dto);
+    Long withDraw(Long id);
 }

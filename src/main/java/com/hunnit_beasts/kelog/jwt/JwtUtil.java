@@ -23,8 +23,7 @@ public class JwtUtil {
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.expiration_time}") long accessTokenExpTime
     ){
-        this.secretKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
-                Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.secretKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.accessTokenExpTime = accessTokenExpTime;
     }
 
@@ -35,6 +34,7 @@ public class JwtUtil {
                 .claim("userId",user.getUserId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpTime))
+                .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
 

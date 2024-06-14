@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.*;
 public class SocialController {
 
     @PostMapping
-    public void addSocial() {}
+    public void addSocial() {
+        throw new UnsupportedOperationException();
+    }
 
     @DeleteMapping("/{user-id}")
-    public void deleteSocial(@PathVariable(value = "user-id") Long userId) {}
+    public void deleteSocial(@PathVariable(value = "user-id") Long userId) {
+        throw new UnsupportedOperationException();
+    }
 }

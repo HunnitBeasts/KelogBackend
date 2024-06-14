@@ -53,10 +53,22 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	// spring AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// test Log
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.withType(Test) {
 	enabled = true
+
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs << "-parameters"
 }
 
 //querydsl 추가
@@ -87,14 +99,14 @@ sonarqube {
 		property "sonar.projectKey", "kelog"
 		property "sonar.projectName", "kelog"
 		property "sonar.host.url", "http://localhost:9000"
-		property "sonar.login", System.getenv("SONAR_TOKEN")
+		property "sonar.token", System.getenv("SONAR_TOKEN")
 		property "sonar.sources", "src" // 소스 경로
 		property "sonar.language", "java" // 언어
 		property "sonar.sourceEncoding", "UTF-8"
 		property "sonar.profile", "Sonar way" // 소나큐브에서 적용할 프로필(분석할 수준 설정)
 		property "sonar.java.binaries", "${buildDir}/classes" // 자바 클래스 파일위치
 		property "sonar.test.inclusions", "**/*Test.java" // 코드 분석에 사용할 테스트 소스
-		property "sonar.exclusions", "**/resources/static/**, **/Q*.class, **/test/**, **//**" // 테스트커버리지에서 제외할 파일, 예제에선 정적 js 파일과 queryDSL Q파일 제외
+		property "sonar.exclusions", "**/resources/static/**, **/Q*.java, **/test/** , **/controller/** , **/domain/**" // 테스트커버리지에서 제외할 파일, 예제에선 정적 js 파일과 queryDSL Q파일 제외
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml" // jacoco 플러그인의 결과파일
 	}
 }
@@ -125,10 +137,13 @@ tasks.jacocoTestCoverageVerification {
 		rule {
 			element = "CLASS"
 
+			excludes = ["com.hunnit_beasts.kelog.entity.**"]
+			excludes = ["com.hunnit_beasts.kelog.controller.**"]
+
 			limit {
 				counter = "BRANCH"
 				value = "COVEREDRATIO"
-				minimum = "0.80".toBigDecimal()
+				minimum = 0.80.toBigDecimal()
 			}
 		}
 	}

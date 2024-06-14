@@ -1,7 +1,6 @@
 package com.hunnit_beasts.kelog.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hunnit_beasts.kelog.config.SecurityConfig;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-public class PostCreateTest {
+class PostCreateTest {
 
     @Autowired
     MockMvc mockMvc;

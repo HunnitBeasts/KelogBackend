@@ -3,10 +3,10 @@ package com.hunnit_beasts.kelog.dto.request.post;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

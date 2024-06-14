@@ -2,14 +2,12 @@ package com.hunnit_beasts.kelog.dto.response.post;
 
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class PostCreateResponseDTO {
     private Long id;
     private Long userId;
@@ -22,6 +20,4 @@ public class PostCreateResponseDTO {
     private String content;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
-
-
 }

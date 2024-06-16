@@ -24,7 +24,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                         post.title,
                         post.type,
                         post.thumbImage,
-                        post.disclosure,
+                        post.isPublic,
                         post.shortContent,
                         post.url,
                         post.postContent.content,

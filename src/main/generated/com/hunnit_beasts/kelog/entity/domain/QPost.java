@@ -26,11 +26,11 @@ public class QPost extends EntityPathBase<Post> {
 
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
 
-    public final BooleanPath disclosure = createBoolean("disclosure");
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final QIncompletePost incompletePost;
+
+    public final BooleanPath isPublic = createBoolean("isPublic");
 
     public final QLikedPost likedPost;
 

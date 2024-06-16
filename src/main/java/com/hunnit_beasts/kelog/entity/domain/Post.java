@@ -29,7 +29,7 @@ public class Post extends BaseEntity {
     private String thumbImage;
 
     @Column(nullable = false)
-    private Boolean disclosure;
+    private Boolean isPublic;
 
     @Column(length = 256, nullable = false)
     private String shortContent;
@@ -70,7 +70,7 @@ public class Post extends BaseEntity {
         this.title = dto.getTitle();
         this.type = dto.getType();
         this.thumbImage = dto.getThumbImage();
-        this.disclosure = dto.getDisclosure();
+        this.isPublic = dto.getIsPublic();
         this.shortContent = dto.getShortContent();
         this.url = dto.getUrl();
         this.postContent = new PostContent(dto.getContent(),this);

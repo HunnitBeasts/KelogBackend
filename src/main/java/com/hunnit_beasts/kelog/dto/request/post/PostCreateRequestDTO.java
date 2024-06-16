@@ -14,7 +14,7 @@ public class PostCreateRequestDTO {
     private String title;
     private PostType type;
     private String thumbImage;
-    private Boolean disclosure;
+    private Boolean isPublic;
     private String shortContent;
     private String url;
     private String content;

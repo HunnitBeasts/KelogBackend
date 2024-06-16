@@ -68,8 +68,9 @@ public class JwtUtil {
 
     public Claims parseClaims(String token){
         try {
+            String parsedToken = token.startsWith("Bearer ")? token.substring(7) : token;
             return getJwtParser()
-                    .parseSignedClaims(token)
+                    .parseSignedClaims(parsedToken)
                     .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();

@@ -12,6 +12,7 @@ public enum ErrorCode {
     NO_TARGET_TYPE_ERROR("CODE 5",500,"[ERROR] 두번째 매개변수 명이 잘못되었습니다!"),
     NOT_SAME_USERID_ERROR("CODE 6",500,"[ERROR] 본인이 아닙니다!"),
     NO_PARAMETER_ERROR("CODE 7",500,"[ERROR] 파라미터가 없습니다.!"),
+    NO_USER_DATA_ERROR("CODE 8",500,"[ERROR] 유저데이터가 없습니다!"),
     ;
 
 

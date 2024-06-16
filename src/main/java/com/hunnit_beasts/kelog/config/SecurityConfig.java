@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.jwt.JwtAuthFilter;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.serviceimpl.CustomUserDetailsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,12 +23,12 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
+@Log4j2
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -36,10 +37,10 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Value("${security.auth-white-list}")
-    private List<String> authWhiteList;
+    private String[] authWhiteList;
 
     @Value("${security.cors-origin-whitelist}")
-    private List<String> corsOriginWhitelist;
+    private String[] corsOriginWhitelist;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -67,7 +68,7 @@ public class SecurityConfig {
 
         // 권한 규칙 작성
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(authWhiteList.toArray(new String[0])).permitAll() // swagger 같은거
+                .requestMatchers(authWhiteList).permitAll() // swagger 같은거
                 .anyRequest().permitAll() // 권한을 따로 지정이 가능하니까 일단 모든걸 열어 놓고 바꾸자
         );
         return http.build();
@@ -76,7 +77,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(corsOriginWhitelist.toArray(new String[0])));
+        configuration.setAllowedOrigins(Arrays.asList(corsOriginWhitelist));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);

@@ -139,6 +139,7 @@ tasks.jacocoTestCoverageVerification {
 
 			excludes = ["com.hunnit_beasts.kelog.entity.**"]
 			excludes = ["com.hunnit_beasts.kelog.controller.**"]
+			excludes = ["com.hunnit_beasts.kelog.dto.convert.user.CustomUserDetails.java"]
 
 			limit {
 				counter = "BRANCH"

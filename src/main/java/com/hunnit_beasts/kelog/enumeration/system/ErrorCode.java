@@ -13,6 +13,8 @@ public enum ErrorCode {
     NOT_SAME_USERID_ERROR("CODE 6",500,"[ERROR] 본인이 아닙니다!"),
     NO_PARAMETER_ERROR("CODE 7",500,"[ERROR] 파라미터가 없습니다.!"),
     NO_USER_DATA_ERROR("CODE 8",500,"[ERROR] 유저데이터가 없습니다!"),
+    NO_POST_DATA_ERROR("CODE 9",500,"[ERROR] 게시물 데이터가 없습니다!"),
+    NOT_SAME_POST_ID_ERROR("CODE 10",500,"[ERROR] 본인의 게시물이 아닙니다!"),
     ;
 
 

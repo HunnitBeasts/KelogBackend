@@ -8,10 +8,12 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Aspect
 @Component
@@ -20,6 +22,9 @@ public class IdentificationAspect {
 
     private final ValidateService validateService;
     private final JwtUtil jwtUtil;
+    // 새로운 아이디 종류가 추가 된다면 yaml파일에 추가 하시면 됩니다.
+    @Value("${arg-types}")
+    private final Set<String> argTypes;
 
     @Before("@annotation(com.hunnit_beasts.kelog.aop.Identification)")
     public void identification(JoinPoint joinPoint) {
@@ -28,6 +33,8 @@ public class IdentificationAspect {
 
         if (parameters.containsKey("userId"))
             validateUserId(id, parameters.get("userId"));
+        else if (parameters.containsKey("postId"))
+            validatePostId(id, parameters.get("postId"));
         else
             throw new IllegalArgumentException(ErrorCode.NO_TARGET_TYPE_ERROR.getMessage());
     }
@@ -46,7 +53,7 @@ public class IdentificationAspect {
             if ("token".equals(parameterNames[i])){
                 String token = ((String) args[i]).substring(7);
                 parameters.put("id", jwtUtil.getId(token));
-            } else
+            } else if(argTypes.contains(parameterNames[i]))
                 parameters.put(parameterNames[i], (Long) args[i]);
 
         return parameters;
@@ -54,6 +61,10 @@ public class IdentificationAspect {
 
     private void validateUserId(Long id, Long userId) {
         validateService.userIdAndUserIdSameCheck(id, userId);
+    }
+
+    private void validatePostId(Long id, Long postId) {
+        validateService.userIdAndPostIdSameCheck(id, postId);
     }
 
 }

@@ -26,4 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(IllegalArgumentException::new);
         return new CustomUserDetails(mapper.map(loginUser, CustomUserInfoDTO.class));
     }
+
+    public CustomUserDetails loadCustomUserByUsername(String userId) throws UsernameNotFoundException {
+        User loginUser = userJpaRepository.findByUserId(userId)
+                .orElseThrow(IllegalArgumentException::new);
+        return new CustomUserDetails(mapper.map(loginUser, CustomUserInfoDTO.class));
+    }
 }

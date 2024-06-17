@@ -1,7 +1,7 @@
 package com.hunnit_beasts.kelog.aop;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.service.ProofService;
 import com.hunnit_beasts.kelog.service.ValidateService;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.util.Set;
 public class IdentificationAspect {
 
     private final ValidateService validateService;
-    private final JwtUtil jwtUtil;
+    private final ProofService proofService;
     // 새로운 아이디 종류가 추가 된다면 yaml파일에 추가 하시면 됩니다.
     @Value("${arg-types}")
     private final Set<String> argTypes;
@@ -50,9 +51,9 @@ public class IdentificationAspect {
             throw new IllegalArgumentException(ErrorCode.NO_PARAMETER_ERROR.getMessage());
 
         for (int i = 0; i < parameterNames.length; i++)
-            if ("token".equals(parameterNames[i])){
-                String token = ((String) args[i]).substring(7);
-                parameters.put("id", jwtUtil.getId(token));
+            if ("authentication".equals(parameterNames[i])){
+                Long id = proofService.getId((Authentication) args[i]);
+                parameters.put("id", id);
             } else if(argTypes.contains(parameterNames[i]))
                 parameters.put(parameterNames[i], (Long) args[i]);
 

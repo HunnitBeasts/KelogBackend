@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
 public class LoginTest {

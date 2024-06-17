@@ -46,10 +46,6 @@ public class JwtUtil {
         return parseClaims(token).get("id", Long.class);
     }
 
-    public UserType getUserType(String token){
-        return parseClaims(token).get("role", UserType.class);
-    }
-
     public boolean validateToken(String token){
         try {
             getJwtParser().parseSignedClaims(token).getPayload();

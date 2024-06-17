@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
 public class SignUpTest {

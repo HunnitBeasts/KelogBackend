@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
@@ -31,10 +32,10 @@ public class PostController {
 
     @PostMapping
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<PostCreateResponseDTO> addPost(@RequestHeader(value = "Authorization") String header,
+    public ResponseEntity<PostCreateResponseDTO> addPost(@RequestHeader(value = "Authorization") String token,
                                                          @RequestBody PostCreateRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.postCreate(jwtUtil.getId(header), dto));
+                .body(postService.postCreate(jwtUtil.getId(token), dto));
     }
 
     @PostMapping("/like")
@@ -58,8 +59,12 @@ public class PostController {
     }
 
     @DeleteMapping("/{post-id}")
-    public void deletePost(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    @PreAuthorize("hasRole('USER')")
+    @Identification
+    public ResponseEntity<Long> deletePost(@RequestHeader(value = "Authorization") String token,
+                                           @PathVariable(value = "post-id") Long postId) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(postService.postDelete(postId));
     }
 
     @DeleteMapping("/like/{post-id}")

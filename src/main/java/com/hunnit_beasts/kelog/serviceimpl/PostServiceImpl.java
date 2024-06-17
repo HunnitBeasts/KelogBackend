@@ -30,4 +30,10 @@ public class PostServiceImpl implements PostService {
         Post createdPost = postJpaRepository.save(createPostEntity);
         return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
     }
+
+    @Override
+    public Long postDelete(Long postId) {
+        postJpaRepository.deleteById(postId);
+        return postId;
+    }
 }

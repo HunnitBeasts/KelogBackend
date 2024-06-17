@@ -1,13 +1,19 @@
 package com.hunnit_beasts.kelog.entity.domain;
 
 
+import com.hunnit_beasts.kelog.dto.request.comment.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.entity.superclass.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +36,10 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "childComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<ReComment> childComments = new ArrayList<>();
+
+    public Comment(CommentCreateRequestDTO dto, Post post, User user){
+        this.commentContent = new CommentContent(dto.getContent(), this);
+        this.user = user;
+        this.post = post;
+    }
 }

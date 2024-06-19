@@ -34,8 +34,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String userId = jwtUtil.getUserId(token);
-        CustomUserDetails userDetails = customUserDetailsService.loadCustomUserByUsername(userId);
+
+        Long id = jwtUtil.getId(token);
+        CustomUserDetails userDetails = customUserDetailsService.loadCustomUserByUsername(id);
 
         if (userDetails == null) {
             filterChain.doFilter(request,response);

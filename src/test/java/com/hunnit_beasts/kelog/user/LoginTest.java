@@ -39,6 +39,8 @@ public class LoginTest {
     @Autowired
     private JwtUtil jwtUtil;
 
+    private Long id;
+
     @BeforeEach
     public void setup() throws Exception {
         UserCreateRequestDTO signUpDto = UserCreateRequestDTO.builder()
@@ -49,7 +51,7 @@ public class LoginTest {
                 .email("testEmail")
                 .build();
 
-        authService.signUp(signUpDto);
+        id = authService.signUp(signUpDto).getId();
     }
 
     @Test
@@ -73,6 +75,6 @@ public class LoginTest {
         JSONObject jsonObject = new JSONObject(content);
         String token = jsonObject.getString("token");
 
-        assertThat(jwtUtil.getUserId(token)).isEqualTo("testUserId");
+        assertThat(jwtUtil.getId(token)).isEqualTo(id);
     }
 }

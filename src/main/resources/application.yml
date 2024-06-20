@@ -62,3 +62,15 @@ security:
 arg-types:
   userId,
   postId
+
+upload:
+  directory:
+    window:
+      C:\Temp\kelog\
+    linux:
+      /tmp/kelog/
+    mac:
+      /temp/kelog/
+  max-size:
+    10485760
+

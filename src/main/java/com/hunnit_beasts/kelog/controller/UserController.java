@@ -3,11 +3,11 @@ package com.hunnit_beasts.kelog.controller;
 import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.user.UserCreateResponseDTO;
-import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final AuthService authService;
-    private final JwtUtil jwtUtil;
 
     @PostMapping
     public ResponseEntity<UserCreateResponseDTO> signUp(@RequestBody UserCreateRequestDTO dto){
@@ -30,9 +29,8 @@ public class UserController {
 
     @DeleteMapping("/{user-id}")
     @Identification
-    public ResponseEntity<Long> deleteUser(
-            @RequestHeader(value = "Authorization") String token,
-            @PathVariable(value = "user-id") Long userId) {
+    public ResponseEntity<Long> deleteUser(@PathVariable(value = "user-id") Long userId,
+                                           Authentication authentication) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(authService.withDraw(userId));
     }

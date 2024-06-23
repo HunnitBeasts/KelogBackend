@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.jwt;
 
+import com.hunnit_beasts.kelog.dto.convert.user.CustomUserDetails;
 import com.hunnit_beasts.kelog.serviceimpl.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -34,8 +34,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String userId = jwtUtil.getUserId(token);
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+
+        Long id = jwtUtil.getId(token);
+        CustomUserDetails userDetails = customUserDetailsService.loadCustomUserByUsername(id);
 
         if (userDetails == null) {
             filterChain.doFilter(request,response);

@@ -1,7 +1,6 @@
 package com.hunnit_beasts.kelog.jwt;
 
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
-import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import io.jsonwebtoken.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,24 +29,14 @@ public class JwtUtil {
     public String createToken(CustomUserInfoDTO user){
         return Jwts.builder()
                 .claim("id",user.getId())
-                .claim("role",user.getUserType())
-                .claim("userId",user.getUserId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpTime))
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
 
-    public String getUserId(String token){
-        return parseClaims(token).get("userId", String.class);
-    }
-
     public Long getId(String token){
         return parseClaims(token).get("id", Long.class);
-    }
-
-    public UserType getUserType(String token){
-        return parseClaims(token).get("role", UserType.class);
     }
 
     public boolean validateToken(String token){

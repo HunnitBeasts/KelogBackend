@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
 public class LoginTest {
@@ -38,6 +39,8 @@ public class LoginTest {
     @Autowired
     private JwtUtil jwtUtil;
 
+    private Long id;
+
     @BeforeEach
     public void setup() throws Exception {
         UserCreateRequestDTO signUpDto = UserCreateRequestDTO.builder()
@@ -48,7 +51,7 @@ public class LoginTest {
                 .email("testEmail")
                 .build();
 
-        authService.signUp(signUpDto);
+        id = authService.signUp(signUpDto).getId();
     }
 
     @Test
@@ -72,6 +75,6 @@ public class LoginTest {
         JSONObject jsonObject = new JSONObject(content);
         String token = jsonObject.getString("token");
 
-        assertThat(jwtUtil.getUserId(token)).isEqualTo("testUserId");
+        assertThat(jwtUtil.getId(token)).isEqualTo(id);
     }
 }

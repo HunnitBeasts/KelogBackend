@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class FollowerId implements Serializable {
 
     @Column(nullable = false)
@@ -19,4 +21,5 @@ public class FollowerId implements Serializable {
 
     @Column(nullable = false)
     private Long followed;
+
 }

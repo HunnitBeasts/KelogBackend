@@ -7,7 +7,6 @@ import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j2;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

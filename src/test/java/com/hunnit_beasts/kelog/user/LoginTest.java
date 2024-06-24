@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-@Log4j2
 public class LoginTest {
 
     @Autowired
@@ -76,8 +75,6 @@ public class LoginTest {
         String content = result.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(content);
         String token = jsonObject.getString("token");
-
-        log.info("Token : {}", token);
 
         assertThat(jwtUtil.getId(token)).isEqualTo(id);
     }

@@ -3,6 +3,7 @@ package com.hunnit_beasts.kelog.serviceimpl;
 import com.hunnit_beasts.kelog.config.ImageConfig;
 import com.hunnit_beasts.kelog.dto.response.image.ImageResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.Image;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.handler.exception.FileUploadException;
 import com.hunnit_beasts.kelog.repository.jpa.ImageJpaRepository;
 import com.hunnit_beasts.kelog.service.ImageService;
@@ -54,9 +55,16 @@ public class ImageServiceImpl implements ImageService {
             throw new FileUploadException("File upload exception. " + Arrays.toString(e.getStackTrace()));
         }
 
-        Image saveImage = imageJpaRepository.save(new Image(file,filePath));
+        Image saveImage = imageJpaRepository.save(new Image(file,filePath,newFileName));
 
         return new ImageResponseDTO(saveImage);
+    }
+
+    @Override
+    public byte[] readImage(String url) throws IOException {
+        Image callImageData = imageJpaRepository.findById(url)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_IMAGE_DATA_ERROR.getMessage()));
+        return Files.readAllBytes(Paths.get(callImageData.getFilePath()));
     }
 
     private String generateUniqueFileName(String originalFileName) {

@@ -27,6 +27,8 @@ public class QImage extends EntityPathBase<Image> {
 
     public final StringPath originalFileName = createString("originalFileName");
 
+    public final StringPath url = createString("url");
+
     public QImage(String variable) {
         super(Image.class, forVariable(variable));
     }

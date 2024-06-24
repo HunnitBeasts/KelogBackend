@@ -7,6 +7,7 @@ import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
+@Log4j2
 public class LoginTest {
 
     @Autowired
@@ -74,6 +76,8 @@ public class LoginTest {
         String content = result.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(content);
         String token = jsonObject.getString("token");
+
+        log.info("Token : {}", token);
 
         assertThat(jwtUtil.getId(token)).isEqualTo(id);
     }

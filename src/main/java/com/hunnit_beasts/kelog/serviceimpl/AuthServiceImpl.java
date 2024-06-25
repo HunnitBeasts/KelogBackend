@@ -15,6 +15,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static com.hunnit_beasts.kelog.enumeration.system.ErrorCode.NO_USER_DATA_ERROR;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponseDTO login(UserLoginRequestDTO dto) {
         User loginUser = userJpaRepository.findByUserId(dto.getUserId())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(()-> new IllegalArgumentException(NO_USER_DATA_ERROR.getCode()+"& [ERROR] 등록되지 않은 아이디입니다!"));
 
         if(encoder.matches(dto.getPassword(), loginUser.getPassword()))
             return new TokenResponseDTO(jwtUtil.createToken(loginUser.entityToCustomUserInfoDTO()));

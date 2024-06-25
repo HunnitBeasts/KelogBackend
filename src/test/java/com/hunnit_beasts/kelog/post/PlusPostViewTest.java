@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-public class PlusPostViewTest {
+class PlusPostViewTest {
 
     @Autowired
     MockMvc mockMvc;

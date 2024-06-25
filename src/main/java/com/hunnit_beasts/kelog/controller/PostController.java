@@ -2,7 +2,9 @@ package com.hunnit_beasts.kelog.controller;
 
 import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostViewCntRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
 import com.hunnit_beasts.kelog.service.PostService;
 import com.hunnit_beasts.kelog.service.ProofService;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +49,9 @@ public class PostController {
     }
 
     @PostMapping("/count")
-    public void plusView() {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<PostViewCntResponseDTO> plusView(@RequestBody PostViewCntRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.plusViewCnt(dto.getPostId()));
     }
 
     @PostMapping("/recent")

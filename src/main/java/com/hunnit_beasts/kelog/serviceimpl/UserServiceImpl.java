@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.serviceimpl;
 
 import com.hunnit_beasts.kelog.dto.request.user.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.user.FollowIngResponseDTO;
+import com.hunnit_beasts.kelog.entity.compositekey.FollowerId;
 import com.hunnit_beasts.kelog.entity.domain.Follower;
 import com.hunnit_beasts.kelog.entity.domain.User;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
@@ -24,8 +25,9 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
         User followed = userJpaRepository.findById(dto.getFollowing())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
-        Follower savedFollower = new Follower(following,followed);
-        Follower follow = followerJpaRepository.save(savedFollower);
+        if(followerJpaRepository.existsById(new FollowerId(following,followed)))
+            throw new IllegalArgumentException(ErrorCode.DUPLICATION_FOLLOW_ERROR.getMessage());
+        Follower follow = followerJpaRepository.save(new Follower(following,followed));
         return new FollowIngResponseDTO(follow);
     }
 }

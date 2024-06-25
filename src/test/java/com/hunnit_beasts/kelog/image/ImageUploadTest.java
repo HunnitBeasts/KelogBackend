@@ -62,7 +62,7 @@ class ImageUploadTest {
 
     @Test
     @DisplayName("이미지 업로드")
-    void createComment() throws Exception {
+    void imageUpload() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "multipartFile",
                 "test.txt",

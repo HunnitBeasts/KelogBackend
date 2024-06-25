@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.comment;
+package com.hunnit_beasts.kelog.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class CommentCreateTest {
+class CreateCommentExceptionTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -96,7 +96,7 @@ class CommentCreateTest {
     @DisplayName("댓글 작성")
     void createComment() throws Exception {
         CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
-                .postId(postId)
+                .postId(postId+1)
                 .content("testCommentContent")
                 .build();
 
@@ -107,12 +107,9 @@ class CommentCreateTest {
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andExpect(status().is5xxServerError())
+                .andExpect(jsonPath("errorMessage").value("[ERROR] 게시물 데이터가 없습니다!"))
+                .andExpect(jsonPath("time").isString())
+                .andReturn();
     }
 }

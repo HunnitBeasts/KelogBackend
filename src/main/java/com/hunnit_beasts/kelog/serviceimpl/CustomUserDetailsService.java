@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import static com.hunnit_beasts.kelog.enumeration.system.ErrorCode.NO_USER_DATA_ERROR;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -23,13 +25,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User loginUser = userJpaRepository.findByUserId(userId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(()-> new IllegalArgumentException(NO_USER_DATA_ERROR.getCode()));
         return new CustomUserDetails(mapper.map(loginUser, CustomUserInfoDTO.class));
     }
 
     public CustomUserDetails loadCustomUserByUsername(Long id) throws UsernameNotFoundException {
         User loginUser = userJpaRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(()-> new IllegalArgumentException(NO_USER_DATA_ERROR.getCode()));
         return new CustomUserDetails(mapper.map(loginUser, CustomUserInfoDTO.class));
     }
 }

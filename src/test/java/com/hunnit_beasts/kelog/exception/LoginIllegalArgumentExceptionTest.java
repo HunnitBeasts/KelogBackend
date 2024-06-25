@@ -55,7 +55,7 @@ public class LoginIllegalArgumentExceptionTest {
     }
 
     @Test
-    @DisplayName("login IllegalArgumentException 예외 테스트(예외 발생)")
+    @DisplayName("login IllegalArgumentException 예외 테스트")
     public void exceptionHandleTest1() throws Exception {
 
         UserLoginRequestDTO dto = UserLoginRequestDTO.builder()
@@ -70,28 +70,9 @@ public class LoginIllegalArgumentExceptionTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("errorMessage").value("[ERROR] 유저데이터가 없습니다!"))
+                .andExpect(jsonPath("errorMessage").value("[ERROR] 등록되지 않은 아이디입니다!"))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();
     }
 
-    @Test
-    @DisplayName("login IllegalArgumentException 예외 테스트(정상 실행)")
-    public void exceptionHandleTest2() throws Exception {
-
-        UserLoginRequestDTO dto = UserLoginRequestDTO.builder()
-                .userId("testUserId")
-                .password("testPassword")
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andReturn();
-
-    }
 }

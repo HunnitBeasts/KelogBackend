@@ -25,6 +25,12 @@ public class ErrorResponseDTO implements ErrorResponse {
         this.time = LocalDateTime.now();
     }
 
+    public ErrorResponseDTO(ErrorCode errorCode, String errorMessage){
+        this.status = errorCode.getStatus();
+        this.errorMessage = errorMessage;
+        this.time = LocalDateTime.now();
+    }
+
     @Override
     public HttpStatusCode getStatusCode() {
         return HttpStatus.resolve(status);

@@ -1,43 +1,80 @@
 package com.hunnit_beasts.kelog.handler;
 
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.etc.ErrorResponseDTO;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.hunnit_beasts.kelog.enumeration.system.ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR;
-import static com.hunnit_beasts.kelog.enumeration.system.ErrorCode.NO_USER_DATA_ERROR;
+import static com.hunnit_beasts.kelog.enumeration.system.ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR;
 
 @ControllerAdvice
 @Log4j2
 public class ControllerExceptionHandler {
 
-    @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUnsupportedException() {
-        ErrorResponseDTO dto = new ErrorResponseDTO(NOT_SUPPORTED_ENDPOINT_ERROR);
-        log.error("{} {}", dto.getStatus(), dto.getErrorMessage());
+    private final List<ErrorCode> errorCodes;
 
-        return ResponseEntity.status(dto.getStatusCode()).body(dto);
+    private String errorCode;
+    private String message = "";
+
+    public ControllerExceptionHandler(){
+        this.errorCodes = List.of(ErrorCode.values());
+    }
+
+    private void splitCodeAndMessage(String errorMessage){
+            if(errorMessage.contains("&")){
+                String[] errorList = errorMessage.split("&");
+                this.errorCode = errorList[0];
+                this.message = errorList[1].trim();
+            }
+            else {
+                this.errorCode = errorMessage;
+            }
+    }
+
+    private ErrorCode getErrorCode(String code){
+        for(ErrorCode errorCode : this.errorCodes){
+            if(errorCode.getCode().equals(code.trim())){
+                return errorCode;
+            }
+        }
+        return OCCUR_UNKNOWN_TYPE_ERROR;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException() {
-        ErrorResponseDTO dto = new ErrorResponseDTO(NO_USER_DATA_ERROR);
-        log.error("{} {}", dto.getStatus(), dto.getErrorMessage());
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException e) {
+
+        splitCodeAndMessage(e.getMessage());
+        ErrorCode code = getErrorCode(errorCode);
+        ErrorResponseDTO dto;
+
+        if(message.isBlank()){
+            dto = new ErrorResponseDTO(code);
+        }else{
+            dto = new ErrorResponseDTO(code,message);
+        }
+
+        log.error("status : {} message : {}", dto.getStatus(), dto.getErrorMessage());
+
+        return ResponseEntity.status(dto.getStatusCode()).body(dto);
+    }
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUnsupportedOperationException() {
+        ErrorResponseDTO dto = new ErrorResponseDTO(NOT_SUPPORTED_ENDPOINT_ERROR);
+        log.error("{} {}",dto.getStatus(),dto.getErrorMessage());
 
         return ResponseEntity.status(dto.getStatusCode()).body(dto);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException() {
-        log.error("{} {}",String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR),"오류가 발생하였습니다!");
+    public ResponseEntity<ErrorResponseDTO> handleException() {
+        ErrorResponseDTO dto = new ErrorResponseDTO(OCCUR_UNKNOWN_TYPE_ERROR);
+        log.error("{} {}",dto.getStatus(),dto.getErrorMessage()+" type: Exception");
 
-        return new ResponseEntity<>("예외 발생", HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(dto.getStatusCode()).body(dto);
     }
 }

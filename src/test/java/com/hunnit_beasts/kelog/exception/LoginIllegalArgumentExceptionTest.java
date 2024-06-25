@@ -2,12 +2,8 @@ package com.hunnit_beasts.kelog.exception;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
-import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
-import com.hunnit_beasts.kelog.enumeration.types.PostType;
-import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;

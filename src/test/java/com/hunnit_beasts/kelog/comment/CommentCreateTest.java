@@ -93,7 +93,7 @@ class CommentCreateTest {
     }
 
     @Test
-    @DisplayName("댓글 작성")
+    @DisplayName("댓글 생성 테스트")
     void createComment() throws Exception {
         CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
                 .postId(postId)

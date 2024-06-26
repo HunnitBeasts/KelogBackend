@@ -2,6 +2,9 @@ package com.hunnit_beasts.kelog.controller;
 
 import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostViewCntRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
@@ -44,8 +47,10 @@ public class PostController {
     }
 
     @PostMapping("/like")
-    public void addPostLike() {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<PostLikeResponseDTO> addPostLike(@RequestBody PostLikeRequestDTO dto,
+                                                           Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.addPostLike(proofService.getId(authentication), dto));
     }
 
     @PostMapping("/count")
@@ -55,7 +60,7 @@ public class PostController {
     }
 
     @PostMapping("/recent")
-    public void addrecentPost() {
+    public void addRecentPost() {
         throw new UnsupportedOperationException();
     }
 

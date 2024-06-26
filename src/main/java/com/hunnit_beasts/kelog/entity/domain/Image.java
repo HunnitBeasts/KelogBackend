@@ -16,6 +16,9 @@ import java.nio.file.Path;
 public class Image {
 
     @Id
+    @Column(nullable = false,length = 512)
+    private String url;
+
     @Column(nullable = false)
     private String filePath;
 
@@ -28,7 +31,8 @@ public class Image {
     @Column(nullable = false)
     private Long fileSize;
 
-    public Image(MultipartFile file, Path path){
+    public Image(MultipartFile file, Path path, String newFileName){
+        this.url = newFileName;
         this.fileType = file.getContentType();
         this.originalFileName = file.getOriginalFilename();
         this.filePath = path.toString();

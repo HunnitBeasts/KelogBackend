@@ -5,7 +5,9 @@ import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
+import com.hunnit_beasts.kelog.service.ImageService;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,17 +17,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class ImageUploadTest {
+@Log4j2
+class ImageReadTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -34,9 +37,13 @@ class ImageUploadTest {
     AuthService authService;
 
     @Autowired
+    ImageService imageService;
+
+    @Autowired
     JwtUtil jwtUtil;
 
     private String token;
+    private String url;
 
     @BeforeEach
     void setUp(){
@@ -58,27 +65,25 @@ class ImageUploadTest {
                 .build();
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
-    }
 
-    @Test
-    @DisplayName("이미지 업로드")
-    void imageUpload() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "multipartFile",
                 "test.txt",
                 "image/jpg",
                 "testImage".getBytes(StandardCharsets.UTF_8) );
 
-        mockMvc.perform(multipart("/images")
-                        .file(multipartFile)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
+        url = imageService.uploadFile(multipartFile).getUrl();
+    }
+
+    @Test
+    @DisplayName("이미지 읽어오기")
+    void imageRead() throws Exception {
+        MvcResult result = mockMvc.perform(get("/images/{url}",url)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").isString())
-                .andExpect(jsonPath("$.fileType").value("image/jpg"))
-                .andExpect(jsonPath("$.originalFileName").value("test.txt"))
-                .andExpect(jsonPath("$.filePath").isString())
-                .andExpect(jsonPath("$.fileSize").isNumber());
+                .andReturn();
+
+        log.info("result : {}", result.getResponse().getContentAsString());
     }
 }

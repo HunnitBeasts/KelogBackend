@@ -17,9 +17,8 @@ public enum ErrorCode {
     POST_LIKE_DUPLICATION_ERROR("CODE 14",500,"[ERROR] 이미 좋아요를 누른 게시물입니다!"),
     NO_POST_VIEW_DATA_ERROR("CODE 12",500,"[ERROR] 조회수 정보가 없습니다."),
     NOT_IMAGE_DATA_ERROR("CODE 13",500,"[ERROR] 요청하신 이미지가 없습니다!"),
-    NO_POST_VIEW_DATA_ERROR("CODE 11",500,"[ERROR] 조회수 정보가 없습니다."),
 
-
+    DUPLICATION_FOLLOW_ERROR("CODE 11",500,"[ERROR] 이미 팔로우한 유저입니다!"),
     ;
 
 

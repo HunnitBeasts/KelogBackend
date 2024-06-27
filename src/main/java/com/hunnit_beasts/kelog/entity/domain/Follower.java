@@ -19,17 +19,17 @@ public class Follower extends RegEntity {
     @MapsId("following")
     @ManyToOne
     @JoinColumn(name = "following")
-    private User following;
+    private User follower;
 
     @MapsId("followed")
     @ManyToOne
     @JoinColumn(name = "followed")
-    private User followed;
+    private User followee;
 
-    public Follower(User following, User followed){
-        this.id = new FollowerId(following.getId(),following.getId());
-        this.following = following;
-        this.followed = followed;
+    public Follower(User follower, User followee){
+        this.id = new FollowerId(follower.getId(), follower.getId());
+        this.follower = follower;
+        this.followee = followee;
     }
 
 }

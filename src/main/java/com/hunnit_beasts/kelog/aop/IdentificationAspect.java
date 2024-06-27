@@ -1,7 +1,7 @@
 package com.hunnit_beasts.kelog.aop;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.service.ProofService;
+import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.ValidateService;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
@@ -22,7 +22,7 @@ import java.util.Set;
 public class IdentificationAspect {
 
     private final ValidateService validateService;
-    private final ProofService proofService;
+    private final AuthenticatedService authenticatedService;
     // 새로운 아이디 종류가 추가 된다면 yaml파일에 추가 하시면 됩니다.
     @Value("${arg-types}")
     private final Set<String> argTypes;
@@ -52,7 +52,7 @@ public class IdentificationAspect {
 
         for (int i = 0; i < parameterNames.length; i++)
             if ("authentication".equals(parameterNames[i])){
-                Long id = proofService.getId((Authentication) args[i]);
+                Long id = authenticatedService.getId((Authentication) args[i]);
                 parameters.put("id", id);
             } else if(argTypes.contains(parameterNames[i]))
                 parameters.put(parameterNames[i], (Long) args[i]);

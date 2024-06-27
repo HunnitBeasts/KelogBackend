@@ -18,14 +18,14 @@ import java.io.Serializable;
 public class FollowerId implements Serializable {
 
     @Column(nullable = false)
-    private Long following;
+    private Long follower;
 
     @Column(nullable = false)
-    private Long followed;
+    private Long followee;
 
-    public FollowerId(User following, User followed){
-        this.following = following.getId();
-        this.followed = followed.getId();
+    public FollowerId(User follower, User followee){
+        this.follower = follower.getId();
+        this.followee = followee.getId();
     }
 
 }

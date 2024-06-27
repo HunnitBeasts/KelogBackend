@@ -21,13 +21,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public FollowIngResponseDTO following(Long userId, FollowIngRequestDTO dto) {
-        User following = userJpaRepository.findById(userId)
+        User follower = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
-        User followed = userJpaRepository.findById(dto.getFollowing())
+        User followee = userJpaRepository.findById(dto.getFollowing())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
-        if(followerJpaRepository.existsById(new FollowerId(following,followed)))
+        if(followerJpaRepository.existsById(new FollowerId(follower,followee)))
             throw new IllegalArgumentException(ErrorCode.DUPLICATION_FOLLOW_ERROR.getMessage());
-        Follower follow = followerJpaRepository.save(new Follower(following,followed));
+        Follower follow = followerJpaRepository.save(new Follower(follower,followee));
         return new FollowIngResponseDTO(follow);
     }
 }

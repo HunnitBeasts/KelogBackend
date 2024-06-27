@@ -7,11 +7,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class FollowIngResponseDTO {
-    private Long following;
-    private Long followed;
+    private Long follower;
+    private Long followee;
 
     public FollowIngResponseDTO(Follower follower){
-        this.following = follower.getId().getFollowing();
-        this.followed = follower.getId().getFollowed();
+        this.follower = follower.getId().getFollower();
+        this.followee = follower.getId().getFollowee();
     }
 }

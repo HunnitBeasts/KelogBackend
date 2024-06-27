@@ -6,10 +6,9 @@ import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostViewCntRequestDTO;
-import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
 import com.hunnit_beasts.kelog.service.PostService;
-import com.hunnit_beasts.kelog.service.ProofService;
+import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
-    private final ProofService proofService;
+    private final AuthenticatedService authenticatedService;
 
     @GetMapping("/{post-id}")
     public void readPost(@PathVariable(value = "post-id") Long postId) {
@@ -43,14 +42,14 @@ public class PostController {
     public ResponseEntity<PostCreateResponseDTO> addPost(@RequestBody PostCreateRequestDTO dto,
                                                          Authentication authentication) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.postCreate(proofService.getId(authentication), dto));
+                .body(postService.postCreate(authenticatedService.getId(authentication), dto));
     }
 
     @PostMapping("/like")
     public ResponseEntity<PostLikeResponseDTO> addPostLike(@RequestBody PostLikeRequestDTO dto,
                                                            Authentication authentication) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.addPostLike(proofService.getId(authentication), dto));
+                .body(postService.addPostLike(authenticatedService.getId(authentication), dto));
     }
 
     @PostMapping("/count")

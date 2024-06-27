@@ -3,7 +3,7 @@ package com.hunnit_beasts.kelog.controller;
 
 import com.hunnit_beasts.kelog.dto.request.user.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.user.FollowIngResponseDTO;
-import com.hunnit_beasts.kelog.service.ProofService;
+import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class FollowController {
 
     private final UserService userService;
-    private final ProofService proofService;
+    private final AuthenticatedService authenticatedService;
 
     @PostMapping
     public ResponseEntity<FollowIngResponseDTO> addFollow(@RequestBody FollowIngRequestDTO dto,
                                                           Authentication authentication) {
-        Long userId = proofService.getId(authentication);
+        Long userId = authenticatedService.getId(authentication);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.following(userId,dto));
     }

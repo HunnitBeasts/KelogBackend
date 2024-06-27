@@ -79,7 +79,7 @@ class FollowingTest {
     @DisplayName("팔로우 기능 성공")
     void followSuccess() throws Exception {
         FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
-                .following(followedUserId)
+                .followee(followedUserId)
                 .build();
 
         String jsonContent = objectMapper.writeValueAsString(followIngRequestDTO);
@@ -90,8 +90,8 @@ class FollowingTest {
                         .header("Authorization", "Bearer " + token)
                         .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.following").value(userId))
-                .andExpect(jsonPath("$.followed").value(followedUserId))
+                .andExpect(jsonPath("$.follower").value(userId))
+                .andExpect(jsonPath("$.followee").value(followedUserId))
                 .andReturn();
     }
 }

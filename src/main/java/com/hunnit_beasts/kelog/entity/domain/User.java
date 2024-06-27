@@ -79,11 +79,11 @@ public class User extends BaseEntity {
     private final List<Alarm> targets = new ArrayList<>();
 
     //Follower
-    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<Follower> followings = new ArrayList<>();
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<Follower> followers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "followed", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<Follower> followeds = new ArrayList<>();
+    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<Follower> followees = new ArrayList<>();
 
     //IncompletePost
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)

@@ -16,14 +16,14 @@ public class Follower extends RegEntity {
     @EmbeddedId
     private FollowerId id;
 
-    @MapsId("following")
+    @MapsId("follower")
     @ManyToOne
-    @JoinColumn(name = "following")
+    @JoinColumn(name = "follower")
     private User follower;
 
-    @MapsId("followed")
+    @MapsId("followee")
     @ManyToOne
-    @JoinColumn(name = "followed")
+    @JoinColumn(name = "followee")
     private User followee;
 
     public Follower(User follower, User followee){

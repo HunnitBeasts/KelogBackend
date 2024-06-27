@@ -20,13 +20,13 @@ public class QFollower extends EntityPathBase<Follower> {
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QFollower follower = new QFollower("follower");
+    public static final QFollower follower1 = new QFollower("follower1");
 
     public final com.hunnit_beasts.kelog.entity.superclass.QRegEntity _super = new com.hunnit_beasts.kelog.entity.superclass.QRegEntity(this);
 
-    public final QUser followed;
+    public final QUser followee;
 
-    public final QUser following;
+    public final QUser follower;
 
     public final com.hunnit_beasts.kelog.entity.compositekey.QFollowerId id;
 
@@ -51,8 +51,8 @@ public class QFollower extends EntityPathBase<Follower> {
 
     public QFollower(Class<? extends Follower> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.followed = inits.isInitialized("followed") ? new QUser(forProperty("followed"), inits.get("followed")) : null;
-        this.following = inits.isInitialized("following") ? new QUser(forProperty("following"), inits.get("following")) : null;
+        this.followee = inits.isInitialized("followee") ? new QUser(forProperty("followee"), inits.get("followee")) : null;
+        this.follower = inits.isInitialized("follower") ? new QUser(forProperty("follower"), inits.get("follower")) : null;
         this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.entity.compositekey.QFollowerId(forProperty("id")) : null;
     }
 

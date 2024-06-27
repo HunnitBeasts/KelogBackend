@@ -36,9 +36,9 @@ public class QUser extends EntityPathBase<User> {
 
     public final BooleanPath emailSetting = createBoolean("emailSetting");
 
-    public final ListPath<Follower, QFollower> followeds = this.<Follower, QFollower>createList("followeds", Follower.class, QFollower.class, PathInits.DIRECT2);
+    public final ListPath<Follower, QFollower> followees = this.<Follower, QFollower>createList("followees", Follower.class, QFollower.class, PathInits.DIRECT2);
 
-    public final ListPath<Follower, QFollower> followings = this.<Follower, QFollower>createList("followings", Follower.class, QFollower.class, PathInits.DIRECT2);
+    public final ListPath<Follower, QFollower> followers = this.<Follower, QFollower>createList("followers", Follower.class, QFollower.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 

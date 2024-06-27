@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FollowIngRequestDTO {
-    private Long following;
+    private Long followee;
 }

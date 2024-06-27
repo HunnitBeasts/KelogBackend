@@ -35,7 +35,7 @@ public class Comment extends BaseEntity {
     private ReComment parentComment;
 
     @OneToMany(mappedBy = "childComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<ReComment> childComments = new ArrayList<>();
+    private final List<ReComment> childComments = new ArrayList<>();
 
     public Comment(CommentCreateRequestDTO dto, Post post, User user){
         this.commentContent = new CommentContent(dto.getContent(), this);

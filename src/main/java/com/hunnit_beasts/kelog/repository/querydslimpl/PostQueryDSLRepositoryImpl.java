@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.repository.querydslimpl;
 
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.QPost;
+import com.hunnit_beasts.kelog.entity.domain.QPostViewCnt;
 import com.hunnit_beasts.kelog.repository.querydsl.PostQueryDSLRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -32,6 +33,16 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                         post.modDate))
                 .from(post)
                 .where(post.id.eq(id))
+                .fetchOne();
+    }
+
+    @Override
+    public Long findTotalViewCntById(Long id) {
+        QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
+        return jpaQueryFactory
+                .select(postViewCnt.viewCnt.sum())
+                .from(postViewCnt)
+                .where(postViewCnt.id.postId.eq(id))
                 .fetchOne();
     }
 }

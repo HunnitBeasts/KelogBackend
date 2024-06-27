@@ -1,10 +1,16 @@
-package com.hunnit_beasts.kelog.image;
+package com.hunnit_beasts.kelog.post;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
+import com.hunnit_beasts.kelog.service.PostService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,19 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.StandardCharsets;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-class ImageUploadTest {
+class PostLikedTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -34,8 +37,16 @@ class ImageUploadTest {
     AuthService authService;
 
     @Autowired
+    PostService postService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
     JwtUtil jwtUtil;
 
+    private Long userId;
+    private Long postId;
     private String token;
 
     @BeforeEach
@@ -48,7 +59,19 @@ class ImageUploadTest {
                 .email("testEmail")
                 .build();
 
-        Long userId = authService.signUp(userDto).getId();
+        userId = authService.signUp(userDto).getId();
+
+        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
+                .title("testTitle")
+                .type(PostType.NORMAL)
+                .thumbImage("testThumbImage")
+                .isPublic(Boolean.TRUE)
+                .shortContent("testShortContent")
+                .url("testUrl")
+                .content("testContent")
+                .build();
+
+        postId = postService.postCreate(userId,postDto).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(userId)
@@ -61,24 +84,23 @@ class ImageUploadTest {
     }
 
     @Test
-    @DisplayName("이미지 업로드")
-    void imageUpload() throws Exception {
-        MockMultipartFile multipartFile = new MockMultipartFile(
-                "multipartFile",
-                "test.txt",
-                "image/jpg",
-                "testImage".getBytes(StandardCharsets.UTF_8) );
+    @DisplayName("게시물 좋아요 성공")
+    void PostLike() throws Exception {
 
-        mockMvc.perform(multipart("/images")
-                        .file(multipartFile)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
+        PostLikeRequestDTO dto = PostLikeRequestDTO.builder()
+                .postId(postId)
+                .build();
+
+        String jsonContent = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(post("/posts/like")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").isString())
-                .andExpect(jsonPath("$.fileType").value("image/jpg"))
-                .andExpect(jsonPath("$.originalFileName").value("test.txt"))
-                .andExpect(jsonPath("$.filePath").isString())
-                .andExpect(jsonPath("$.fileSize").isNumber());
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.postId").value(postId))
+                .andReturn();
     }
 }

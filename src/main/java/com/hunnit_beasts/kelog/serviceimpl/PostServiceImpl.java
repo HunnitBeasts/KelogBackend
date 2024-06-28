@@ -2,20 +2,16 @@ package com.hunnit_beasts.kelog.serviceimpl;
 
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.SeriesCreateResponseDTO;
 import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.entity.compositekey.PostViewCntId;
-import com.hunnit_beasts.kelog.entity.domain.LikedPost;
-import com.hunnit_beasts.kelog.entity.domain.Post;
-import com.hunnit_beasts.kelog.entity.domain.PostViewCnt;
-import com.hunnit_beasts.kelog.entity.domain.User;
+import com.hunnit_beasts.kelog.entity.domain.*;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.repository.jpa.LikedPostJpaRepository;
-import com.hunnit_beasts.kelog.repository.jpa.PostJpaRepository;
-import com.hunnit_beasts.kelog.repository.jpa.PostViewCntJpaRepository;
-import com.hunnit_beasts.kelog.repository.jpa.UserJpaRepository;
+import com.hunnit_beasts.kelog.repository.jpa.*;
 import com.hunnit_beasts.kelog.repository.querydsl.PostQueryDSLRepository;
 import com.hunnit_beasts.kelog.service.PostService;
 import jakarta.transaction.Transactional;
@@ -31,6 +27,8 @@ public class PostServiceImpl implements PostService {
     private final UserJpaRepository userJpaRepository;
     private final LikedPostJpaRepository likedPostJpaRepository;
     private final PostViewCntJpaRepository postViewCntJpaRepository;
+    private final SeriesJpaRepository seriesJpaRepository;
+
     private final PostQueryDSLRepository postQueryDSLRepository;
 
     @Override
@@ -75,5 +73,13 @@ public class PostServiceImpl implements PostService {
         }else
             postViewCntJpaRepository.save(new PostViewCnt(plusViewCntPost));
         return new PostViewCntResponseDTO(postQueryDSLRepository.findTotalViewCntById(postId));
+    }
+
+    @Override
+    public SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto) {
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+        Series series = seriesJpaRepository.save(new Series(user, dto));
+        return new SeriesCreateResponseDTO(series);
     }
 }

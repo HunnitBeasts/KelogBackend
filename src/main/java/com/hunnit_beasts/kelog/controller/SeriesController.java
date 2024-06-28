@@ -1,10 +1,22 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
+import com.hunnit_beasts.kelog.dto.response.post.SeriesCreateResponseDTO;
+import com.hunnit_beasts.kelog.service.AuthenticatedService;
+import com.hunnit_beasts.kelog.service.PostService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/series")
 public class SeriesController {
+
+    private final PostService postService;
+    private final AuthenticatedService authenticatedService;
 
     @GetMapping("/{post-id}")
     public void readSeries(@PathVariable(value = "post-id") Long postId) {
@@ -12,8 +24,10 @@ public class SeriesController {
     }
 
     @PostMapping
-    public void addSeries() {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<SeriesCreateResponseDTO> addSeries(@RequestBody SeriesCreateRequestDTO dto,
+                                                             Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.createSeries(authenticatedService.getId(authentication),dto));
     }
 
     @PostMapping("/post")

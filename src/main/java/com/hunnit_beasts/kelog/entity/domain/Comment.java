@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.entity.domain;
 
 
 import com.hunnit_beasts.kelog.dto.request.comment.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.comment.CommentUpdateRequestDTO;
 import com.hunnit_beasts.kelog.entity.superclass.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

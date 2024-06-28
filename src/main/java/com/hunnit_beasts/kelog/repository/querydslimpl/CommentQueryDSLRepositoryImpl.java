@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.repository.querydslimpl;
 
 import com.hunnit_beasts.kelog.dto.response.comment.CommentCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.comment.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.QComment;
 import com.hunnit_beasts.kelog.repository.querydsl.CommentQueryDSLRepository;
 import com.querydsl.core.types.Projections;
@@ -24,6 +25,19 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
                         comment.post.id,
                         comment.commentContent.content,
                         comment.regDate,
+                        comment.modDate))
+                .from(comment)
+                .where(comment.id.eq(id))
+                .fetchOne();
+    }
+
+    @Override
+    public CommentUpdateResponseDTO findCommentUpdateResponseDTOById(Long id) {
+        QComment comment = QComment.comment;
+        return jpaQueryFactory
+                .select(Projections.constructor(CommentUpdateResponseDTO.class,
+                        comment.id,
+                        comment.commentContent.content,
                         comment.modDate))
                 .from(comment)
                 .where(comment.id.eq(id))

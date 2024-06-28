@@ -19,6 +19,7 @@ public enum ErrorCode {
     NOT_IMAGE_DATA_ERROR("CODE 13",500,"[ERROR] 요청하신 이미지가 없습니다!"),
 
     DUPLICATION_FOLLOW_ERROR("CODE 11",500,"[ERROR] 이미 팔로우한 유저입니다!"),
+    NO_FOLLOW_DATA_ERROR("CODE 22",500,"[ERROR] 팔로우 정보가 없습니다!"),
     ;
 
 

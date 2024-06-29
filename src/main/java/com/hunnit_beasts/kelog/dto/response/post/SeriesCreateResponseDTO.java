@@ -2,9 +2,7 @@ package com.hunnit_beasts.kelog.dto.response.post;
 
 import com.hunnit_beasts.kelog.entity.domain.Series;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor

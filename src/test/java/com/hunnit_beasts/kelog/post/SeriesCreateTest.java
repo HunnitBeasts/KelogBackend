@@ -1,17 +1,13 @@
 package com.hunnit_beasts.kelog.post;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
-import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
-import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
-import com.hunnit_beasts.kelog.service.PostService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-public class SeriesCreateTest {
+class SeriesCreateTest {
 
     @Autowired
     MockMvc mockMvc;

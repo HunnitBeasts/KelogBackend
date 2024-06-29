@@ -5,7 +5,6 @@ import com.hunnit_beasts.kelog.dto.request.comment.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.comment.CommentUpdateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.comment.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.comment.CommentUpdateResponseDTO;
-import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.CommentService;
 import lombok.RequiredArgsConstructor;

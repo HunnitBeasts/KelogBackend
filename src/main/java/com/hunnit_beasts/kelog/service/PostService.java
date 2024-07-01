@@ -7,6 +7,7 @@ import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.SeriesCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.RecentViewCreateResponseDTO;
 
 public interface PostService {
     PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto);
@@ -14,4 +15,5 @@ public interface PostService {
     PostLikeResponseDTO addPostLike(Long userId, PostLikeRequestDTO dto);
     PostViewCntResponseDTO plusViewCnt(Long postId);
     SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto);
+    RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId);
 }

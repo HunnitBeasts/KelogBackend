@@ -75,6 +75,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PostLikeResponseDTO deletePostLike(Long userId, Long postId) {
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+        Post post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+        LikedPostId likedPostId = new LikedPostId(user, post);
+        if (likedPostJpaRepository.existsById(likedPostId))
+            likedPostJpaRepository.deleteById(likedPostId);
+        else
+            throw new IllegalArgumentException(ErrorCode.POST_LIKE_DUPLICATION_ERROR.getMessage());
+        return new PostLikeResponseDTO(userId,postId);  
+    }
+  
+    @Override
     public SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto) {
         User user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));

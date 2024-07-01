@@ -1,13 +1,16 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.comment.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.comment.CommentCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.comment.CommentDeleteResponseDTO;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,8 +45,11 @@ public class CommentController {
     }
 
     @DeleteMapping("/{comment-id}")
-    public void deleteComment(@PathVariable(value = "comment-id") Long commentId) {
-        throw new UnsupportedOperationException();
+    @Identification
+    public ResponseEntity<CommentDeleteResponseDTO> deleteComment(@PathVariable(value = "comment-id") Long commentId,
+                                                                  Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(commentService.commentDelete(commentId));
     }
 
 }

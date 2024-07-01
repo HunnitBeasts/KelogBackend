@@ -2,20 +2,20 @@ package com.hunnit_beasts.kelog.serviceimpl;
 
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.SeriesCreateResponseDTO;
 import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.entity.compositekey.PostViewCntId;
-import com.hunnit_beasts.kelog.entity.domain.LikedPost;
-import com.hunnit_beasts.kelog.entity.domain.Post;
-import com.hunnit_beasts.kelog.entity.domain.PostViewCnt;
-import com.hunnit_beasts.kelog.entity.domain.User;
+import com.hunnit_beasts.kelog.dto.response.post.RecentViewCreateResponseDTO;
+import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
+import com.hunnit_beasts.kelog.entity.compositekey.PostViewCntId;
+import com.hunnit_beasts.kelog.entity.compositekey.RecentPostId;
+import com.hunnit_beasts.kelog.entity.domain.*;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.repository.jpa.LikedPostJpaRepository;
-import com.hunnit_beasts.kelog.repository.jpa.PostJpaRepository;
-import com.hunnit_beasts.kelog.repository.jpa.PostViewCntJpaRepository;
-import com.hunnit_beasts.kelog.repository.jpa.UserJpaRepository;
+import com.hunnit_beasts.kelog.repository.jpa.*;
 import com.hunnit_beasts.kelog.repository.querydsl.PostQueryDSLRepository;
 import com.hunnit_beasts.kelog.service.PostService;
 import jakarta.transaction.Transactional;
@@ -31,7 +31,10 @@ public class PostServiceImpl implements PostService {
     private final UserJpaRepository userJpaRepository;
     private final LikedPostJpaRepository likedPostJpaRepository;
     private final PostViewCntJpaRepository postViewCntJpaRepository;
+    private final SeriesJpaRepository seriesJpaRepository;
+
     private final PostQueryDSLRepository postQueryDSLRepository;
+    private final RecentPostJpaRepository recentPostJpaRepository;
 
     @Override
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
@@ -88,6 +91,33 @@ public class PostServiceImpl implements PostService {
             likedPostJpaRepository.deleteById(likedPostId);
         else
             throw new IllegalArgumentException(ErrorCode.POST_LIKE_DUPLICATION_ERROR.getMessage());
-        return new PostLikeResponseDTO(userId,postId);
+        return new PostLikeResponseDTO(userId,postId);  
+    }
+  
+    @Override
+    public SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto) {
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+        Series series = seriesJpaRepository.save(new Series(user, dto));
+        return new SeriesCreateResponseDTO(series);
+    }
+  
+    @Override
+    public RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId) {
+      User user = userJpaRepository.findById(userId)
+              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+      Post post = postJpaRepository.findById(postId)
+              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+
+      RecentPostId recentPostId = new RecentPostId(userId,postId);
+
+      if(recentPostJpaRepository.existsById(recentPostId)){
+          recentPostJpaRepository.deleteById(recentPostId);
+          RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user,post));
+          return new RecentViewCreateResponseDTO(recentPost);
+      }else {
+          RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user, post));
+          return new RecentViewCreateResponseDTO(recentPost);
+      }
     }
 }

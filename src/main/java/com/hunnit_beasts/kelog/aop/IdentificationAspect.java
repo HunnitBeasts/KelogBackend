@@ -36,6 +36,8 @@ public class IdentificationAspect {
             validateUserId(id, parameters.get("userId"));
         else if (parameters.containsKey("postId"))
             validatePostId(id, parameters.get("postId"));
+        else if (parameters.containsKey("commentId"))
+            validateCommentId(id, parameters.get("commentId"));
         else
             throw new IllegalArgumentException(ErrorCode.NO_TARGET_TYPE_ERROR.getMessage());
     }
@@ -56,7 +58,6 @@ public class IdentificationAspect {
                 parameters.put("id", id);
             } else if(argTypes.contains(parameterNames[i]))
                 parameters.put(parameterNames[i], (Long) args[i]);
-
         return parameters;
     }
 
@@ -66,6 +67,10 @@ public class IdentificationAspect {
 
     private void validatePostId(Long id, Long postId) {
         validateService.userIdAndPostIdSameCheck(id, postId);
+    }
+
+    private void validateCommentId(Long id, Long commentId) {
+        validateService.userIdAndCommentIdSameCheck(id, commentId);
     }
 
 }

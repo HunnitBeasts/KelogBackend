@@ -19,10 +19,9 @@ public class JwtUtil {
     private final long accessTokenExpTime;
 
     public JwtUtil(
-            @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.expiration_time}") long accessTokenExpTime
     ){
-        this.secretKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.secretKey = new SecretKeySpec(System.getenv("JWT_SECRET").getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.accessTokenExpTime = accessTokenExpTime;
     }
 

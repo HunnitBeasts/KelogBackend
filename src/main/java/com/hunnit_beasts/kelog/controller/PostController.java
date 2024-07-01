@@ -5,10 +5,12 @@ import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostViewCntRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.RecentViewCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.RecentViewCreateResponseDTO;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -61,8 +63,10 @@ public class PostController {
     }
 
     @PostMapping("/recent")
-    public void addRecentPost() {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<RecentViewCreateResponseDTO> addRecentPost(@RequestBody RecentViewCreateRequestDTO dto,
+                                                                     Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.recentViewAdd(authenticatedService.getId(authentication),dto.getPostId()));
     }
 
     @PatchMapping("/{post-id}")

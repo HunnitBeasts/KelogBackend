@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.serviceimpl;
 
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.*;
 import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
@@ -95,7 +96,7 @@ public class PostServiceImpl implements PostService {
         Series series = seriesJpaRepository.save(new Series(user, dto));
         return new SeriesCreateResponseDTO(series);
     }
-  
+
     @Override
     public RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId) {
       User user = userJpaRepository.findById(userId)
@@ -113,5 +114,13 @@ public class PostServiceImpl implements PostService {
           RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user, post));
           return new RecentViewCreateResponseDTO(recentPost);
       }
+    }
+
+    @Override
+    public PostUpdateResponseDTO postUpdate(Long postId, PostUpdateRequestDTO dto) {
+        Post post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+        Post updatedPost = postJpaRepository.save(post.changePost(dto));
+        return postQueryDSLRepository.findPostUpdateResponseDTOById(updatedPost.getId());
     }
 }

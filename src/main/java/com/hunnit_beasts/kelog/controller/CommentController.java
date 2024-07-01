@@ -4,6 +4,7 @@ import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.comment.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.comment.CommentUpdateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.comment.CommentCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.comment.CommentDeleteResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.comment.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.CommentService;

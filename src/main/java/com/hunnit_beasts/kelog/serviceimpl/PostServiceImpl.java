@@ -2,9 +2,13 @@ package com.hunnit_beasts.kelog.serviceimpl;
 
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.SeriesCreateResponseDTO;
+import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
+import com.hunnit_beasts.kelog.entity.compositekey.PostViewCntId;
 import com.hunnit_beasts.kelog.dto.response.post.RecentViewCreateResponseDTO;
 import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.entity.compositekey.PostViewCntId;
@@ -27,6 +31,8 @@ public class PostServiceImpl implements PostService {
     private final UserJpaRepository userJpaRepository;
     private final LikedPostJpaRepository likedPostJpaRepository;
     private final PostViewCntJpaRepository postViewCntJpaRepository;
+    private final SeriesJpaRepository seriesJpaRepository;
+
     private final PostQueryDSLRepository postQueryDSLRepository;
     private final RecentPostJpaRepository recentPostJpaRepository;
 
@@ -75,21 +81,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId) {
+    public SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto) {
         User user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
-        Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+        Series series = seriesJpaRepository.save(new Series(user, dto));
+        return new SeriesCreateResponseDTO(series);
+    }
+  
+    @Override
+    public RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId) {
+      User user = userJpaRepository.findById(userId)
+              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+      Post post = postJpaRepository.findById(postId)
+              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
 
-        RecentPostId recentPostId = new RecentPostId(userId,postId);
+      RecentPostId recentPostId = new RecentPostId(userId,postId);
 
-        if(recentPostJpaRepository.existsById(recentPostId)){
-            recentPostJpaRepository.deleteById(recentPostId);
-            RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user,post));
-            return new RecentViewCreateResponseDTO(recentPost);
-        }else {
-            RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user, post));
-            return new RecentViewCreateResponseDTO(recentPost);
-        }
+      if(recentPostJpaRepository.existsById(recentPostId)){
+          recentPostJpaRepository.deleteById(recentPostId);
+          RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user,post));
+          return new RecentViewCreateResponseDTO(recentPost);
+      }else {
+          RecentPost recentPost = recentPostJpaRepository.save(new RecentPost(user, post));
+          return new RecentViewCreateResponseDTO(recentPost);
+      }
     }
 }

@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.repository.querydslimpl;
 
 import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.response.post.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.QPost;
 import com.hunnit_beasts.kelog.entity.domain.QPostViewCnt;
 import com.hunnit_beasts.kelog.repository.querydsl.PostQueryDSLRepository;
@@ -43,6 +44,24 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .select(postViewCnt.viewCnt.sum())
                 .from(postViewCnt)
                 .where(postViewCnt.id.postId.eq(id))
+                .fetchOne();
+    }
+
+    @Override
+    public PostUpdateResponseDTO findPostUpdateResponseDTOById(Long id) {
+        QPost post = QPost.post;
+        return jpaQueryFactory
+                .select(Projections.constructor(PostUpdateResponseDTO.class,
+                        post.id,
+                        post.title,
+                        post.type,
+                        post.thumbImage,
+                        post.isPublic,
+                        post.shortContent,
+                        post.url,
+                        post.postContent.content))
+                .from(post)
+                .where(post.id.eq(id))
                 .fetchOne();
     }
 }

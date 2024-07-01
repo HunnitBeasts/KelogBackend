@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.entity.domain;
 
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.entity.superclass.BaseEntity;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import jakarta.persistence.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,5 +77,22 @@ public class Post extends BaseEntity {
         this.url = dto.getUrl();
         this.postContent = new PostContent(dto.getContent(),this);
         this.user = user;
+    }
+
+    public Post changePost(PostUpdateRequestDTO dto){
+        this.title = dto.getTitle() != null ? dto.getTitle() : title;
+        this.type = dto.getType() != null ? dto.getType() : type;
+        this.thumbImage = dto.getThumbImage() != null ? dto.getThumbImage() : thumbImage;
+        this.isPublic = dto.getIsPublic() != null ? dto.getIsPublic() : isPublic;
+        this.shortContent = dto.getShortContent() != null ? dto.getShortContent() : shortContent;
+        if (dto.getContent() != null) {
+            this.postContent = PostContent.builder()
+                    .id(this.postContent.getId())
+                    .content(dto.getContent())
+                    .post(this)
+                    .build();
+        }
+        this.url = dto.getUrl() != null ? dto.getUrl() : url;
+        return this;
     }
 }

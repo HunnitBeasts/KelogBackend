@@ -69,8 +69,8 @@ public class IdentificationAspect {
         validateService.userIdAndPostIdSameCheck(id, postId);
     }
 
-    private void validateCommentId(Long id, Long postId) {
-        validateService.userIdAndCommentIdSameCheck(id, postId);
+    private void validateCommentId(Long id, Long commentId) {
+        validateService.userIdAndCommentIdSameCheck(id, commentId);
     }
 
 }

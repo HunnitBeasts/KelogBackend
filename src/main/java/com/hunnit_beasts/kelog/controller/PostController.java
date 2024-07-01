@@ -78,8 +78,10 @@ public class PostController {
     }
 
     @DeleteMapping("/like/{post-id}")
-    public void deletePostLike(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<PostLikeResponseDTO> deletePostLike(@PathVariable(value = "post-id") Long postId,
+                                                              Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.deletePostLike(authenticatedService.getId(authentication), postId));
     }
 
 }

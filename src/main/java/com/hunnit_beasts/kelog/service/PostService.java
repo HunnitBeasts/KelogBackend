@@ -11,4 +11,5 @@ public interface PostService {
     Long postDelete(Long postId);
     PostLikeResponseDTO addPostLike(Long userId, PostLikeRequestDTO dto);
     PostViewCntResponseDTO plusViewCnt(Long postId);
+    PostLikeResponseDTO deletePostLike(Long userId, Long postId);
 }

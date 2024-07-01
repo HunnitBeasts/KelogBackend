@@ -58,7 +58,6 @@ public class IdentificationAspect {
                 parameters.put("id", id);
             } else if(argTypes.contains(parameterNames[i]))
                 parameters.put(parameterNames[i], (Long) args[i]);
-
         return parameters;
     }
 
@@ -70,8 +69,8 @@ public class IdentificationAspect {
         validateService.userIdAndPostIdSameCheck(id, postId);
     }
 
-    private void validateCommentId(Long id, Long postId) {
-        validateService.userIdAndCommentIdSameCheck(id, postId);
+    private void validateCommentId(Long id, Long commentId) {
+        validateService.userIdAndCommentIdSameCheck(id, commentId);
     }
 
 }

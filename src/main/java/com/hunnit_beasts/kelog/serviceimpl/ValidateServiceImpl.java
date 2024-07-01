@@ -37,7 +37,7 @@ public class ValidateServiceImpl implements ValidateService {
     @Override
     public void userIdAndCommentIdSameCheck(Long id, Long commentId) {
         Comment comment = commentJpaRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getMessage()));
         if(!comment.getUser().getId().equals(id))
             throw new IllegalArgumentException(ErrorCode.NOT_SAME_COMMENT_ID_ERROR.getMessage());
     }

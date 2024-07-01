@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.entity.domain;
 
+import com.hunnit_beasts.kelog.dto.request.comment.CommentUpdateRequestDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,5 +25,10 @@ public class CommentContent {
     public CommentContent(String content, Comment comment){
         this.content = content;
         this.comment = comment;
+    }
+
+    public CommentContent commentContentUpdate(CommentUpdateRequestDTO dto){
+        this.content = dto.getContent();
+        return this;
     }
 }

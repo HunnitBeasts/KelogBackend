@@ -50,8 +50,11 @@ public class CommentController {
     }
 
     @DeleteMapping("/{comment-id}")
-    public void deleteComment(@PathVariable(value = "comment-id") Long commentId) {
-        throw new UnsupportedOperationException();
+    @Identification
+    public ResponseEntity<CommentDeleteResponseDTO> deleteComment(@PathVariable(value = "comment-id") Long commentId,
+                                                                  Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(commentService.commentDelete(commentId));
     }
 
 }

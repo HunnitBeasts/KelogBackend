@@ -1,16 +1,8 @@
 package com.hunnit_beasts.kelog.controller;
 
 import com.hunnit_beasts.kelog.aop.Identification;
-import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.post.PostUpdateRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.post.PostViewCntRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.post.RecentViewCreateRequestDTO;
-import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
-import com.hunnit_beasts.kelog.dto.response.post.PostLikeResponseDTO;
-import com.hunnit_beasts.kelog.dto.response.post.PostUpdateResponseDTO;
-import com.hunnit_beasts.kelog.dto.response.post.PostViewCntResponseDTO;
-import com.hunnit_beasts.kelog.dto.response.post.RecentViewCreateResponseDTO;
+import com.hunnit_beasts.kelog.dto.request.post.*;
+import com.hunnit_beasts.kelog.dto.response.post.*;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.PostService;
 import lombok.RequiredArgsConstructor;

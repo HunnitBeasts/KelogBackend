@@ -20,6 +20,7 @@ public enum ErrorCode {
 
     DUPLICATION_FOLLOW_ERROR("CODE 11",500,"[ERROR] 이미 팔로우한 유저입니다!"),
     NOT_SAME_COMMENT_ID_ERROR("CODE 21",500,"[ERROR] 본인의 댓글이 아닙니다!"),
+    NO_FOLLOW_DATA_ERROR("CODE 22",500,"[ERROR] 팔로우 정보가 없습니다!"),
     ;
 
 

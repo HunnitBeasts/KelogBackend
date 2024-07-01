@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.controller;
 
 
 import com.hunnit_beasts.kelog.dto.request.user.FollowIngRequestDTO;
+import com.hunnit_beasts.kelog.dto.response.user.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.user.FollowIngResponseDTO;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.UserService;
@@ -27,10 +28,11 @@ public class FollowController {
                 .body(userService.following(userId,dto));
     }
 
-    @DeleteMapping("/{follower-id}/{followee-id}")
-    public void deleteFollow(@PathVariable(value = "follower-id") Long followerId,
-                             @PathVariable(value = "followee-id") Long followeeId) {
-        throw new UnsupportedOperationException();
+    @DeleteMapping("/{followee-id}")
+    public ResponseEntity<FollowDeleteResponseDTO> deleteFollow(@PathVariable(value = "followee-id") Long followeeId,
+                                                                Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(userService.unFollow(authenticatedService.getId(authentication),followeeId));
     }
 
 }

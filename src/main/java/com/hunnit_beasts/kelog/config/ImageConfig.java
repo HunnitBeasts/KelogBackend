@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.config;
 
-import com.hunnit_beasts.kelog.handler.exception.UnSupportedOsException;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +38,7 @@ public class ImageConfig {
         else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix"))
             directory = new File(linuxUploadDirectory);
         else
-            throw new UnSupportedOsException("Unsupported operating system: " + osName);
+            throw new IllegalArgumentException(ErrorCode.NOT_SUPPORTED_OS_ERROR.getCode()+"Unsupported operating system: " + osName);
 
         if (!directory.exists()) {
             boolean created = directory.mkdirs();

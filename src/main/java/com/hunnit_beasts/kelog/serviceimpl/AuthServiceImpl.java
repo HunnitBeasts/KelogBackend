@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.user.TokenResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.user.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.User;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.repository.querydsl.UserQueryDSLRepository;
@@ -29,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponseDTO login(UserLoginRequestDTO dto) {
         User loginUser = userJpaRepository.findByUserId(dto.getUserId())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(()-> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
 
         if(encoder.matches(dto.getPassword(), loginUser.getPassword()))
             return new TokenResponseDTO(jwtUtil.createToken(loginUser.entityToCustomUserInfoDTO()));

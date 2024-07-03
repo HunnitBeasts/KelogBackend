@@ -66,7 +66,7 @@ class LoginIllegalArgumentExceptionTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is(404))
                 .andExpect(jsonPath("errorMessage").value(ErrorCode.NO_USER_DATA_ERROR.getMessage()))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();

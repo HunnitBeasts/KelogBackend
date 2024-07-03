@@ -70,7 +70,7 @@ class PrintErrorCodeAndStackTraceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is(404))
                 .andExpect(MockMvcResultMatchers.jsonPath("errorMessage").isString())
                 .andExpect(MockMvcResultMatchers.jsonPath("time").isString())
                 .andReturn();

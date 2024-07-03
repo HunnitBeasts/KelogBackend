@@ -126,7 +126,7 @@ class ImageUploadExceptionTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is(415))
                 .andExpect(jsonPath("errorMessage").value(ErrorCode.NOT_FILE_TYPE_ERROR.getMessage()))
                 .andExpect(jsonPath("time").isString());
 

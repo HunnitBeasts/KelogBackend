@@ -108,7 +108,7 @@ class CreateCommentExceptionTest {
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().is5xxServerError())
+                .andExpect(status().is(404))
                 .andExpect(jsonPath("errorMessage").value(ErrorCode.NO_POST_DATA_ERROR.getMessage()))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();

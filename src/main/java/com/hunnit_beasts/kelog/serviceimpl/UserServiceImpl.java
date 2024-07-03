@@ -23,11 +23,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public FollowIngResponseDTO following(Long userId, FollowIngRequestDTO dto) {
         User follower = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         User followee = userJpaRepository.findById(dto.getFollowee())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         if(followerJpaRepository.existsById(new FollowerId(follower,followee)))
-            throw new IllegalArgumentException(ErrorCode.DUPLICATION_FOLLOW_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.DUPLICATION_FOLLOW_ERROR.getCode());
         Follower follow = followerJpaRepository.save(new Follower(follower,followee));
         return new FollowIngResponseDTO(follow);
     }
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         if(followerJpaRepository.existsById(followerId))
             followerJpaRepository.deleteById(followerId);
         else
-            throw new IllegalArgumentException(ErrorCode.NO_FOLLOW_DATA_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.NO_FOLLOW_DATA_ERROR.getCode());
         return new FollowDeleteResponseDTO(follower, followee);
     }
 }

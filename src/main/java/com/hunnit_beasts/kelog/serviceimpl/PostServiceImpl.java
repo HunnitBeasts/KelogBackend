@@ -34,7 +34,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
         User creator = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(()-> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         Post createPostEntity = new Post(dto,creator);
         Post createdPost = postJpaRepository.save(createPostEntity);
         return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
@@ -49,14 +49,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostLikeResponseDTO addPostLike(Long userId, PostLikeRequestDTO dto) {
         User user = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         Post post = postJpaRepository.findById(dto.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
 
-        if (likedPostJpaRepository.existsById(new LikedPostId(user, post)))
-            throw new IllegalArgumentException(ErrorCode.POST_LIKE_DUPLICATION_ERROR.getMessage());
-        else {
-            LikedPost likedPost = likedPostJpaRepository.save(new LikedPost(user, post));
+        if(likedPostJpaRepository.existsById(new LikedPostId(user,post)))
+            throw new IllegalArgumentException(ErrorCode.POST_LIKE_DUPLICATION_ERROR.getCode());
+        else{
+            LikedPost likedPost = likedPostJpaRepository.save(new LikedPost(user,post));
             return new PostLikeResponseDTO(likedPost);
         }
     }
@@ -64,11 +64,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostViewCntResponseDTO plusViewCnt(Long postId) {
         Post plusViewCntPost = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
         PostViewCntId thisPostsViewCnt = new PostViewCntId(plusViewCntPost.getId());
         if(postViewCntJpaRepository.existsById(thisPostsViewCnt)){
             PostViewCnt postViewCnt = postViewCntJpaRepository.findById(thisPostsViewCnt)
-                    .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_VIEW_DATA_ERROR.getMessage()));
+                    .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_VIEW_DATA_ERROR.getCode()));
             postViewCntJpaRepository.save(postViewCnt.plusViewCnt());
         }else
             postViewCntJpaRepository.save(new PostViewCnt(plusViewCntPost));
@@ -78,21 +78,21 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostLikeResponseDTO deletePostLike(Long userId, Long postId) {
         User user = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
         LikedPostId likedPostId = new LikedPostId(user, post);
         if (likedPostJpaRepository.existsById(likedPostId))
             likedPostJpaRepository.deleteById(likedPostId);
         else
-            throw new IllegalArgumentException(ErrorCode.POST_LIKE_DUPLICATION_ERROR.getMessage());
-        return new PostLikeResponseDTO(userId,postId);  
+            throw new IllegalArgumentException(ErrorCode.POST_LIKE_DUPLICATION_ERROR.getCode());
+        return new PostLikeResponseDTO(userId,postId);
     }
-  
+
     @Override
     public SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto) {
         User user = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         Series series = seriesJpaRepository.save(new Series(user, dto));
         return new SeriesCreateResponseDTO(series);
     }
@@ -100,9 +100,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId) {
       User user = userJpaRepository.findById(userId)
-              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
       Post post = postJpaRepository.findById(postId)
-              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+              .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
 
       RecentPostId recentPostId = new RecentPostId(userId,postId);
 
@@ -119,7 +119,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostUpdateResponseDTO postUpdate(Long postId, PostUpdateRequestDTO dto) {
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
         Post updatedPost = postJpaRepository.save(post.changePost(dto));
         return postQueryDSLRepository.findPostUpdateResponseDTOById(updatedPost.getId());
     }

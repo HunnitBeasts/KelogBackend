@@ -33,9 +33,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentCreateResponseDTO commentCreate(Long userId, CommentCreateRequestDTO dto) {
         User commentWriter = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getMessage()));
+                .orElseThrow(()-> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
         Post commentedPost = postJpaRepository.findById(dto.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(()-> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
         Comment createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
         Comment createdComment = commentJpaRepository.save(createdCommentEntity);
         return commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
@@ -50,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentUpdateResponseDTO commentUpdate(Long commentId, CommentUpdateRequestDTO dto) {
         CommentContent commentContent = commentContentJpaRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getCode()));
         commentContentJpaRepository.save(commentContent.commentContentUpdate(dto));
         return commentQueryDSLRepository.findCommentUpdateResponseDTOById(commentId);
     }

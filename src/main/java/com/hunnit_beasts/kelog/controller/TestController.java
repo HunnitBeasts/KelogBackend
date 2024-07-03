@@ -1,15 +1,18 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Arrays;
+
+@Log4j2
 @Tag(name = "Swagger Test", description = "This is a test API")
 //@Hidden // 일단 숨겨놓고 필요에 따라 다시 올리자
 @RestController
@@ -35,5 +38,27 @@ public class TestController {
     @GetMapping("/ignore")
     public String ignore(){
         return "무시되는 API";
+    }
+
+    @PostMapping("/unsupported-operation-exception")
+    public void postUnsupportedOperationExceptionTest(){throw new UnsupportedOperationException();}
+
+    @PostMapping("/print-stacktrace-exception")
+    public void printStackTraceExceptionTest(){
+        try {
+            throw new IOException();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(Arrays.toString(e.getStackTrace()));
+        }
+    }
+
+    @PostMapping("/print-errorcode-stacktrace-exception")
+    public void printStackTraceErrorCodeExceptionTest(){
+
+        try {
+            throw new IOException();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()+ Arrays.toString(e.getStackTrace()));
+        }
     }
 }

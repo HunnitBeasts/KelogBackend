@@ -23,22 +23,22 @@ public class ValidateServiceImpl implements ValidateService {
     @Override
     public void userIdAndUserIdSameCheck(Long id, Long userId) {
         if(!Objects.equals(id, userId))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_USERID_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.NOT_SAME_USERID_ERROR.getCode());
     }
 
     @Override
     public void userIdAndPostIdSameCheck(Long id, Long postId) {
         Post userPost = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
         if(!userPost.getUser().getId().equals(id))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_POST_ID_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.NOT_SAME_POST_ID_ERROR.getCode());
     }
 
     @Override
     public void userIdAndCommentIdSameCheck(Long id, Long commentId) {
         Comment comment = commentJpaRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getCode()));
         if(!comment.getUser().getId().equals(id))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_COMMENT_ID_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.NOT_SAME_COMMENT_ID_ERROR.getCode());
     }
 }

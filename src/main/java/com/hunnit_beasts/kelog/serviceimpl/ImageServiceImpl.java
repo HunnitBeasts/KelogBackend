@@ -4,7 +4,6 @@ import com.hunnit_beasts.kelog.config.ImageConfig;
 import com.hunnit_beasts.kelog.dto.response.image.ImageResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.Image;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.handler.exception.FileUploadException;
 import com.hunnit_beasts.kelog.repository.jpa.ImageJpaRepository;
 import com.hunnit_beasts.kelog.service.ImageService;
 import jakarta.transaction.Transactional;
@@ -41,10 +40,10 @@ public class ImageServiceImpl implements ImageService {
         String mimeType = file.getContentType();
 
         if (file.getSize() > maxSize)
-            throw new IllegalArgumentException("10MB 이하 파일만 업로드 할 수 있습니다.");
+            throw new IllegalArgumentException(ErrorCode.FILE_SIZE_OVER_ERROR.getCode());
 
         if (!isImageFile(mimeType))
-            throw new IllegalArgumentException("이미지 파일만 업로드할 수 있습니다.");
+            throw new IllegalArgumentException(ErrorCode.NOT_FILE_TYPE_ERROR.getCode());
 
         String newFileName = generateUniqueFileName(originalFileName);
         Path filePath = Paths.get( imageConfig.getFileDirectory() + File.separator + newFileName);
@@ -52,7 +51,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             Files.copy(file.getInputStream(), filePath);
         } catch (IOException e) {
-            throw new FileUploadException("File upload exception. " + Arrays.toString(e.getStackTrace()));
+            throw new IllegalArgumentException(ErrorCode.FILE_UPLOAD_FAILURE_ERROR.getCode()+"File upload exception. " + Arrays.toString(e.getStackTrace()));
         }
 
         Image saveImage = imageJpaRepository.save(new Image(file,filePath,newFileName));
@@ -63,7 +62,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public byte[] readImage(String url) throws IOException {
         Image callImageData = imageJpaRepository.findById(url)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_IMAGE_DATA_ERROR.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_IMAGE_DATA_ERROR.getCode()));
         return Files.readAllBytes(Paths.get(callImageData.getFilePath()));
     }
 

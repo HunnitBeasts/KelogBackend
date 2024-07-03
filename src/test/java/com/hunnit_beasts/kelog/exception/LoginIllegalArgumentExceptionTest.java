@@ -52,7 +52,7 @@ class LoginIllegalArgumentExceptionTest {
 
     @Test
     @DisplayName("login IllegalArgumentException 예외 테스트")
-    public void exceptionHandleTest1() throws Exception {
+    void exceptionHandleTest1() throws Exception {
 
         UserLoginRequestDTO dto = UserLoginRequestDTO.builder()
                 .userId("testUserId1") //예외 발생부분

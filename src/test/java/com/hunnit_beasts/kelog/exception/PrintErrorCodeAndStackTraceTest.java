@@ -52,7 +52,7 @@ class PrintErrorCodeAndStackTraceTest {
 
     @Test
     @DisplayName("에러 코드 및 스택 트레이스 출력 테스트")
-    public void printErrorCodeStackTrace() throws Exception {
+    void printErrorCodeStackTrace() throws Exception {
 
         PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
                 .title("testTitle")

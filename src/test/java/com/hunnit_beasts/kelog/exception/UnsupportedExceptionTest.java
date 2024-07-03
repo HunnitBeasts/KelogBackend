@@ -51,7 +51,7 @@ class UnsupportedExceptionTest {
 
     @Test
     @DisplayName("Unsupported 예외 테스트")
-    public void exceptionHandleTest() throws Exception {
+    void exceptionHandleTest() throws Exception {
 
         PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
                 .title("testTitle")

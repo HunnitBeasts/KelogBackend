@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.dto.request.comment.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
@@ -108,7 +109,7 @@ class CreateCommentExceptionTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().is5xxServerError())
-                .andExpect(jsonPath("errorMessage").value("[ERROR] 게시물 데이터가 없습니다!"))
+                .andExpect(jsonPath("errorMessage").value(ErrorCode.NO_POST_DATA_ERROR.getMessage()))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();
     }

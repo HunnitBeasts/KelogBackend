@@ -4,6 +4,7 @@ package com.hunnit_beasts.kelog.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
@@ -66,7 +67,7 @@ class LoginIllegalArgumentExceptionTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("errorMessage").value("[ERROR] 유저데이터가 없습니다!"))
+                .andExpect(jsonPath("errorMessage").value(ErrorCode.NO_USER_DATA_ERROR.getMessage()))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();
     }

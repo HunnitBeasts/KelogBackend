@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.exception;
 
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
@@ -126,7 +127,7 @@ class ImageUploadExceptionTest {
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("errorMessage").value("[ERROR] 잘못된 파일 종류입니다!"))
+                .andExpect(jsonPath("errorMessage").value(ErrorCode.NOT_FILE_TYPE_ERROR.getMessage()))
                 .andExpect(jsonPath("time").isString());
 
     }

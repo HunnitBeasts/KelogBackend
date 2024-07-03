@@ -69,7 +69,7 @@ class UnsupportedExceptionTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .content(jsonContent))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is(415))
                 .andReturn();
     }
 }

@@ -98,6 +98,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Long deleteSeries(Long seriesId) {
+        if(seriesJpaRepository.existsById(seriesId))
+            seriesJpaRepository.deleteById(seriesId);
+        else
+            throw new IllegalArgumentException(ErrorCode.NO_SERIES_DATA_ERROR.getCode());
+        return seriesId;
+    }
+
+    @Override
     public RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId) {
       User user = userJpaRepository.findById(userId)
               .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));

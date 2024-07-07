@@ -2,9 +2,11 @@ package com.hunnit_beasts.kelog.serviceimpl;
 
 import com.hunnit_beasts.kelog.entity.domain.Comment;
 import com.hunnit_beasts.kelog.entity.domain.Post;
+import com.hunnit_beasts.kelog.entity.domain.Series;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.repository.jpa.CommentJpaRepository;
 import com.hunnit_beasts.kelog.repository.jpa.PostJpaRepository;
+import com.hunnit_beasts.kelog.repository.jpa.SeriesJpaRepository;
 import com.hunnit_beasts.kelog.service.ValidateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +21,7 @@ public class ValidateServiceImpl implements ValidateService {
 
     private final PostJpaRepository postJpaRepository;
     private final CommentJpaRepository commentJpaRepository;
+    private final SeriesJpaRepository seriesJpaRepository;
 
     @Override
     public void userIdAndUserIdSameCheck(Long id, Long userId) {
@@ -40,5 +43,13 @@ public class ValidateServiceImpl implements ValidateService {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getCode()));
         if(!comment.getUser().getId().equals(id))
             throw new IllegalArgumentException(ErrorCode.NOT_SAME_COMMENT_ID_ERROR.getCode());
+    }
+
+    @Override
+    public void userIdAndSeriesIdSameCheck(Long id, Long seriesId) {
+        Series series = seriesJpaRepository.findById(seriesId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SERIES_DATA_ERROR.getCode()));
+        if(!series.getUser().getId().equals(id))
+            throw new IllegalArgumentException(ErrorCode.NOT_SAME_SERIES_ID_ERROR.getCode());
     }
 }

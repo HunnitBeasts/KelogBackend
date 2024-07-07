@@ -98,7 +98,7 @@ sonarqube {
 	properties {
 		property "sonar.projectKey", "kelog"
 		property "sonar.projectName", "kelog"
-		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.host.url", "http://varen.iptime.org:9000"
 		property "sonar.token", System.getenv("SONAR_TOKEN")
 		property "sonar.sources", "src" // 소스 경로
 		property "sonar.language", "java" // 언어

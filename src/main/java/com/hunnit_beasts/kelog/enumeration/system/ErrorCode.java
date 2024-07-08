@@ -21,6 +21,7 @@ public enum ErrorCode {
     NO_IMAGE_DATA_ERROR("CODE B-004",404,"[ERROR] 요청하신 이미지가 없습니다!"),
     NO_COMMENT_DATA_ERROR("CODE B-005",404,"[ERROR] 댓글 데이터가 없습니다!"),
     NO_FOLLOW_DATA_ERROR("CODE B-006",404,"[ERROR] 팔로우 정보가 없습니다!"),
+    NO_SERIES_DATA_ERROR("CODE B-007",404,"[ERROR] 시리즈 정보가 없습니다!"),
 
     /*C error type: 잘못된 입력 에러*/
     FILE_SIZE_OVER_ERROR("CODE C-001",413,"[ERROR] 파일의 크기가 너무 큽니다!"),
@@ -33,6 +34,7 @@ public enum ErrorCode {
     NOT_SAME_USERID_ERROR("CODE D-001",403,"[ERROR] 본인이 아닙니다!"),
     NOT_SAME_POST_ID_ERROR("CODE D-002",403,"[ERROR] 본인의 게시물이 아닙니다!"),
     NOT_SAME_COMMENT_ID_ERROR("CODE D-003",403,"[ERROR] 본인의 댓글이 아닙니다!"),
+    NOT_SAME_SERIES_ID_ERROR("CODE D-004",403,"[ERROR] 본인의 시리즈가 아닙니다!"),
 
     /*E error type: 서비스 실패 에러*/
     FILE_UPLOAD_FAILURE_ERROR("CODE E-001",500,"[ERROR] 파일을 업로드하지 못했습니다!"),

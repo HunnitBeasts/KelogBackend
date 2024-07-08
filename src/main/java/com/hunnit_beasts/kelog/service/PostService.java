@@ -13,6 +13,7 @@ public interface PostService {
     PostViewCntResponseDTO plusViewCnt(Long postId);
     PostLikeResponseDTO deletePostLike(Long userId, Long postId);
     SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto);
+    Long deleteSeries(Long seriesId);
     RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId);
     PostUpdateResponseDTO postUpdate(Long postId, PostUpdateRequestDTO dto);
 }

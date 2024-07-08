@@ -1,11 +1,9 @@
 package com.hunnit_beasts.kelog.controller;
 
-import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.tag.TagCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.tag.TagCreateResponseDTO;
 import com.hunnit_beasts.kelog.service.TagService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

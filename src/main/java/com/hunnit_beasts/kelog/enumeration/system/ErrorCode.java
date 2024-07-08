@@ -29,6 +29,7 @@ public enum ErrorCode {
     POST_LIKE_DUPLICATION_ERROR("CODE C-003",409,"[ERROR] 이미 좋아요를 누른 게시물입니다!"),
     DUPLICATION_FOLLOW_ERROR("CODE C-004",409,"[ERROR] 이미 팔로우한 유저입니다!"),
     NOT_SUPPORTED_OS_ERROR("CODE C-005", 400, "[ERROR] 지원하지 않는 OS 입니다!"),
+    DUPLICATION_SERIES_POST_ERROR("CODE C-006",409,"[ERROR] 이미 시리즈에 존재하는 포스트입니다!"),
 
     /*D error type: 잘못된 권한 에러*/
     NOT_SAME_USERID_ERROR("CODE D-001",403,"[ERROR] 본인이 아닙니다!"),

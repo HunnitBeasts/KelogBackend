@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.dto.request.post.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.response.post.SeriesCreateResponseDTO;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
@@ -40,9 +41,12 @@ public class SeriesController {
         throw new UnsupportedOperationException();
     }
 
-    @DeleteMapping("/{post-id}")
-    public void deleteSeries(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    @DeleteMapping("/{series-id}")
+    @Identification
+    public ResponseEntity<Long> deleteSeries(@PathVariable(value = "series-id") Long seriesId,
+                                             Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.deleteSeries(seriesId));
     }
 
     @DeleteMapping("/post/{series-id}/{post-id}")

@@ -30,7 +30,7 @@ public class Series extends BaseEntity {
 
     //SeriesPost
     @OneToMany(mappedBy = "series",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<SeriesPost> series = new ArrayList<>();
+    private final List<SeriesPost> series = new ArrayList<>();
 
     public Series(User user, SeriesCreateRequestDTO dto){
         this.seriesName = dto.getSeriesName();

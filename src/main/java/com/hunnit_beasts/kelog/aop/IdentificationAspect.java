@@ -38,6 +38,8 @@ public class IdentificationAspect {
             validatePostId(id, parameters.get("postId"));
         else if (parameters.containsKey("commentId"))
             validateCommentId(id, parameters.get("commentId"));
+        else if (parameters.containsKey("seriesId"))
+            validateSeriesId(id, parameters.get("seriesId"));
         else
             throw new IllegalArgumentException(ErrorCode.NO_TARGET_TYPE_ERROR.getMessage());
     }
@@ -71,6 +73,10 @@ public class IdentificationAspect {
 
     private void validateCommentId(Long id, Long commentId) {
         validateService.userIdAndCommentIdSameCheck(id, commentId);
+    }
+
+    private void validateSeriesId(Long id, Long seriesId) {
+        validateService.userIdAndSeriesIdSameCheck(id, seriesId);
     }
 
 }

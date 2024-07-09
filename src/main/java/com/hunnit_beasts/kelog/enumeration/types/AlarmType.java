@@ -23,6 +23,6 @@ public enum AlarmType {
         for (AlarmType alarmType : AlarmType.values())
             if(alarmType.getTypeNum().equals(value))
                 return alarmType;
-        throw new IllegalArgumentException(ErrorCode.NO_ALARM_TYPE_ERROR.getMessage());
+        throw new IllegalArgumentException(ErrorCode.NO_ALARM_TYPE_ERROR.getCode());
     }
 }

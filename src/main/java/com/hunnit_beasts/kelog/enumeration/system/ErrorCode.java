@@ -1,6 +1,5 @@
 package com.hunnit_beasts.kelog.enumeration.system;
 
-import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import lombok.Getter;
 
 @Getter
@@ -49,33 +48,24 @@ public enum ErrorCode {
 
     private final String code;
     private final int status;
-    private final String message;
 
     ErrorCode(String code){
         this.code = code;
         this.status = checkStatus(code);
-        this.message = ErrorMessageManager.getMessages(this.name());
     }
 
     ErrorCode(String code, int status){
         this.code = code;
         this.status = status;
-        this.message = ErrorMessageManager.getMessages(this.name());
     }
 
     private int checkStatus(String code){
         if(code.startsWith("CODE U")) return 500;
-
         if(code.startsWith("CODE A")) return 500;
-
         if(code.startsWith("CODE B")) return 404;
-
         if(code.startsWith("CODE C")) return 409;
-
         if(code.startsWith("CODE D")) return 403;
-
         if(code.startsWith("CODE E")) return 500;
-
         if(code.startsWith("CODE F")) return 400;
 
         return 500;

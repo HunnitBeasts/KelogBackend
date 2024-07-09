@@ -42,7 +42,7 @@ class LoginTest {
     private Long id;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() {
         UserCreateRequestDTO signUpDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")

@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
@@ -58,5 +60,17 @@ public class TestController {
         } catch (RuntimeException e) {
             throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
         }
+    }
+
+    @PostMapping("/aop-type-error-test")
+    @Identification
+    public void aopTypeErrorTest( Long errorId, Authentication authentication) {
+
+    }
+
+    @PostMapping("/aop-null-parameter-test")
+    @Identification
+    public void aopNullParameterTest() {
+
     }
 }

@@ -24,6 +24,6 @@ public enum UserType {
         for (UserType userType : UserType.values())
             if(userType.getOrder().equals(value))
                 return userType;
-        throw new IllegalArgumentException(ErrorCode.NO_USER_TYPE_ERROR.getMessage());
+        throw new IllegalArgumentException(ErrorCode.NO_USER_TYPE_ERROR.getCode());
     }
 }

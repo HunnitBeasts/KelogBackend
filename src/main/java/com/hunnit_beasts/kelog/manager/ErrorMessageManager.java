@@ -1,20 +1,16 @@
 package com.hunnit_beasts.kelog.manager;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ErrorMessageManager {
 
-    private static Environment environment;
+    private final Environment environment;
 
-    @Autowired
-    private ErrorMessageManager(Environment environment) {
-        ErrorMessageManager.environment = environment;
-    }
-
-    public static String getMessages(String key){
+    public String getMessages(String key){
         return environment.getProperty("error.messages." + key);
     }
 }

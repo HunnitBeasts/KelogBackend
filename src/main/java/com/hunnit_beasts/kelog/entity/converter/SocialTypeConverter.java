@@ -11,7 +11,7 @@ public class SocialTypeConverter implements AttributeConverter<SocialType, Integ
     @Override // entity-> db 값 추가할때 integer로 변환
     public Integer convertToDatabaseColumn(SocialType socialType) {
         if(socialType == null)
-            throw new IllegalArgumentException(ErrorCode.NO_SOCIAL_TYPE_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.NO_SOCIAL_TYPE_ERROR.getCode());
         return socialType.getTypeNum();
     }
 

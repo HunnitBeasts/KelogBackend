@@ -3,8 +3,10 @@ package com.hunnit_beasts.kelog.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +38,9 @@ class PrintErrorCodeAndStackTraceTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    ErrorMessageManager errorMessageManager;
 
     @BeforeEach
     void setUp(){
@@ -71,7 +76,7 @@ class PrintErrorCodeAndStackTraceTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().is(404))
-                .andExpect(MockMvcResultMatchers.jsonPath("errorMessage").isString())
+                .andExpect(MockMvcResultMatchers.jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_USER_DATA_ERROR.name())))
                 .andExpect(MockMvcResultMatchers.jsonPath("time").isString())
                 .andReturn();
 

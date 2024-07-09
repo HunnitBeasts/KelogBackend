@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.aop;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.ValidateService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class IdentificationAspect {
         else if (parameters.containsKey("seriesId"))
             validateSeriesId(id, parameters.get("seriesId"));
         else
-            throw new IllegalArgumentException(ErrorCode.NO_TARGET_TYPE_ERROR.getMessage());
+            throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
     }
 
     private Map<String, Long> extractParameters(JoinPoint joinPoint) {
@@ -52,7 +53,7 @@ public class IdentificationAspect {
         Object[] args = joinPoint.getArgs();
 
         if (args == null || args.length == 0)
-            throw new IllegalArgumentException(ErrorCode.NO_PARAMETER_ERROR.getMessage());
+            throw new ExpectException(ErrorCode.NO_PARAMETER_ERROR);
 
         for (int i = 0; i < parameterNames.length; i++)
             if ("authentication".equals(parameterNames[i])){

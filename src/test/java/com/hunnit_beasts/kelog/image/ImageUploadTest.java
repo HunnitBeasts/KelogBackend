@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,13 +68,15 @@ class ImageUploadTest {
     @Test
     @DisplayName("이미지 업로드")
     void imageUpload() throws Exception {
+        String fileName = "dummyfile.txt";
+
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "multipartFile",
-                "test.txt",
+                fileName,
                 "image/jpg",
                 "testImage".getBytes(StandardCharsets.UTF_8) );
 
-        mockMvc.perform(multipart("/images")
+        MvcResult result = mockMvc.perform(multipart("/images")
                         .file(multipartFile)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .header("Authorization", token)
@@ -77,8 +84,15 @@ class ImageUploadTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.url").isString())
                 .andExpect(jsonPath("$.fileType").value("image/jpg"))
-                .andExpect(jsonPath("$.originalFileName").value("test.txt"))
+                .andExpect(jsonPath("$.originalFileName").value(fileName))
                 .andExpect(jsonPath("$.filePath").isString())
-                .andExpect(jsonPath("$.fileSize").isNumber());
+                .andExpect(jsonPath("$.fileSize").isNumber())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content);
+        String url = jsonObject.getString("url");
+        Path filePath = Paths.get("C:\\Temp\\kelog\\"+url);
+        Files.delete(filePath);
     }
 }

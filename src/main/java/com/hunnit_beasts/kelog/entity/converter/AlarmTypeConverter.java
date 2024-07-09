@@ -11,7 +11,7 @@ public class AlarmTypeConverter implements AttributeConverter<AlarmType, Integer
     @Override // entity-> db 값 추가할때 integer로 변환
     public Integer convertToDatabaseColumn(AlarmType alarmType) {
         if(alarmType == null)
-            throw new IllegalArgumentException(ErrorCode.NO_ALARM_TYPE_ERROR.getMessage());
+            throw new IllegalArgumentException(ErrorCode.NO_ALARM_TYPE_ERROR.getCode());
         return alarmType.getTypeNum();
     }
 

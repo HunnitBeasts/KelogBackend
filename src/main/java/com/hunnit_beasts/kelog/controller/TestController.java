@@ -45,11 +45,7 @@ public class TestController {
 
     @PostMapping("/print-stacktrace-exception")
     public void printStackTraceExceptionTest(){
-        try {
-            throw new RuntimeException();
-        } catch (RuntimeException e) {
-            throw new ExpectException(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR);
-        }
+        throw new RuntimeException();
     }
 
     @PostMapping("/print-errorcode-stacktrace-exception")

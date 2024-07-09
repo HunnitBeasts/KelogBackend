@@ -7,4 +7,5 @@ public interface PostQueryDSLRepository {
     PostCreateResponseDTO findPostCreateResponseDTOById(Long id);
     Long findTotalViewCntById(Long id);
     PostUpdateResponseDTO findPostUpdateResponseDTOById(Long id);
+    Long findMaxOrderBySeriesId(Long seriesId);
 }

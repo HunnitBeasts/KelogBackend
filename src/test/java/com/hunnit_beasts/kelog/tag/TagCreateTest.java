@@ -43,7 +43,6 @@ class TagCreateTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private Long userId;
     private String token;
 
     @BeforeEach
@@ -56,7 +55,7 @@ class TagCreateTest {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(userDto).getId();
+        Long userId = authService.signUp(userDto).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(userId)

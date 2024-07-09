@@ -4,6 +4,7 @@ import com.hunnit_beasts.kelog.config.ImageConfig;
 import com.hunnit_beasts.kelog.dto.response.image.ImageResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.Image;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.repository.jpa.ImageJpaRepository;
 import com.hunnit_beasts.kelog.service.ImageService;
 import jakarta.transaction.Transactional;
@@ -18,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -40,10 +40,10 @@ public class ImageServiceImpl implements ImageService {
         String mimeType = file.getContentType();
 
         if (file.getSize() > maxSize)
-            throw new IllegalArgumentException(ErrorCode.FILE_SIZE_OVER_ERROR.getCode());
+            throw new ExpectException(ErrorCode.FILE_SIZE_OVER_ERROR);
 
         if (!isImageFile(mimeType))
-            throw new IllegalArgumentException(ErrorCode.NOT_FILE_TYPE_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NOT_FILE_TYPE_ERROR);
 
         String newFileName = generateUniqueFileName(originalFileName);
         Path filePath = Paths.get( imageConfig.getFileDirectory() + File.separator + newFileName);
@@ -51,7 +51,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             Files.copy(file.getInputStream(), filePath);
         } catch (IOException e) {
-            throw new IllegalArgumentException(ErrorCode.FILE_UPLOAD_FAILURE_ERROR.getCode()+"File upload exception. " + Arrays.toString(e.getStackTrace()));
+            throw new ExpectException(ErrorCode.FILE_UPLOAD_FAILURE_ERROR);
         }
 
         Image saveImage = imageJpaRepository.save(new Image(file,filePath,newFileName));
@@ -62,7 +62,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public byte[] readImage(String url) throws IOException {
         Image callImageData = imageJpaRepository.findById(url)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_IMAGE_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_IMAGE_DATA_ERROR));
         return Files.readAllBytes(Paths.get(callImageData.getFilePath()));
     }
 

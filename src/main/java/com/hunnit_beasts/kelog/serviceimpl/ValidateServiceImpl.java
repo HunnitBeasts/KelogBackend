@@ -4,6 +4,7 @@ import com.hunnit_beasts.kelog.entity.domain.Comment;
 import com.hunnit_beasts.kelog.entity.domain.Post;
 import com.hunnit_beasts.kelog.entity.domain.Series;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.repository.jpa.CommentJpaRepository;
 import com.hunnit_beasts.kelog.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.repository.jpa.SeriesJpaRepository;
@@ -26,30 +27,30 @@ public class ValidateServiceImpl implements ValidateService {
     @Override
     public void userIdAndUserIdSameCheck(Long id, Long userId) {
         if(!Objects.equals(id, userId))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_USERID_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NOT_SAME_USERID_ERROR);
     }
 
     @Override
     public void userIdAndPostIdSameCheck(Long id, Long postId) {
         Post userPost = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         if(!userPost.getUser().getId().equals(id))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_POST_ID_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NOT_SAME_POST_ID_ERROR);
     }
 
     @Override
     public void userIdAndCommentIdSameCheck(Long id, Long commentId) {
         Comment comment = commentJpaRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_COMMENT_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
         if(!comment.getUser().getId().equals(id))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_COMMENT_ID_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NOT_SAME_COMMENT_ID_ERROR);
     }
 
     @Override
     public void userIdAndSeriesIdSameCheck(Long id, Long seriesId) {
         Series series = seriesJpaRepository.findById(seriesId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SERIES_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR));
         if(!series.getUser().getId().equals(id))
-            throw new IllegalArgumentException(ErrorCode.NOT_SAME_SERIES_ID_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NOT_SAME_SERIES_ID_ERROR);
     }
 }

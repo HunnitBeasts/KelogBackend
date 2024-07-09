@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.controller;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,9 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 @Log4j2
 @Tag(name = "Swagger Test", description = "This is a test API")
@@ -46,9 +44,9 @@ public class TestController {
     @PostMapping("/print-stacktrace-exception")
     public void printStackTraceExceptionTest(){
         try {
-            throw new IOException();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            throw new ExpectException(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR);
         }
     }
 
@@ -56,9 +54,9 @@ public class TestController {
     public void printStackTraceErrorCodeExceptionTest(){
 
         try {
-            throw new IOException();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()+ Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
         }
     }
 }

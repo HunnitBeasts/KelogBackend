@@ -2,69 +2,58 @@ package com.hunnit_beasts.kelog.handler;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.etc.ErrorResponseDTO;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.List;
+import java.util.Arrays;
 
 @ControllerAdvice
 @Log4j2
 public class ControllerExceptionHandler {
 
-    private final List<ErrorCode> errorCodes;
+    private void LogError(Exception e){
+        int status;
+        String message;
+        String stackTrace;
 
-    public ControllerExceptionHandler() {
-        this.errorCodes = List.of(ErrorCode.values());
-    }
-
-    private boolean isErrorCode(String errorMessage) {
-        return errorMessage.startsWith("CODE");
-    }
-
-    private void logErrorResponse(ErrorResponseDTO dto) {
-        log.error("status : {} message : {}",dto.getStatus(), dto.getErrorMessage());
-    }
-
-    private ErrorCode findErrorCode(String code) {
-        return errorCodes.stream()
-                .filter(errorCode -> errorCode.getCode().equals(code.trim()))
-                .findFirst()
-                .orElse(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR);
-    }
-
-    private ErrorResponseDTO createErrorResponseFromMessage(String errorMessage) {
-        if (!isErrorCode(errorMessage))
-            return new ErrorResponseDTO(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR, errorMessage);
-        else {
-            if (errorMessage.length() == 10)
-                return new ErrorResponseDTO(findErrorCode(errorMessage));
-            String code = errorMessage.substring(0, 10);
-            String message = errorMessage.substring(10);
-            ErrorCode errorCode = findErrorCode(code);
-            return new ErrorResponseDTO(errorCode, message);
+        if(e instanceof ExpectException){
+            status = ((ExpectException) e).getErrorCode().getStatus();
+            message = ((ExpectException) e).getErrorCode().getMessage();
         }
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException e) {
-        ErrorResponseDTO dto = createErrorResponseFromMessage(e.getMessage());
-        logErrorResponse(dto);
-        return ResponseEntity.status(dto.getStatusCode()).body(dto);
+        else if(e instanceof UnsupportedOperationException){
+            status = ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR.getStatus();
+            message = ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR.getMessage();
+        }
+        else {
+            status = ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR.getStatus();
+            message = ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR.getMessage();
+        }
+        stackTrace = Arrays.toString(e.getStackTrace());
+        log.error("status: {}, message: {}, stack trace: {}",status,message,stackTrace);
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUnsupportedOperationException() {
+    public ResponseEntity<ErrorResponseDTO> handleUnsupportedOperationException(UnsupportedOperationException e) {
+        LogError(e);
         ErrorResponseDTO dto = new ErrorResponseDTO(ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR);
-        logErrorResponse(dto);
+        return ResponseEntity.status(dto.getStatusCode()).body(dto);
+    }
+
+    @ExceptionHandler(ExpectException.class)
+    public ResponseEntity<ErrorResponseDTO> handleExpectException(ExpectException e) {
+        LogError(e);
+        ErrorResponseDTO dto = new ErrorResponseDTO(e.getErrorCode());
         return ResponseEntity.status(dto.getStatusCode()).body(dto);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {
-        ErrorResponseDTO dto = createErrorResponseFromMessage(e.getMessage());
-        logErrorResponse(dto);
+        LogError(e);
+        ErrorResponseDTO dto = new ErrorResponseDTO(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR);
         return ResponseEntity.status(dto.getStatusCode()).body(dto);
     }
+
 }

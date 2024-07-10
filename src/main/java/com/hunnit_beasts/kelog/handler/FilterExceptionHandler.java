@@ -1,7 +1,6 @@
 package com.hunnit_beasts.kelog.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.etc.ErrorResponseDTO;
 import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
@@ -12,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
@@ -22,29 +20,11 @@ public class FilterExceptionHandler {
     private final ErrorMessageManager errorMessageManager;
     private final ObjectMapper mapper;
 
-    private void logError(Exception e){
-        int status;
-        String message;
-        String stackTrace;
-
-        if(e instanceof ExpectException expectException){
-            status = expectException.getErrorCode().getStatus();
-            message = errorMessageManager.getMessages(expectException.getErrorCode().toString());
-        }
-        else if(e instanceof UnsupportedOperationException ){
-            status = ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR.getStatus();
-            message = errorMessageManager.getMessages(ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR.name());
-        }
-        else {
-            status = ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR.getStatus();
-            message = errorMessageManager.getMessages(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR.name());
-        }
-        stackTrace = Arrays.toString(e.getStackTrace());
-        log.error("status: {}, message: {}, stack trace: {}",status,message,stackTrace);
-    }
-
     public void handleExpectException(HttpServletResponse response, ExpectException e) throws IOException {
-        logError(e);
+        log.error("status: {}, message: {}, stack trace: {}"
+                ,e.getErrorCode().getStatus()
+                ,errorMessageManager.getMessages(e.getErrorCode().name())
+                ,e.getStackTrace());
 
         ErrorResponseDTO dto = new ErrorResponseDTO(e.getErrorCode(),errorMessageManager);
         String responseBody = mapper.writeValueAsString(dto);

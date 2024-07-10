@@ -35,19 +35,8 @@ public class IdentificationAspect {
         Map<String, Long> parameters = extractParameters(joinPoint);
         Long id = parameters.remove("id");  // id를 가져오고 map에서 제거
 
-        if (parameters.containsKey("userId"))
-            validateUserId(id, parameters.get("userId"));
-        else if (parameters.containsKey("postId"))
-            validatePostId(id, parameters.get("postId"));
-        else if (parameters.containsKey("commentId"))
-            validateCommentId(id, parameters.get("commentId"));
-        else if (parameters.containsKey("seriesId"))
-            validateSeriesId(id, parameters.get("seriesId"));
-        else
-            throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
-    }
         if (parameters.isEmpty()) {
-            throw new IllegalArgumentException(ErrorCode.NO_TARGET_TYPE_ERROR.getMessage());
+            throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
         }
 
         for (Map.Entry<String, Long> entry : parameters.entrySet()) {
@@ -59,9 +48,10 @@ public class IdentificationAspect {
                 case "postId" -> validatePostId(id, value);
                 case "commentId" -> validateCommentId(id, value);
                 case "seriesId" -> validateSeriesId(id, value);
-                default -> throw new IllegalArgumentException("Unexpected parameter: " + key);
+                default -> throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
             }
         }
+
     }
 
     private Map<String, Long> extractParameters(JoinPoint joinPoint) {

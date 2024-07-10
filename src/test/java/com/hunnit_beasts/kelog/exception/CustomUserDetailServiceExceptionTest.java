@@ -89,8 +89,8 @@ class CustomUserDetailServiceExceptionTest  {
     }
 
     @Test
-    @DisplayName("게시물 좋아요 성공")
-    void PostLike() throws Exception {
+    @DisplayName("필터체인 에러 테스트")
+    void filterExceptionTest() throws Exception {
 
         PostLikeRequestDTO dto = PostLikeRequestDTO.builder()
                 .postId(postId)

@@ -27,12 +27,10 @@ public class ControllerExceptionHandler {
         if(e instanceof ExpectException expectException){
             status = expectException.getErrorCode().getStatus();
             message = errorMessageManager.getMessages(expectException.getErrorCode().toString());
-        }
-        else if(e instanceof UnsupportedOperationException ){
+        } else if(e instanceof UnsupportedOperationException ){
             status = ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR.getStatus();
             message = errorMessageManager.getMessages(ErrorCode.NOT_SUPPORTED_ENDPOINT_ERROR.name());
-        }
-        else {
+        } else {
             status = ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR.getStatus();
             message = errorMessageManager.getMessages(ErrorCode.OCCUR_UNKNOWN_TYPE_ERROR.name());
         }

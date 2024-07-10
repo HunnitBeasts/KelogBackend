@@ -116,7 +116,7 @@ public class PostServiceImpl implements PostService {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
         if(seriesPostJpaRepository.existsById(new SeriesPostId(seriesId,postId))){
-            throw new IllegalArgumentException(ErrorCode.DUPLICATION_SERIES_POST_ERROR.getCode());
+            throw new ExpectException(ErrorCode.DUPLICATION_SERIES_POST_ERROR);
         }else {
             Long maxOrder = postQueryDSLRepository.findMaxOrderBySeriesId(series.getId());
             SeriesPost seriesPost = seriesPostJpaRepository.save(new SeriesPost(post,series,maxOrder));

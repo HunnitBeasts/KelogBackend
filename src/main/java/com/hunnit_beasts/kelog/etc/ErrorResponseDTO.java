@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.etc;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,15 +21,10 @@ public class ErrorResponseDTO implements ErrorResponse {
     private String errorMessage;
     private final LocalDateTime time;
 
-    public ErrorResponseDTO(ErrorCode errorCode){
-        this.status = errorCode.getStatus();
-        this.errorMessage = errorCode.getMessage();
-        this.time = LocalDateTime.now();
-    }
 
-    public ErrorResponseDTO(ErrorCode errorCode,String errorMessage){
+    public ErrorResponseDTO(ErrorCode errorCode, ErrorMessageManager errorMessageManager){
         this.status = errorCode.getStatus();
-        this.errorMessage = errorMessage;
+        this.errorMessage = errorMessageManager.getMessages(errorCode.name());
         this.time = LocalDateTime.now();
     }
 

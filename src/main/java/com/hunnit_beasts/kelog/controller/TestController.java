@@ -1,16 +1,16 @@
 package com.hunnit_beasts.kelog.controller;
 
+import com.hunnit_beasts.kelog.aop.Identification;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 @Log4j2
 @Tag(name = "Swagger Test", description = "This is a test API")
@@ -45,20 +45,24 @@ public class TestController {
 
     @PostMapping("/print-stacktrace-exception")
     public void printStackTraceExceptionTest(){
-        try {
-            throw new IOException();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(Arrays.toString(e.getStackTrace()));
-        }
+        throw new RuntimeException();
     }
 
     @PostMapping("/print-errorcode-stacktrace-exception")
     public void printStackTraceErrorCodeExceptionTest(){
 
-        try {
-            throw new IOException();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()+ Arrays.toString(e.getStackTrace()));
-        }
+        throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
+    }
+
+    @PostMapping("/aop-type-error-test")
+    @Identification
+    public void aopTypeErrorTest( Long errorId, Authentication authentication) {
+
+    }
+
+    @PostMapping("/aop-null-parameter-test")
+    @Identification
+    public void aopNullParameterTest() {
+
     }
 }

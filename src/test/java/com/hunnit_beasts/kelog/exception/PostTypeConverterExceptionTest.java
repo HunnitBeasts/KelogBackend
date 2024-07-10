@@ -1,12 +1,14 @@
-package com.hunnit_beasts.kelog.user;
+package com.hunnit_beasts.kelog.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
-import com.hunnit_beasts.kelog.dto.request.user.FollowIngRequestDTO;
+import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,27 +27,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-class FollowingTest {
+class PostTypeConverterExceptionTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    AuthService authService;
 
     @Autowired
-    private AuthService authService;
+    ObjectMapper objectMapper;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    JwtUtil jwtUtil;
+
+    @Autowired
+    ErrorMessageManager errorMessageManager;
 
     private Long userId;
-    private Long followedUserId;
-    private String token;
 
     @BeforeEach
-    void setup() {
-        UserCreateRequestDTO signUpDto = UserCreateRequestDTO.builder()
+    void setUp(){
+        UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
                 .nickname("testNickname")
@@ -53,45 +56,41 @@ class FollowingTest {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(signUpDto).getId();
+        userId = authService.signUp(dto).getId();
+    }
 
-        UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
-                .userId("testUserId1")
-                .password("testPassword1")
-                .nickname("testNickname1")
-                .briefIntro("testBriefIntro1")
-                .email("testEmail1")
+    @Test
+    @DisplayName("PostTypeConverter 의 Exception 테스트")
+    void postTypeConverterTest() throws Exception {
+        PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
+                .title("testTitle")
+                .type(null)
+                .thumbImage("testThumbImage")
+                .isPublic(Boolean.TRUE)
+                .shortContent("testShortContent")
+                .url("testUrl")
+                .content("testContent")
                 .build();
 
-        followedUserId = authService.signUp(followUserDTO).getId();
+        String jsonContent = objectMapper.writeValueAsString(dto);
 
-        CustomUserInfoDTO customUserInfoDTO = CustomUserInfoDTO.builder()
+        CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(userId)
                 .userId("testUserId")
                 .password("testPassword")
                 .userType(UserType.USER)
                 .build();
 
-        token = jwtUtil.createToken(customUserInfoDTO);
-    }
+        String token = jwtUtil.createToken(userInfoDTO);
 
-    @Test
-    @DisplayName("팔로우 기능 성공")
-    void followSuccess() throws Exception {
-        FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
-                .followee(followedUserId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(followIngRequestDTO);
-
-        mockMvc.perform(post("/following")
+        mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.follower").value(userId))
-                .andExpect(jsonPath("$.followee").value(followedUserId))
+                .andExpect(status().is(500))
+                .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_POST_TYPE_ERROR.name())))
+                .andExpect(jsonPath("time").isString())
                 .andReturn();
     }
 }

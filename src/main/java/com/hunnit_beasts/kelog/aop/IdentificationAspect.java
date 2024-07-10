@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.aop;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.service.ValidateService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class IdentificationAspect {
         Long id = parameters.remove("id");  // id를 가져오고 map에서 제거
 
         if (parameters.isEmpty()) {
-            throw new IllegalArgumentException(ErrorCode.NO_TARGET_TYPE_ERROR.getMessage());
+            throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
         }
 
         for (Map.Entry<String, Long> entry : parameters.entrySet()) {
@@ -47,9 +48,10 @@ public class IdentificationAspect {
                 case "postId" -> validatePostId(id, value);
                 case "commentId" -> validateCommentId(id, value);
                 case "seriesId" -> validateSeriesId(id, value);
-                default -> throw new IllegalArgumentException("Unexpected parameter: " + key);
+                default -> throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
             }
         }
+
     }
 
     private Map<String, Long> extractParameters(JoinPoint joinPoint) {
@@ -60,7 +62,7 @@ public class IdentificationAspect {
         Object[] args = joinPoint.getArgs();
 
         if (args == null || args.length == 0)
-            throw new IllegalArgumentException(ErrorCode.NO_PARAMETER_ERROR.getMessage());
+            throw new ExpectException(ErrorCode.NO_PARAMETER_ERROR);
 
         for (int i = 0; i < parameterNames.length; i++) {
             if ("authentication".equals(parameterNames[i])) {

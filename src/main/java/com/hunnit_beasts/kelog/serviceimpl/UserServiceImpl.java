@@ -7,6 +7,7 @@ import com.hunnit_beasts.kelog.entity.compositekey.FollowerId;
 import com.hunnit_beasts.kelog.entity.domain.Follower;
 import com.hunnit_beasts.kelog.entity.domain.User;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.repository.jpa.FollowerJpaRepository;
 import com.hunnit_beasts.kelog.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.service.UserService;
@@ -23,11 +24,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public FollowIngResponseDTO following(Long userId, FollowIngRequestDTO dto) {
         User follower = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         User followee = userJpaRepository.findById(dto.getFollowee())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_USER_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         if(followerJpaRepository.existsById(new FollowerId(follower,followee)))
-            throw new IllegalArgumentException(ErrorCode.DUPLICATION_FOLLOW_ERROR.getCode());
+            throw new ExpectException(ErrorCode.DUPLICATION_FOLLOW_ERROR);
         Follower follow = followerJpaRepository.save(new Follower(follower,followee));
         return new FollowIngResponseDTO(follow);
     }
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
         if(followerJpaRepository.existsById(followerId))
             followerJpaRepository.deleteById(followerId);
         else
-            throw new IllegalArgumentException(ErrorCode.NO_FOLLOW_DATA_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NO_FOLLOW_DATA_ERROR);
         return new FollowDeleteResponseDTO(follower, followee);
     }
 }

@@ -1,12 +1,13 @@
-package com.hunnit_beasts.kelog.user;
+package com.hunnit_beasts.kelog.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
-import com.hunnit_beasts.kelog.dto.request.user.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,15 +18,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-class FollowingTest {
+class AopIdTypeErrorTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,8 +40,10 @@ class FollowingTest {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    ErrorMessageManager errorMessageManager;
+
     private Long userId;
-    private Long followedUserId;
     private String token;
 
     @BeforeEach
@@ -55,16 +58,6 @@ class FollowingTest {
 
         userId = authService.signUp(signUpDto).getId();
 
-        UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
-                .userId("testUserId1")
-                .password("testPassword1")
-                .nickname("testNickname1")
-                .briefIntro("testBriefIntro1")
-                .email("testEmail1")
-                .build();
-
-        followedUserId = authService.signUp(followUserDTO).getId();
-
         CustomUserInfoDTO customUserInfoDTO = CustomUserInfoDTO.builder()
                 .id(userId)
                 .userId("testUserId")
@@ -76,22 +69,14 @@ class FollowingTest {
     }
 
     @Test
-    @DisplayName("팔로우 기능 성공")
-    void followSuccess() throws Exception {
-        FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
-                .followee(followedUserId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(followIngRequestDTO);
-
-        mockMvc.perform(post("/following")
-                        .contentType(MediaType.APPLICATION_JSON)
+    @DisplayName("Aop 에러(NO_TARGET_TYPE_ERROR) 테스트")
+    void aopTest() throws Exception {
+        mockMvc.perform(post("/api/aop-type-error-test")
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + token)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.follower").value(userId))
-                .andExpect(jsonPath("$.followee").value(followedUserId))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().is(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_TARGET_TYPE_ERROR.name())))
                 .andReturn();
     }
+
 }

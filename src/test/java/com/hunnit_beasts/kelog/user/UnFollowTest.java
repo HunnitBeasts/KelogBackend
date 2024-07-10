@@ -48,7 +48,7 @@ class UnFollowTest {
     private String token;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() {
         UserCreateRequestDTO signUpDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")

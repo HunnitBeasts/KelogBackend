@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.entity.converter;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -11,7 +12,7 @@ public class PostTypeConverter implements AttributeConverter<PostType,Integer> {
     @Override //entity-> db 값 추가할때 integer로 변환
     public Integer convertToDatabaseColumn(PostType postType) {
         if(postType == null)
-            throw new IllegalArgumentException(ErrorCode.NO_POST_TYPE_ERROR.getMessage()); // TODO : 나중에 service 분리 하자잇
+            throw new ExpectException(ErrorCode.NO_POST_TYPE_ERROR); // TODO : 나중에 service 분리 하자잇
         return postType.getTypeNum();
     }
 

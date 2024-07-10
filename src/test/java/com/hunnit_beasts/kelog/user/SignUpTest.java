@@ -29,8 +29,8 @@ class SignUpTest {
 
     @Test
     @DisplayName("회원가입")
-    void signUp() throws Exception {
-        UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
+    void signup() throws Exception {
+    UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
                 .nickname("testNickname")
@@ -46,16 +46,16 @@ class SignUpTest {
                         .content(jsonContent))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath(".userId").value("testUserId"))
-                .andExpect(jsonPath(".nickname").value("testNickname"))
-                .andExpect(jsonPath(".thumbImage").value(""))
-                .andExpect(jsonPath(".briefIntro").value("testBriefIntro"))
-                .andExpect(jsonPath(".email").value("testEmail@test.com"))
-                .andExpect(jsonPath(".emailSetting").value(false))
-                .andExpect(jsonPath(".alarmSetting").value(false))
-                .andExpect(jsonPath(".userType").value("USER"))
-                .andExpect(jsonPath(".kelogName").value("testUserId"))
-                .andExpect(jsonPath(".userIntro").value(""))
+                .andExpect(jsonPath("$.userId").value("testUserId"))
+                .andExpect(jsonPath("$.nickname").value("testNickname"))
+                .andExpect(jsonPath("$.thumbImage").value(""))
+                .andExpect(jsonPath("$.briefIntro").value("testBriefIntro"))
+                .andExpect(jsonPath("$.email").value("testEmail@test.com"))
+                .andExpect(jsonPath("$.emailSetting").value(false))
+                .andExpect(jsonPath("$.alarmSetting").value(false))
+                .andExpect(jsonPath("$.userType").value("USER"))
+                .andExpect(jsonPath("$.kelogName").value("testUserId"))
+                .andExpect(jsonPath("$.userIntro").value(""))
                 .andExpect(jsonPath("regDate").isString())
                 .andExpect(jsonPath("modDate").isString())
                 .andReturn();

@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.config;
 
 import com.hunnit_beasts.kelog.handler.CustomAccessDeniedHandler;
 import com.hunnit_beasts.kelog.handler.CustomAuthenticationEntryPoint;
+import com.hunnit_beasts.kelog.handler.FilterExceptionHandler;
 import com.hunnit_beasts.kelog.jwt.JwtAuthFilter;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.serviceimpl.CustomUserDetailsService;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final FilterExceptionHandler filterExceptionHandler;
 
     @Value("${security.auth-white-list}")
     private String[] authWhiteList;
@@ -58,12 +60,13 @@ public class SecurityConfig {
 
         //JwtAuthFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
         http.addFilterBefore(
-                new JwtAuthFilter(customUserDetailsService, jwtUtil),
+                new JwtAuthFilter(customUserDetailsService, jwtUtil, filterExceptionHandler),
                 UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
+
         );
 
         // 권한 규칙 작성

@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.entity.converter;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -11,7 +12,7 @@ public class UserTypeConverter implements AttributeConverter<UserType, Integer> 
     @Override // entity-> db 값 추가할때 integer로 변환
     public Integer convertToDatabaseColumn(UserType alarmType) {
         if(alarmType == null)
-            throw new IllegalArgumentException(ErrorCode.NO_ALARM_TYPE_ERROR.getMessage());
+            throw new ExpectException(ErrorCode.NO_ALARM_TYPE_ERROR);
         return alarmType.getOrder();
     }
 

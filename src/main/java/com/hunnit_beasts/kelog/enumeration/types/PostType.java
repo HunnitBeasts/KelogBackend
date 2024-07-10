@@ -25,6 +25,6 @@ public enum PostType {
         for (PostType postType : PostType.values())
             if (postType.getTypeNum().equals(typeNum))
                 return postType;
-        throw new IllegalArgumentException(ErrorCode.NO_POST_TYPE_ERROR.getMessage()); // TODO : 서비스분리
+        throw new IllegalArgumentException(ErrorCode.NO_POST_TYPE_ERROR.getCode()); // TODO : 서비스분리
     }
 }

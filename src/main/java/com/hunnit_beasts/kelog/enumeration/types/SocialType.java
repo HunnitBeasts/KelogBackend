@@ -27,6 +27,6 @@ public enum SocialType {
         for (SocialType socialType : SocialType.values())
             if(socialType.getTypeNum().equals(value))
                 return socialType;
-        throw new IllegalArgumentException(ErrorCode.NO_SOCIAL_TYPE_ERROR.getMessage());
+        throw new IllegalArgumentException(ErrorCode.NO_SOCIAL_TYPE_ERROR.getCode());
     }
 }

@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class LoginIllegalArgumentExceptionTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    ErrorMessageManager errorMessageManager;
+
     @BeforeEach
     void setUp(){
         UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
@@ -67,7 +71,7 @@ class LoginIllegalArgumentExceptionTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().is(404))
-                .andExpect(jsonPath("errorMessage").value(ErrorCode.NO_USER_DATA_ERROR.getMessage()))
+                .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_USER_DATA_ERROR.name())))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();
     }

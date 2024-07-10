@@ -27,6 +27,9 @@ spring:
       max-file-size: 8MB
       max-request-size: 8MB
 
+  config:
+    import: classpath:/system-constant.yml
+
 spring-doc:
   packages-to-scan: com.hunnit_beasts.kelog.controller
   swagger-ui:

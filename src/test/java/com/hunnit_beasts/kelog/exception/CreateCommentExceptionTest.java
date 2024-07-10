@@ -9,6 +9,7 @@ import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
 import com.hunnit_beasts.kelog.service.PostService;
 import jakarta.transaction.Transactional;
@@ -38,6 +39,9 @@ class CreateCommentExceptionTest {
 
     @Autowired
     PostService postService;
+
+    @Autowired
+    ErrorMessageManager errorMessageManager;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -109,7 +113,7 @@ class CreateCommentExceptionTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().is(404))
-                .andExpect(jsonPath("errorMessage").value(ErrorCode.NO_POST_DATA_ERROR.getMessage()))
+                .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_POST_DATA_ERROR.name())))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();
     }

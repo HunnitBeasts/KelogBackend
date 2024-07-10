@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,9 @@ class ImageUploadExceptionTest {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired
+    ErrorMessageManager errorMessageManager;
 
     private String token;
 
@@ -104,7 +108,7 @@ class ImageUploadExceptionTest {
                             .header("Authorization", token)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().is4xxClientError())
-                    .andExpect(jsonPath("errorMessage").value("[ERROR] 파일의 크기가 너무 큽니다!"))
+                    .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.FILE_SIZE_OVER_ERROR.name())))
                     .andExpect(jsonPath("time").isString());
 
             Files.delete(filePath);
@@ -127,7 +131,7 @@ class ImageUploadExceptionTest {
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(415))
-                .andExpect(jsonPath("errorMessage").value(ErrorCode.NOT_FILE_TYPE_ERROR.getMessage()))
+                .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NOT_FILE_TYPE_ERROR.name())))
                 .andExpect(jsonPath("time").isString());
 
     }

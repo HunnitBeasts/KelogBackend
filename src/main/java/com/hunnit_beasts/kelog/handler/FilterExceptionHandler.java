@@ -44,7 +44,6 @@ public class FilterExceptionHandler {
         log.error("status: {}, message: {}, stack trace: {}",status,message,stackTrace);
     }
 
-    @ExceptionHandler(ExpectException.class)
     public void handleExpectException(HttpServletResponse response, ExpectException e) throws IOException {
         logError(e);
 

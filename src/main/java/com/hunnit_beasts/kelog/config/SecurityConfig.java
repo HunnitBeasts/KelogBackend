@@ -66,6 +66,7 @@ public class SecurityConfig {
         http.exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
+
         );
 
         // 권한 규칙 작성

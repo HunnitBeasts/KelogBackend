@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.dto.info.user.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.dto.request.post.PostCreateRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.post.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.PostType;
@@ -12,7 +11,6 @@ import com.hunnit_beasts.kelog.enumeration.types.UserType;
 import com.hunnit_beasts.kelog.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import com.hunnit_beasts.kelog.service.AuthService;
-import com.hunnit_beasts.kelog.service.PostService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,16 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-class CustomUserDetailServiceExceptionTest  {
+class PostTypeConverterExceptionTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
     AuthService authService;
-
-    @Autowired
-    PostService postService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -51,12 +46,10 @@ class CustomUserDetailServiceExceptionTest  {
     ErrorMessageManager errorMessageManager;
 
     private Long userId;
-    private Long postId;
-    private String token;
 
     @BeforeEach
     void setUp(){
-        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+        UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
                 .nickname("testNickname")
@@ -64,11 +57,15 @@ class CustomUserDetailServiceExceptionTest  {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(userDto).getId();
+        userId = authService.signUp(dto).getId();
+    }
 
-        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
+    @Test
+    @DisplayName("PostTypeConverter 의 Exception 테스트")
+    void postTypeConverterTest() throws Exception {
+        PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
                 .title("testTitle")
-                .type(PostType.NORMAL)
+                .type(null)
                 .thumbImage("testThumbImage")
                 .isPublic(Boolean.TRUE)
                 .shortContent("testShortContent")
@@ -76,7 +73,7 @@ class CustomUserDetailServiceExceptionTest  {
                 .content("testContent")
                 .build();
 
-        postId = postService.postCreate(userId,postDto).getId();
+        String jsonContent = objectMapper.writeValueAsString(dto);
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(userId)
@@ -85,30 +82,16 @@ class CustomUserDetailServiceExceptionTest  {
                 .userType(UserType.USER)
                 .build();
 
-        token = "Bearer " + jwtUtil.createToken(userInfoDTO);
-    }
+        String token = jwtUtil.createToken(userInfoDTO);
 
-    @Test
-    @DisplayName("게시물 좋아요 성공")
-    void PostLike() throws Exception {
-
-        PostLikeRequestDTO dto = PostLikeRequestDTO.builder()
-                .postId(postId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        authService.withDraw(userId);
-
-        mockMvc.perform(post("/posts/like")
+        mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
+                        .header("Authorization", "Bearer " + token)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().is(404))
-                .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_USER_DATA_ERROR.name())))
+                .andExpect(status().is(500))
+                .andExpect(jsonPath("errorMessage").value(errorMessageManager.getMessages(ErrorCode.NO_POST_TYPE_ERROR.name())))
                 .andExpect(jsonPath("time").isString())
                 .andReturn();
     }
 }
-

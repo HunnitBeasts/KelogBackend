@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.entity.converter;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.enumeration.types.SocialType;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -11,7 +12,7 @@ public class SocialTypeConverter implements AttributeConverter<SocialType, Integ
     @Override // entity-> db 값 추가할때 integer로 변환
     public Integer convertToDatabaseColumn(SocialType socialType) {
         if(socialType == null)
-            throw new IllegalArgumentException(ErrorCode.NO_SOCIAL_TYPE_ERROR.getCode());
+            throw new ExpectException(ErrorCode.NO_SOCIAL_TYPE_ERROR);
         return socialType.getTypeNum();
     }
 

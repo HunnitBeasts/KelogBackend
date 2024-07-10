@@ -1,8 +1,11 @@
 package com.hunnit_beasts.kelog.config;
 
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
+import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +15,10 @@ import java.io.FileNotFoundException;
 
 @Configuration
 @Log4j2
+@RequiredArgsConstructor
 public class ImageConfig {
+
+    private final ErrorMessageManager errorMessageManager;
 
     @Value("${upload.directory.window}")
     private String windowUploadDirectory;
@@ -38,7 +44,12 @@ public class ImageConfig {
         else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix"))
             directory = new File(linuxUploadDirectory);
         else
-            throw new IllegalArgumentException(ErrorCode.NOT_SUPPORTED_OS_ERROR.getCode()+"Unsupported operating system: " + osName);
+            throw new IllegalArgumentException("Error: " +ErrorCode.NOT_SUPPORTED_OS_ERROR.name()
+                    +" Code: "+ErrorCode.NOT_SUPPORTED_OS_ERROR.getCode()
+                    +" Unsupported operating system: " + osName
+                    +" Message: "+errorMessageManager.getMessages(ErrorCode.NOT_SUPPORTED_OS_ERROR.name()));
+
+
 
         if (!directory.exists()) {
             boolean created = directory.mkdirs();

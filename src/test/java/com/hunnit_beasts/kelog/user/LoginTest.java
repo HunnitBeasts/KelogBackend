@@ -2,10 +2,10 @@ package com.hunnit_beasts.kelog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
-import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
-import com.hunnit_beasts.kelog.jwt.JwtUtil;
-import com.hunnit_beasts.kelog.service.AuthService;
+import com.hunnit_beasts.kelog.user.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.user.dto.request.UserLoginRequestDTO;
+import com.hunnit_beasts.kelog.user.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.user.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;

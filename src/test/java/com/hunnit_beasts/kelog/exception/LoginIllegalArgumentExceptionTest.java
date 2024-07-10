@@ -2,12 +2,12 @@ package com.hunnit_beasts.kelog.exception;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
-import com.hunnit_beasts.kelog.dto.request.user.UserLoginRequestDTO;
-import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
-import com.hunnit_beasts.kelog.jwt.JwtUtil;
-import com.hunnit_beasts.kelog.manager.ErrorMessageManager;
-import com.hunnit_beasts.kelog.service.AuthService;
+import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
+import com.hunnit_beasts.kelog.common.manager.ErrorMessageManager;
+import com.hunnit_beasts.kelog.user.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.user.dto.request.UserLoginRequestDTO;
+import com.hunnit_beasts.kelog.user.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.user.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

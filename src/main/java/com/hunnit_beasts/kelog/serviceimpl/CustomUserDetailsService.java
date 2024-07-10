@@ -8,7 +8,6 @@ import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

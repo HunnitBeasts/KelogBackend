@@ -22,7 +22,7 @@ public class QIncompletePost extends EntityPathBase<IncompletePost> {
 
     public static final QIncompletePost incompletePost = new QIncompletePost("incompletePost");
 
-    public final com.hunnit_beasts.kelog.post.entity.compositekey.QIncompletePostId id;
+    public final com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QIncompletePostId id;
 
     public final QPost post;
 
@@ -46,7 +46,7 @@ public class QIncompletePost extends EntityPathBase<IncompletePost> {
 
     public QIncompletePost(Class<? extends IncompletePost> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.post.entity.compositekey.QIncompletePostId(forProperty("id")) : null;
+        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QIncompletePostId(forProperty("id")) : null;
         this.post = inits.isInitialized("post") ? new QPost(forProperty("post"), inits.get("post")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }

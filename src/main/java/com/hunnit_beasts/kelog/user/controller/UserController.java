@@ -1,9 +1,9 @@
 package com.hunnit_beasts.kelog.user.controller;
 
-import com.hunnit_beasts.kelog.user.aop.Identification;
-import com.hunnit_beasts.kelog.user.dto.request.UserCreateRequestDTO;
-import com.hunnit_beasts.kelog.user.dto.response.UserCreateResponseDTO;
-import com.hunnit_beasts.kelog.user.service.AuthService;
+import com.hunnit_beasts.kelog.auth.aop.Identification;
+import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
+import com.hunnit_beasts.kelog.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

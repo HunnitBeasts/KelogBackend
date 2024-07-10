@@ -46,11 +46,11 @@ public class QPost extends EntityPathBase<Post> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
 
-    public final QSeriesPost seriesPost;
+    public final com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost seriesPost;
 
     public final StringPath shortContent = createString("shortContent");
 
-    public final QTagPost tagPost;
+    public final com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost tagPost;
 
     public final StringPath thumbImage = createString("thumbImage");
 
@@ -84,8 +84,8 @@ public class QPost extends EntityPathBase<Post> {
         this.likedPost = inits.isInitialized("likedPost") ? new QLikedPost(forProperty("likedPost"), inits.get("likedPost")) : null;
         this.postContent = inits.isInitialized("postContent") ? new QPostContent(forProperty("postContent"), inits.get("postContent")) : null;
         this.recentPost = inits.isInitialized("recentPost") ? new QRecentPost(forProperty("recentPost"), inits.get("recentPost")) : null;
-        this.seriesPost = inits.isInitialized("seriesPost") ? new QSeriesPost(forProperty("seriesPost"), inits.get("seriesPost")) : null;
-        this.tagPost = inits.isInitialized("tagPost") ? new QTagPost(forProperty("tagPost"), inits.get("tagPost")) : null;
+        this.seriesPost = inits.isInitialized("seriesPost") ? new com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost(forProperty("seriesPost"), inits.get("seriesPost")) : null;
+        this.tagPost = inits.isInitialized("tagPost") ? new com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost(forProperty("tagPost"), inits.get("tagPost")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

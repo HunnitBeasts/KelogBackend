@@ -5,6 +5,8 @@ import com.hunnit_beasts.kelog.common.entity.superclass.BaseEntity;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
+import com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost;
+import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import jakarta.persistence.*;
 import lombok.*;

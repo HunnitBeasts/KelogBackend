@@ -62,7 +62,7 @@ public class QUser extends EntityPathBase<User> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
 
-    public final ListPath<com.hunnit_beasts.kelog.post.entity.domain.Series, com.hunnit_beasts.kelog.post.entity.domain.QSeries> seriesList = this.<com.hunnit_beasts.kelog.post.entity.domain.Series, com.hunnit_beasts.kelog.post.entity.domain.QSeries>createList("seriesList", com.hunnit_beasts.kelog.post.entity.domain.Series.class, com.hunnit_beasts.kelog.post.entity.domain.QSeries.class, PathInits.DIRECT2);
+    public final ListPath<com.hunnit_beasts.kelog.postassist.entity.domain.Series, com.hunnit_beasts.kelog.postassist.entity.domain.QSeries> seriesList = this.<com.hunnit_beasts.kelog.postassist.entity.domain.Series, com.hunnit_beasts.kelog.postassist.entity.domain.QSeries>createList("seriesList", com.hunnit_beasts.kelog.postassist.entity.domain.Series.class, com.hunnit_beasts.kelog.postassist.entity.domain.QSeries.class, PathInits.DIRECT2);
 
     public final ListPath<SocialInfo, QSocialInfo> socialInfos = this.<SocialInfo, QSocialInfo>createList("socialInfos", SocialInfo.class, QSocialInfo.class, PathInits.DIRECT2);
 

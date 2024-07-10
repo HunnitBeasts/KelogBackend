@@ -2,7 +2,7 @@ package com.hunnit_beasts.kelog.post.entity.domain;
 
 
 import com.hunnit_beasts.kelog.common.entity.superclass.RegEntity;
-import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
+import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.RecentPostId;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import jakarta.persistence.*;
 import lombok.*;

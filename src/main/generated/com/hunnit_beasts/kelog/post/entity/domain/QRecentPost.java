@@ -24,7 +24,7 @@ public class QRecentPost extends EntityPathBase<RecentPost> {
 
     public final com.hunnit_beasts.kelog.common.entity.superclass.QRegEntity _super = new com.hunnit_beasts.kelog.common.entity.superclass.QRegEntity(this);
 
-    public final com.hunnit_beasts.kelog.post.entity.compositekey.QRecentPostId id;
+    public final com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QRecentPostId id;
 
     public final QPost post;
 
@@ -51,7 +51,7 @@ public class QRecentPost extends EntityPathBase<RecentPost> {
 
     public QRecentPost(Class<? extends RecentPost> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.post.entity.compositekey.QRecentPostId(forProperty("id")) : null;
+        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QRecentPostId(forProperty("id")) : null;
         this.post = inits.isInitialized("post") ? new QPost(forProperty("post"), inits.get("post")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }

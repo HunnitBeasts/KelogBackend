@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.post.repository.jpa;
 
-import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
+import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.PostViewCntId;
 import com.hunnit_beasts.kelog.post.entity.domain.PostViewCnt;
 import org.springframework.data.repository.CrudRepository;
 

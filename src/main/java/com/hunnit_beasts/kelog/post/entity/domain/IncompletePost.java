@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.post.entity.domain;
 
-import com.hunnit_beasts.kelog.post.entity.compositekey.IncompletePostId;
+import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.IncompletePostId;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import jakarta.persistence.*;
 

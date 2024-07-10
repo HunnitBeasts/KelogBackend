@@ -4,7 +4,7 @@ package com.hunnit_beasts.kelog.user.controller;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
-import com.hunnit_beasts.kelog.user.service.AuthenticatedService;
+import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

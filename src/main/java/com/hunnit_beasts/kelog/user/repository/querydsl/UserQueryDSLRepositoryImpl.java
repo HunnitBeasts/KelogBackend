@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.user.repository.querydsl;
 
-import com.hunnit_beasts.kelog.user.dto.response.UserCreateResponseDTO;
+import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.user.entity.domain.QUser;
 import com.hunnit_beasts.kelog.user.entity.domain.QUserIntro;
 import com.querydsl.core.types.Projections;

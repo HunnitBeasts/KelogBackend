@@ -5,9 +5,10 @@ import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.entity.superclass.BaseEntity;
 import com.hunnit_beasts.kelog.post.entity.domain.*;
-import com.hunnit_beasts.kelog.user.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.postassist.entity.domain.Series;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
-import com.hunnit_beasts.kelog.user.etc.CustomUserInfoDTO;
+import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

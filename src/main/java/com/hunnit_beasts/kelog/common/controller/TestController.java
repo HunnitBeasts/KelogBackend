@@ -2,7 +2,7 @@ package com.hunnit_beasts.kelog.common.controller;
 
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
-import com.hunnit_beasts.kelog.user.aop.Identification;
+import com.hunnit_beasts.kelog.auth.aop.Identification;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

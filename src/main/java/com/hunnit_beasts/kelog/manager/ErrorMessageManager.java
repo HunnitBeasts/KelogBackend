@@ -11,6 +11,6 @@ public class ErrorMessageManager {
     private final Environment environment;
 
     public String getMessages(String key){
-        return environment.getProperty("error.messages." + key);
+        return environment.getProperty("error.messages.ko" + key);
     }
 }

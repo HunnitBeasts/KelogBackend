@@ -59,15 +59,14 @@ public enum ErrorCode {
         this.status = status;
     }
 
-    private int checkStatus(String code){
-        if(code.startsWith("CODE U")) return 500;
-        if(code.startsWith("CODE A")) return 500;
-        if(code.startsWith("CODE B")) return 404;
-        if(code.startsWith("CODE C")) return 409;
-        if(code.startsWith("CODE D")) return 403;
-        if(code.startsWith("CODE E")) return 500;
-        if(code.startsWith("CODE F")) return 400;
-
-        return 500;
+    private int checkStatus(String code) {
+        return switch (code.substring(5, 6)) { // 'CODE U', 'CODE A' 등에서 'U', 'A' 등을 추출
+            case "U", "A", "E" -> 500;
+            case "B" -> 404;
+            case "C" -> 409;
+            case "D" -> 403;
+            case "F" -> 400;
+            default -> 500;
+        };
     }
 }

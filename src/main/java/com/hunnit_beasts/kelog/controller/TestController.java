@@ -51,11 +51,7 @@ public class TestController {
     @PostMapping("/print-errorcode-stacktrace-exception")
     public void printStackTraceErrorCodeExceptionTest(){
 
-        try {
-            throw new RuntimeException();
-        } catch (RuntimeException e) {
-            throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
-        }
+        throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
     }
 
     @PostMapping("/aop-type-error-test")

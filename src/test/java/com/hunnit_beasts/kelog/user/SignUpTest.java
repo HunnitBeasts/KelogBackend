@@ -29,7 +29,7 @@ class SignUpTest {
 
     @Test
     @DisplayName("회원가입")
-    void setup() throws Exception {
+    void signup() throws Exception {
     UserCreateRequestDTO dto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")

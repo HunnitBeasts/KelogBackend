@@ -4,6 +4,7 @@ import com.hunnit_beasts.kelog.dto.response.post.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.dto.response.post.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.entity.domain.QPost;
 import com.hunnit_beasts.kelog.entity.domain.QPostViewCnt;
+import com.hunnit_beasts.kelog.entity.domain.QSeriesPost;
 import com.hunnit_beasts.kelog.repository.querydsl.PostQueryDSLRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -63,5 +64,16 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .from(post)
                 .where(post.id.eq(id))
                 .fetchOne();
+    }
+
+    @Override
+    public Long findMaxOrderBySeriesId(Long seriesId) {
+        QSeriesPost seriesPost = QSeriesPost.seriesPost;
+        Long maxOrder = jpaQueryFactory
+                .select(seriesPost.seriesOrder.max())
+                .from(seriesPost)
+                .where(seriesPost.id.seriesId.eq(seriesId))
+                .fetchOne();
+        return maxOrder != null ? maxOrder : 0L;
     }
 }

@@ -29,6 +29,7 @@ public enum ErrorCode {
     POST_LIKE_DUPLICATION_ERROR("CODE C-003"),
     DUPLICATION_FOLLOW_ERROR("CODE C-004"),
     NOT_SUPPORTED_OS_ERROR("CODE C-005", 400),
+    DUPLICATION_SERIES_POST_ERROR("CODE C-006"),
 
     /*D error type: 잘못된 권한 에러, default status: 403*/
     NOT_SAME_USERID_ERROR("CODE D-001"),

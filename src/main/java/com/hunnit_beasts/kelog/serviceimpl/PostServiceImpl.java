@@ -8,6 +8,7 @@ import com.hunnit_beasts.kelog.dto.response.post.*;
 import com.hunnit_beasts.kelog.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.entity.compositekey.PostViewCntId;
 import com.hunnit_beasts.kelog.entity.compositekey.RecentPostId;
+import com.hunnit_beasts.kelog.entity.compositekey.SeriesPostId;
 import com.hunnit_beasts.kelog.entity.domain.*;
 import com.hunnit_beasts.kelog.enumeration.system.ErrorCode;
 import com.hunnit_beasts.kelog.handler.exception.ExpectException;
@@ -28,6 +29,7 @@ public class PostServiceImpl implements PostService {
     private final LikedPostJpaRepository likedPostJpaRepository;
     private final PostViewCntJpaRepository postViewCntJpaRepository;
     private final SeriesJpaRepository seriesJpaRepository;
+    private final SeriesPostJpaRepository seriesPostJpaRepository;
 
     private final PostQueryDSLRepository postQueryDSLRepository;
     private final RecentPostJpaRepository recentPostJpaRepository;
@@ -105,6 +107,22 @@ public class PostServiceImpl implements PostService {
         else
             throw new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR);
         return seriesId;
+    }
+
+    @Override
+    public PostAddResponseDTO seriesAddPost(Long postId, Long seriesId) {
+        Series series = seriesJpaRepository.findById(seriesId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SERIES_DATA_ERROR.getCode()));
+        Post post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
+        if(seriesPostJpaRepository.existsById(new SeriesPostId(seriesId,postId))){
+            throw new IllegalArgumentException(ErrorCode.DUPLICATION_SERIES_POST_ERROR.getCode());
+        }else {
+            Long maxOrder = postQueryDSLRepository.findMaxOrderBySeriesId(series.getId());
+            SeriesPost seriesPost = seriesPostJpaRepository.save(new SeriesPost(post,series,maxOrder));
+            return new PostAddResponseDTO(seriesPost);
+        }
+
     }
 
     @Override

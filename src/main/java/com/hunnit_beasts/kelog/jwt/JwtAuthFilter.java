@@ -1,6 +1,8 @@
 package com.hunnit_beasts.kelog.jwt;
 
 import com.hunnit_beasts.kelog.dto.convert.user.CustomUserDetails;
+import com.hunnit_beasts.kelog.handler.FilterExceptionHandler;
+import com.hunnit_beasts.kelog.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.serviceimpl.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +20,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
+    private final FilterExceptionHandler filterExceptionHandler;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -36,16 +39,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         Long id = jwtUtil.getId(token);
-        CustomUserDetails userDetails = customUserDetailsService.loadCustomUserByUsername(id);
 
-        if (userDetails == null) {
-            filterChain.doFilter(request,response);
+        try{
+            CustomUserDetails userDetails = customUserDetailsService.loadCustomUserByUsername(id);
+
+            if (userDetails == null) {
+                filterChain.doFilter(request,response);
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+        }catch (ExpectException e){
+            filterExceptionHandler.handleExpectException(response,e);
             return;
         }
-
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
         filterChain.doFilter(request,response);
 

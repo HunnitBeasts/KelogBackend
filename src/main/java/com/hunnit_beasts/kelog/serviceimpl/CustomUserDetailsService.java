@@ -23,7 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserJpaRepository userJpaRepository;
     private final ModelMapper mapper;
 
-    @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User loginUser = userJpaRepository.findByUserId(userId)

@@ -2,7 +2,7 @@ package com.hunnit_beasts.kelog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
-import com.hunnit_beasts.kelog.dto.request.user.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

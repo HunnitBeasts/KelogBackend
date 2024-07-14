@@ -124,4 +124,9 @@ public class PostServiceImpl implements PostService {
         Post updatedPost = postJpaRepository.save(post.changePost(dto));
         return postQueryDSLRepository.findPostUpdateResponseDTOById(updatedPost.getId());
     }
+
+    @Override
+    public PostViewCountResponseDTO viewCntInfos(Long postId) {
+        return postQueryDSLRepository.findViewCntInfosById(postId);
+    }
 }

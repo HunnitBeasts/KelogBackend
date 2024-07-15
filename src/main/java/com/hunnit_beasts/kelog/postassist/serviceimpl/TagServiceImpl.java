@@ -3,6 +3,7 @@ package com.hunnit_beasts.kelog.postassist.serviceimpl;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
+import com.hunnit_beasts.kelog.postassist.dto.response.AllTagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.TagCreateResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
 import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
@@ -45,5 +46,16 @@ public class TagServiceImpl implements TagService {
         Iterable<TagPost> savedTagPosts = tagPostJpaRepository.saveAll(tagPosts);
         return StreamSupport.stream(savedTagPosts.spliterator(), false)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AllTagsResponseDTO allTags() {
+        Iterable<Tag> allTags = tagJpaRepository.findAll();
+
+        List<String> tagNames = StreamSupport.stream(allTags.spliterator(), false)
+                .map(Tag::getTagName)
+                .collect(Collectors.toList());
+
+        return new AllTagsResponseDTO(tagNames);
     }
 }

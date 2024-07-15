@@ -1,14 +1,11 @@
 package com.hunnit_beasts.kelog.post;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.request.PostViewCntRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
@@ -21,11 +18,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,9 +37,6 @@ class ViewCountTest {
 
     @Autowired
     PostService postService;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Autowired
     JwtUtil jwtUtil;
@@ -95,8 +87,8 @@ class ViewCountTest {
     @DisplayName("조회수 통계")
     void plusPostViewCnt() throws Exception {
         mockMvc.perform(get("/view-cnt/{post-id}", postId)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token))
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.allDayView").value(2))
                 .andExpect(jsonPath("$.todayView").value(2))
@@ -105,6 +97,7 @@ class ViewCountTest {
                 .andExpect(jsonPath("$.views", hasSize(1))) // 사이즈
                 .andExpect(jsonPath("$.views[0].viewCnt").value(2)) // [0] 번째 값
                 .andExpect(jsonPath("$.views[0].regDate").value("2024-07-15T00:00:00"))
+                .andExpect(jsonPath("$.regDate").isString())
                 .andReturn();
     }
 }

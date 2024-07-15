@@ -68,6 +68,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     @Override
     public PostViewCountResponseDTO findViewCntInfosById(Long id) {
         QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
+        QPost post = QPost.post;
 
         LocalDateTime now = LocalDate.now().atStartOfDay();
         Long totalViewCnt = findTotalViewCntById(id);
@@ -80,8 +81,13 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .from(postViewCnt)
                 .where(postViewCnt.id.postId.eq(id))
                 .fetch();
+        LocalDateTime regDate = jpaQueryFactory
+                .select(post.regDate)
+                .from(post)
+                .where(post.id.eq(id))
+                .fetchOne();
 
-        return new PostViewCountResponseDTO(totalViewCnt,todayViewCnt,yesterdayViewCnt,views);
+        return new PostViewCountResponseDTO(totalViewCnt,todayViewCnt,yesterdayViewCnt,views,regDate);
     }
 
     private Long todayViewCnt(Long postId){

@@ -1,8 +1,10 @@
 package com.hunnit_beasts.kelog.post.repository.querydsl;
 
 import com.hunnit_beasts.kelog.post.dto.convert.PostInfos;
+import com.hunnit_beasts.kelog.post.dto.info.ViewCntInfo;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
+import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
 import com.hunnit_beasts.kelog.post.entity.domain.QPost;
 import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
@@ -11,8 +13,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+
 import java.util.List;
 import java.util.Objects;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,12 +56,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
 
     @Override
     public Long findTotalViewCntById(Long id) {
-        QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
-        return jpaQueryFactory
-                .select(postViewCnt.viewCnt.sum())
-                .from(postViewCnt)
-                .where(postViewCnt.id.postId.eq(id))
-                .fetchOne();
+        return todayViewCnt(id);
     }
 
     @Override
@@ -73,6 +74,49 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                         post.postContent.content))
                 .from(post)
                 .where(post.id.eq(id))
+                .fetchOne();
+    }
+
+    @Override
+    public PostViewCountResponseDTO findViewCntInfosById(Long id) {
+        QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
+        QPost post = QPost.post;
+
+        LocalDateTime now = LocalDate.now().atStartOfDay();
+        Long totalViewCnt = findTotalViewCntById(id);
+        Long todayViewCnt = targetDayViewCnt(id, now);
+        Long yesterdayViewCnt = targetDayViewCnt(id, now.minusDays(1));
+        List<ViewCntInfo> views = jpaQueryFactory
+                .select(Projections.constructor(ViewCntInfo.class,
+                        postViewCnt.viewCnt,
+                        postViewCnt.id.regDate))
+                .from(postViewCnt)
+                .where(postViewCnt.id.postId.eq(id))
+                .fetch();
+        LocalDateTime regDate = jpaQueryFactory
+                .select(post.regDate)
+                .from(post)
+                .where(post.id.eq(id))
+                .fetchOne();
+
+        return new PostViewCountResponseDTO(totalViewCnt,todayViewCnt,yesterdayViewCnt,views,regDate);
+    }
+
+    private Long todayViewCnt(Long postId){
+        QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
+        return jpaQueryFactory
+                .select(postViewCnt.viewCnt.sum())
+                .from(postViewCnt)
+                .where(postViewCnt.id.postId.eq(postId))
+                .fetchOne();
+    }
+
+    private Long targetDayViewCnt(Long postId, LocalDateTime day){
+        QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
+        return jpaQueryFactory
+                .select(postViewCnt.viewCnt)
+                .from(postViewCnt)
+                .where(postViewCnt.id.postId.eq(postId).and(postViewCnt.id.regDate.eq(day)))
                 .fetchOne();
     }
 

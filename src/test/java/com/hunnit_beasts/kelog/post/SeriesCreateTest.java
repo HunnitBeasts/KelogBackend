@@ -2,12 +2,12 @@ package com.hunnit_beasts.kelog.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
-import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
-import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
+import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
+import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

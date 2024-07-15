@@ -1,9 +1,9 @@
 package com.hunnit_beasts.kelog.auth.aop;
 
+import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.service.ValidateService;
-import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;

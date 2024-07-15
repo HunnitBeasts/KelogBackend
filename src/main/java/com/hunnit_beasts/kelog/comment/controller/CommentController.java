@@ -1,13 +1,13 @@
 package com.hunnit_beasts.kelog.comment.controller;
 
+import com.hunnit_beasts.kelog.auth.aop.Identification;
+import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentUpdateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
-import com.hunnit_beasts.kelog.auth.aop.Identification;
-import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

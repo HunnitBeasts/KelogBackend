@@ -9,7 +9,6 @@ import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.postassist.dto.request.PostAddRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.postassist.service.SeriesService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
@@ -23,14 +22,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-class AddPostTest {
+class PopPostTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -50,15 +49,11 @@ class AddPostTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private Long userId;
     private Long seriesId;
     private String token;
     private Long firstPostId;
-    private Long secondPostId;
-    private Long eUserId;
     private Long ePostId;
     private Long eSeriesId;
-    private String eToken;
 
     @BeforeEach
     void setUp(){
@@ -70,7 +65,7 @@ class AddPostTest {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(userDto).getId();
+        Long userId = authService.signUp(userDto).getId();
 
         SeriesCreateRequestDTO seriesDto = SeriesCreateRequestDTO.builder()
                 .seriesName("테스트 시리즈 이름")
@@ -100,18 +95,6 @@ class AddPostTest {
 
         firstPostId = postService.postCreate(userId, fPostDto).getId();
 
-        PostCreateRequestDTO sPostDto = PostCreateRequestDTO.builder()
-                .title("testTitle")
-                .type(PostType.NORMAL)
-                .thumbImage("testThumbImage")
-                .isPublic(Boolean.TRUE)
-                .shortContent("testShortContent")
-                .url("testUrl")
-                .content("testContent")
-                .build();
-
-        secondPostId = postService.postCreate(userId, sPostDto).getId();
-
         UserCreateRequestDTO eUserDto = UserCreateRequestDTO.builder()
                 .userId("testUserId1")
                 .password("testPassword1")
@@ -120,7 +103,7 @@ class AddPostTest {
                 .email("testEmail1")
                 .build();
 
-        eUserId = authService.signUp(eUserDto).getId();
+        Long eUserId = authService.signUp(eUserDto).getId();
 
         PostCreateRequestDTO ePostDto = PostCreateRequestDTO.builder()
                 .title("testTitle")
@@ -141,134 +124,61 @@ class AddPostTest {
 
         eSeriesId = seriesService.createSeries(eUserId,eSeriesDto).getId();
 
+        seriesService.seriesAddPost(firstPostId,seriesId);
+
     }
 
     @Test
-    @DisplayName("시리즈에 포스트 추가")
-    void seriesAddPost() throws Exception {
-        PostAddRequestDTO dto = PostAddRequestDTO.builder()
-                .postId(firstPostId)
-                .seriesId(seriesId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/series/post")
+    @DisplayName("시리즈에 있는 포스트 삭제 추가")
+    void seriesPopPost() throws Exception {
+        mockMvc.perform(delete("/series/post/{series-id}/{post-id}",seriesId, firstPostId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.postId").value(firstPostId))
                 .andExpect(jsonPath("$.seriesId").value(seriesId))
-                .andExpect(jsonPath("$.seriesOrder").value(1))
                 .andReturn();
     }
 
     @Test
-    @DisplayName("중복 포스트")
+    @DisplayName("없는 상태서 또 삭제")
     void seriesAddPostDuple() throws Exception {
-        PostAddRequestDTO dto = PostAddRequestDTO.builder()
-                .postId(firstPostId)
-                .seriesId(seriesId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/series/post")
+        mockMvc.perform(delete("/series/post/{series-id}/{post-id}",seriesId, firstPostId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.postId").value(firstPostId))
                 .andExpect(jsonPath("$.seriesId").value(seriesId))
-                .andExpect(jsonPath("$.seriesOrder").value(1))
                 .andReturn();
 
-        mockMvc.perform(post("/series/post")
+        mockMvc.perform(delete("/series/post/{series-id}/{post-id}",seriesId, firstPostId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andReturn();
     }
 
     @Test
-    @DisplayName("시리즈에 포스트 두개 추가")
-    void seriesAddTwoPost() throws Exception {
-        PostAddRequestDTO dto = PostAddRequestDTO.builder()
-                .postId(firstPostId)
-                .seriesId(seriesId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/series/post")
+    @DisplayName("시리즈 본인꺼 아님")
+    void notMySeriesPopPost() throws Exception {
+        mockMvc.perform(delete("/series/post/{series-id}/{post-id}",eSeriesId, firstPostId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.postId").value(firstPostId))
-                .andExpect(jsonPath("$.seriesId").value(seriesId))
-                .andExpect(jsonPath("$.seriesOrder").value(1))
-                .andReturn();
-
-        PostAddRequestDTO dto2 = PostAddRequestDTO.builder()
-                .postId(secondPostId)
-                .seriesId(seriesId)
-                .build();
-
-        String jsonContent2 = objectMapper.writeValueAsString(dto2);
-
-        mockMvc.perform(post("/series/post")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent2))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.postId").value(secondPostId))
-                .andExpect(jsonPath("$.seriesId").value(seriesId))
-                .andExpect(jsonPath("$.seriesOrder").value(2))
-                .andReturn();
-    }
-
-    @Test
-    @DisplayName("본인 시리즈 아닐 때시리즈에 포스트 추가")
-    void notMySeriesAddPost() throws Exception {
-        PostAddRequestDTO dto = PostAddRequestDTO.builder()
-                .postId(firstPostId)
-                .seriesId(eSeriesId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/series/post")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andReturn();
     }
 
     @Test
-    @DisplayName("본인 포스트 아닐 때시리즈에 포스트 추가")
-    void seriesAddNotMyPost() throws Exception {
-        PostAddRequestDTO dto = PostAddRequestDTO.builder()
-                .postId(eSeriesId)
-                .seriesId(seriesId)
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/series/post")
+    @DisplayName("포스트 본인꺼 아님")
+    void seriesPopNotMyPost() throws Exception {
+        mockMvc.perform(delete("/series/post/{series-id}/{post-id}",seriesId, ePostId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andReturn();
     }

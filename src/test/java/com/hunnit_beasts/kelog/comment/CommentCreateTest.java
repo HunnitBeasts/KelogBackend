@@ -1,15 +1,15 @@
 package com.hunnit_beasts.kelog.comment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
+import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
+import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
-import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
-import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
-import com.hunnit_beasts.kelog.auth.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,10 +1,10 @@
 package com.hunnit_beasts.kelog.auth.serviceimpl;
 
+import com.hunnit_beasts.kelog.auth.etc.CustomUserDetails;
+import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
-import com.hunnit_beasts.kelog.auth.etc.CustomUserDetails;
-import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

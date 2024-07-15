@@ -1,12 +1,12 @@
 package com.hunnit_beasts.kelog.postassist.controller;
 
+import com.hunnit_beasts.kelog.auth.aop.Identification;
+import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.postassist.dto.request.PostAddRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
-import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.auth.aop.Identification;
-import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.postassist.service.SeriesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,8 +56,11 @@ public class SeriesController {
     }
 
     @DeleteMapping("/post/{series-id}/{post-id}")
-    public void deleteSeriesPost(@PathVariable(value = "series-id") Long seriesId,
-                                 @PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    @Identification
+    public ResponseEntity<PostPopResponseDTO> deleteSeriesPost(@PathVariable(value = "series-id") Long seriesId,
+                                                               @PathVariable(value = "post-id") Long postId,
+                                                               Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(seriesService.seriesPopPost(postId,seriesId));
     }
 }

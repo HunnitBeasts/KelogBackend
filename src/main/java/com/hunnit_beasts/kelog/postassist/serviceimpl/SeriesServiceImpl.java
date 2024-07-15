@@ -4,9 +4,9 @@ import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
-import com.hunnit_beasts.kelog.post.repository.querydsl.PostQueryDSLRepository;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.SeriesPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Series;
@@ -53,9 +53,9 @@ public class SeriesServiceImpl implements SeriesService {
     @Override
     public PostAddResponseDTO seriesAddPost(Long postId, Long seriesId) {
         Series series = seriesJpaRepository.findById(seriesId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SERIES_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR));
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_POST_DATA_ERROR.getCode()));
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         if(seriesPostJpaRepository.existsById(new SeriesPostId(seriesId,postId))){
             throw new ExpectException(ErrorCode.DUPLICATION_SERIES_POST_ERROR);
         }else {
@@ -64,5 +64,19 @@ public class SeriesServiceImpl implements SeriesService {
             return new PostAddResponseDTO(seriesPost);
         }
 
+    }
+
+    @Override
+    public PostPopResponseDTO seriesPopPost(Long postId, Long seriesId) {
+        Series series = seriesJpaRepository.findById(seriesId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR));
+        Post post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
+        SeriesPostId id = new SeriesPostId(seriesId,postId);
+        if(seriesPostJpaRepository.existsById(id)){
+            seriesPostJpaRepository.deleteById(id);
+            return new PostPopResponseDTO(post.getId(),series.getId());
+        }else
+            throw new ExpectException(ErrorCode.NOT_EXIST_SERIES_POST_ERROR);
     }
 }

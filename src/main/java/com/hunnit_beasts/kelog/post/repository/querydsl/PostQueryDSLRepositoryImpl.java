@@ -6,7 +6,6 @@ import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
 import com.hunnit_beasts.kelog.post.entity.domain.QPost;
 import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
-import com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

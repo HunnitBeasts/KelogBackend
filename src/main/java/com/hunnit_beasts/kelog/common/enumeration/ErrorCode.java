@@ -30,6 +30,7 @@ public enum ErrorCode {
     DUPLICATION_FOLLOW_ERROR("CODE C-004"),
     NOT_SUPPORTED_OS_ERROR("CODE C-005", 400),
     DUPLICATION_SERIES_POST_ERROR("CODE C-006"),
+    NOT_EXIST_SERIES_POST_ERROR("CODE C-007"),
 
     /*D error type: 잘못된 권한 에러, default status: 403*/
     NOT_SAME_USERID_ERROR("CODE D-001"),

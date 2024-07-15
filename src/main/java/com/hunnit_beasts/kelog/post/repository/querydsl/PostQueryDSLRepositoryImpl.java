@@ -1,13 +1,18 @@
 package com.hunnit_beasts.kelog.post.repository.querydsl;
 
+import com.hunnit_beasts.kelog.post.dto.convert.PostInfos;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.entity.domain.QPost;
 import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
+import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,8 +23,9 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     @Override
     public PostCreateResponseDTO findPostCreateResponseDTOById(Long id) {
         QPost post = QPost.post;
-        return jpaQueryFactory
-                .select(Projections.constructor(PostCreateResponseDTO.class,
+        QTagPost tagPost = QTagPost.tagPost;
+        PostInfos postInfos = jpaQueryFactory
+                .select(Projections.constructor(PostInfos.class,
                         post.id,
                         post.user.id,
                         post.title,
@@ -34,6 +40,12 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .from(post)
                 .where(post.id.eq(id))
                 .fetchOne();
+        List<String> tags = jpaQueryFactory
+                .select(tagPost.tag.tagName)
+                .from(tagPost)
+                .where(tagPost.id.postId.eq(id))
+                .fetch();
+        return new PostCreateResponseDTO(Objects.requireNonNull(postInfos),tags);
     }
 
     @Override

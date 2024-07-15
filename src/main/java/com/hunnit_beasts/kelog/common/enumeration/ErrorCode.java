@@ -22,6 +22,7 @@ public enum ErrorCode {
     NO_COMMENT_DATA_ERROR("CODE B-005"),
     NO_FOLLOW_DATA_ERROR("CODE B-006"),
     NO_SERIES_DATA_ERROR("CODE B-007"),
+    NO_TAG_DATA_ERROR("CODE B-008"),
 
     /*C error type: 잘못된 입력 에러, default status: 409*/
     FILE_SIZE_OVER_ERROR("CODE C-001",413),

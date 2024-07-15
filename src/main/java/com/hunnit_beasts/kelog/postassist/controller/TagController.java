@@ -26,7 +26,7 @@ public class TagController {
     public ResponseEntity<TagCreateResponseDTO> addTag(
                                                 @RequestBody TagCreateRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(tagService.createTag(dto));
+                .body(tagService.createTag(dto.getTagName()));
     }
 
     @GetMapping

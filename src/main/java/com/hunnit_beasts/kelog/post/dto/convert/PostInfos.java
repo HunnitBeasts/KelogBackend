@@ -1,18 +1,16 @@
-package com.hunnit_beasts.kelog.post.dto.request;
+package com.hunnit_beasts.kelog.post.dto.convert;
 
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class PostCreateRequestDTO {
+public class PostInfos {
+    private Long id;
+    private Long userId;
     private String title;
     private PostType type;
     private String thumbImage;
@@ -20,5 +18,6 @@ public class PostCreateRequestDTO {
     private String shortContent;
     private String url;
     private String content;
-    private List<String> tags;
+    private LocalDateTime regDate;
+    private LocalDateTime modDate;
 }

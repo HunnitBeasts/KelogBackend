@@ -60,7 +60,7 @@ class UserSeriesReadTest {
     @Test
     @DisplayName("유저별 시리즈 읽기")
     void userSeriesRead() throws Exception {
-        mockMvc.perform(get("/series/{user-id}",userId)
+        mockMvc.perform(get("/series/{user-id}/users",userId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.seriesList").isArray())

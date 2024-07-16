@@ -4,11 +4,7 @@ import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.postassist.dto.request.PostAddRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.SeriesReadResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.*;
 import com.hunnit_beasts.kelog.postassist.service.SeriesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +26,7 @@ public class SeriesController {
                 .body(seriesService.readSeries(seriesId));
     }
 
-    @GetMapping("/{user-id}")
+    @GetMapping("/{user-id}/users")
     public ResponseEntity<UserSeriesResponseDTO> readUserSeries(@PathVariable(value = "user-id") Long userId){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(seriesService.readUserSeries(userId));

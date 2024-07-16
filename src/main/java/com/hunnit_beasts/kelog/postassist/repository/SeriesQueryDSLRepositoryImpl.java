@@ -1,10 +1,9 @@
 package com.hunnit_beasts.kelog.postassist.repository;
 
-import com.hunnit_beasts.kelog.postassist.dto.convert.UserSeriesInfos;
-import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
-import com.hunnit_beasts.kelog.postassist.entity.domain.QSeries;
 import com.hunnit_beasts.kelog.postassist.dto.convert.SeriesPostInfos;
+import com.hunnit_beasts.kelog.postassist.dto.convert.UserSeriesInfos;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesReadResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QSeries;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost;
 import com.querydsl.core.types.Projections;

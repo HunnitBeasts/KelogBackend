@@ -19,6 +19,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -96,7 +99,7 @@ class ViewCountTest {
                 .andExpect(jsonPath("$.views").isArray()) // 배열인지 여부
                 .andExpect(jsonPath("$.views", hasSize(1))) // 사이즈
                 .andExpect(jsonPath("$.views[0].viewCnt").value(2)) // [0] 번째 값
-                .andExpect(jsonPath("$.views[0].regDate").value("2024-07-15T00:00:00"))
+                .andExpect(jsonPath("$.views[0].regDate").value(LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
                 .andExpect(jsonPath("$.regDate").isString())
                 .andReturn();
     }

@@ -13,5 +13,6 @@ public class AlarmAspect{
 
     @After("@annotation(com.hunnit_beasts.kelog.common.aop.Alarm)")
     public void alarm(JoinPoint joinPoint){
+
     }
 }

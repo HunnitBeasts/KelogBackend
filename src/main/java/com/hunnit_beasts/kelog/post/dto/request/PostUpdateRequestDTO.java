@@ -3,6 +3,8 @@ package com.hunnit_beasts.kelog.post.dto.request;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -16,4 +18,5 @@ public class PostUpdateRequestDTO {
     private String shortContent;
     private String url;
     private String content;
+    private List<String> tags;
 }

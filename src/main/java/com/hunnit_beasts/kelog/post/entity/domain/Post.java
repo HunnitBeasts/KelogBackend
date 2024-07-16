@@ -97,6 +97,7 @@ public class Post extends BaseEntity {
                     .build();
         }
         this.url = dto.getUrl() != null ? dto.getUrl() : url;
+
         return this;
     }
 }

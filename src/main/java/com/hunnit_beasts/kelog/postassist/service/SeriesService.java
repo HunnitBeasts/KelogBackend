@@ -5,9 +5,11 @@ import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.SeriesReadResponseDTO;
 
 public interface SeriesService {
     SeriesCreateResponseDTO createSeries(Long userId, SeriesCreateRequestDTO dto);
+    SeriesReadResponseDTO readSeries(Long seriesId);
     Long deleteSeries(Long seriesId);
     UserSeriesResponseDTO readUserSeries(Long userId);
     PostAddResponseDTO seriesAddPost(Long postId, Long seriesId);

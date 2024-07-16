@@ -9,6 +9,7 @@ import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.SeriesReadResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.SeriesPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Series;
 import com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost;
@@ -40,6 +41,11 @@ public class SeriesServiceImpl implements SeriesService {
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         Series series = seriesJpaRepository.save(new Series(user, dto));
         return new SeriesCreateResponseDTO(series);
+    }
+
+    @Override
+    public SeriesReadResponseDTO readSeries(Long seriesId) {
+        return seriesQueryDSLRepository.findSeriesReadResponseDTOById(seriesId);
     }
 
     @Override

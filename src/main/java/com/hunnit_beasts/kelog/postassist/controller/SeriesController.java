@@ -7,6 +7,7 @@ import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
 import com.hunnit_beasts.kelog.postassist.service.SeriesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,12 @@ public class SeriesController {
     @GetMapping("/{post-id}")
     public void readSeries(@PathVariable(value = "post-id") Long postId) {
         throw new UnsupportedOperationException();
+    }
+
+    @GetMapping("/{user-id}")
+    public ResponseEntity<UserSeriesResponseDTO> readUserSeries(@PathVariable(value = "user-id") Long userId){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(seriesService.readUserSeries(userId));
     }
 
     @PostMapping

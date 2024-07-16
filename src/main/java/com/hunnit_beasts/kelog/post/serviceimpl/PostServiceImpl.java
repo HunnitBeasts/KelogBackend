@@ -19,11 +19,14 @@ import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.PostViewCntId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.RecentPostId;
+import com.hunnit_beasts.kelog.postassist.service.TagService;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +41,22 @@ public class PostServiceImpl implements PostService {
     private final PostQueryDSLRepository postQueryDSLRepository;
     private final RecentPostJpaRepository recentPostJpaRepository;
 
+    private final TagService tagService;
+
     @Override
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
         User creator = userJpaRepository.findById(userId)
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         Post createPostEntity = new Post(dto,creator);
         Post createdPost = postJpaRepository.save(createPostEntity);
+        if(dto.getTags() != null)
+            tagInsert(dto.getTags(), createdPost);
         return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
+    }
+
+    private void tagInsert(List<String> tags, Post post){
+        for (String tag : tags) tagService.createTag(tag);
+        tagService.addTagPost(tags, post);
     }
 
     @Override
@@ -121,5 +133,10 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         Post updatedPost = postJpaRepository.save(post.changePost(dto));
         return postQueryDSLRepository.findPostUpdateResponseDTOById(updatedPost.getId());
+    }
+
+    @Override
+    public PostViewCountResponseDTO viewCntInfos(Long postId) {
+        return postQueryDSLRepository.findViewCntInfosById(postId);
     }
 }

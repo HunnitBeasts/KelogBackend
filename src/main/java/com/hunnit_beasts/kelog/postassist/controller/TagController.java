@@ -1,6 +1,7 @@
 package com.hunnit_beasts.kelog.postassist.controller;
 
 import com.hunnit_beasts.kelog.postassist.dto.request.TagCreateRequestDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.AllTagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.TagCreateResponseDTO;
 import com.hunnit_beasts.kelog.postassist.service.TagService;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,13 @@ public class TagController {
     public ResponseEntity<TagCreateResponseDTO> addTag(
                                                 @RequestBody TagCreateRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(tagService.createTag(dto));
+                .body(tagService.createTag(dto.getTagName()));
     }
 
     @GetMapping
-    public void allTags() {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<AllTagsResponseDTO> allTags() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(tagService.allTags());
     }
 
 }

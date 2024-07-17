@@ -74,7 +74,7 @@ public class User extends BaseEntity {
     private final List<Series> seriesList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<SocialInfo> socialInfos = new ArrayList<>();
+    private final List<Social> socials = new ArrayList<>();
 
     //복합키를 사용하는 클래스들과의 매핑(alarm, follwer 등등)
 

@@ -6,6 +6,9 @@ import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.*;
+import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.entity.domain.PostViewCnt;
@@ -16,20 +19,12 @@ import com.hunnit_beasts.kelog.post.repository.jpa.PostViewCntJpaRepository;
 import com.hunnit_beasts.kelog.post.repository.jpa.RecentPostJpaRepository;
 import com.hunnit_beasts.kelog.post.repository.querydsl.PostQueryDSLRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
-import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
-import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
-import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
-import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
 import com.hunnit_beasts.kelog.postassist.service.TagService;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

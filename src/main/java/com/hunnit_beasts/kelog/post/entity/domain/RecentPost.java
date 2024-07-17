@@ -23,7 +23,7 @@ public class RecentPost extends RegEntity {
     private User user;
 
     @MapsId("postId")
-    @OneToOne // m TO 1
+    @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 

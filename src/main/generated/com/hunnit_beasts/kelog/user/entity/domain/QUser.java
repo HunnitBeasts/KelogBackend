@@ -42,8 +42,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final ListPath<com.hunnit_beasts.kelog.post.entity.domain.IncompletePost, com.hunnit_beasts.kelog.post.entity.domain.QIncompletePost> incompletePostUsers = this.<com.hunnit_beasts.kelog.post.entity.domain.IncompletePost, com.hunnit_beasts.kelog.post.entity.domain.QIncompletePost>createList("incompletePostUsers", com.hunnit_beasts.kelog.post.entity.domain.IncompletePost.class, com.hunnit_beasts.kelog.post.entity.domain.QIncompletePost.class, PathInits.DIRECT2);
-
     public final StringPath kelogName = createString("kelogName");
 
     public final ListPath<com.hunnit_beasts.kelog.post.entity.domain.LikedPost, com.hunnit_beasts.kelog.post.entity.domain.QLikedPost> LikedPostUsers = this.<com.hunnit_beasts.kelog.post.entity.domain.LikedPost, com.hunnit_beasts.kelog.post.entity.domain.QLikedPost>createList("LikedPostUsers", com.hunnit_beasts.kelog.post.entity.domain.LikedPost.class, com.hunnit_beasts.kelog.post.entity.domain.QLikedPost.class, PathInits.DIRECT2);

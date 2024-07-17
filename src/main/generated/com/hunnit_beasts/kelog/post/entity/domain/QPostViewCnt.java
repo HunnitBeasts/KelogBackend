@@ -22,7 +22,7 @@ public class QPostViewCnt extends EntityPathBase<PostViewCnt> {
 
     public static final QPostViewCnt postViewCnt = new QPostViewCnt("postViewCnt");
 
-    public final com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QPostViewCntId id;
+    public final com.hunnit_beasts.kelog.post.entity.compositekey.QPostViewCntId id;
 
     public final QPost post;
 
@@ -46,7 +46,7 @@ public class QPostViewCnt extends EntityPathBase<PostViewCnt> {
 
     public QPostViewCnt(Class<? extends PostViewCnt> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QPostViewCntId(forProperty("id")) : null;
+        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.post.entity.compositekey.QPostViewCntId(forProperty("id")) : null;
         this.post = inits.isInitialized("post") ? new QPost(forProperty("post"), inits.get("post")) : null;
     }
 

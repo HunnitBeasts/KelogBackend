@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.post.entity.domain;
 
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.PostViewCntId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;

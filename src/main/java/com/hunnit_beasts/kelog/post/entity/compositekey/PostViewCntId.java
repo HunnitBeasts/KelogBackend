@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.post.entity.compositekey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

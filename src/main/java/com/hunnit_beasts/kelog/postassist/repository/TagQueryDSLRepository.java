@@ -7,4 +7,5 @@ import java.util.List;
 public interface TagQueryDSLRepository {
     List<Tag> findUnusedTags();
     List<String> findTagNameByPostId(Long postId);
+    List<String> findUserTagsByUserId(Long userId);
 }

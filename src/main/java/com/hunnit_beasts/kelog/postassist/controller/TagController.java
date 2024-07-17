@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.postassist.controller;
 
-import com.hunnit_beasts.kelog.postassist.dto.response.AllTagsResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.TagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,12 +18,13 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping("/{user-id}")
-    public void tagList(@PathVariable(value = "user-id") Long userId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<TagsResponseDTO> tagList(@PathVariable(value = "user-id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(tagService.userTags(userId));
     }
 
     @GetMapping
-    public ResponseEntity<AllTagsResponseDTO> allTags() {
+    public ResponseEntity<TagsResponseDTO> allTags() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tagService.allTags());
     }

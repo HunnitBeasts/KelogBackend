@@ -24,11 +24,16 @@ import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Log4j2
 public class PostServiceImpl implements PostService {
 
     private final PostJpaRepository postJpaRepository;
@@ -41,7 +46,7 @@ public class PostServiceImpl implements PostService {
 
     private final TagService tagService;
 
-    @Transactional
+    @Override
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
         User creator = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
@@ -126,7 +131,17 @@ public class PostServiceImpl implements PostService {
     public PostUpdateResponseDTO postUpdate(Long postId, PostUpdateRequestDTO dto) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        Post updatedPost = postJpaRepository.save(post.changePost(dto));
+
+        Post updatedPost = post.changePost(dto);
+
+        Set<String> existingTags = tagService.getExistingTags(post.getId());
+        Set<String> newTags = new HashSet<>(dto.getTags());
+
+        tagService.removeDeletedTags(updatedPost.getId(), existingTags, newTags);
+        tagService.addNewTags(updatedPost, existingTags, newTags);
+
+        postJpaRepository.save(updatedPost);
+
         return postQueryDSLRepository.findPostUpdateResponseDTOById(updatedPost.getId());
     }
 

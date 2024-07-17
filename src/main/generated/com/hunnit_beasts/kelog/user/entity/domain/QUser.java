@@ -42,8 +42,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final ListPath<com.hunnit_beasts.kelog.post.entity.domain.IncompletePost, com.hunnit_beasts.kelog.post.entity.domain.QIncompletePost> incompletePostUsers = this.<com.hunnit_beasts.kelog.post.entity.domain.IncompletePost, com.hunnit_beasts.kelog.post.entity.domain.QIncompletePost>createList("incompletePostUsers", com.hunnit_beasts.kelog.post.entity.domain.IncompletePost.class, com.hunnit_beasts.kelog.post.entity.domain.QIncompletePost.class, PathInits.DIRECT2);
-
     public final StringPath kelogName = createString("kelogName");
 
     public final ListPath<com.hunnit_beasts.kelog.post.entity.domain.LikedPost, com.hunnit_beasts.kelog.post.entity.domain.QLikedPost> LikedPostUsers = this.<com.hunnit_beasts.kelog.post.entity.domain.LikedPost, com.hunnit_beasts.kelog.post.entity.domain.QLikedPost>createList("LikedPostUsers", com.hunnit_beasts.kelog.post.entity.domain.LikedPost.class, com.hunnit_beasts.kelog.post.entity.domain.QLikedPost.class, PathInits.DIRECT2);
@@ -64,7 +62,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<com.hunnit_beasts.kelog.postassist.entity.domain.Series, com.hunnit_beasts.kelog.postassist.entity.domain.QSeries> seriesList = this.<com.hunnit_beasts.kelog.postassist.entity.domain.Series, com.hunnit_beasts.kelog.postassist.entity.domain.QSeries>createList("seriesList", com.hunnit_beasts.kelog.postassist.entity.domain.Series.class, com.hunnit_beasts.kelog.postassist.entity.domain.QSeries.class, PathInits.DIRECT2);
 
-    public final ListPath<SocialInfo, QSocialInfo> socialInfos = this.<SocialInfo, QSocialInfo>createList("socialInfos", SocialInfo.class, QSocialInfo.class, PathInits.DIRECT2);
+    public final ListPath<Social, QSocial> socials = this.<Social, QSocial>createList("socials", Social.class, QSocial.class, PathInits.DIRECT2);
 
     public final ListPath<com.hunnit_beasts.kelog.common.entity.domain.Alarm, com.hunnit_beasts.kelog.common.entity.domain.QAlarm> targets = this.<com.hunnit_beasts.kelog.common.entity.domain.Alarm, com.hunnit_beasts.kelog.common.entity.domain.QAlarm>createList("targets", com.hunnit_beasts.kelog.common.entity.domain.Alarm.class, com.hunnit_beasts.kelog.common.entity.domain.QAlarm.class, PathInits.DIRECT2);
 

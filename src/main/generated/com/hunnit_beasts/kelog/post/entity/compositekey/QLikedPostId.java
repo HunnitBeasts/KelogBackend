@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.post.entity.compositekey;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEmbeddableSerializer")
 public class QLikedPostId extends BeanPath<LikedPostId> {
 
-    private static final long serialVersionUID = 1270402162L;
+    private static final long serialVersionUID = -244434573L;
 
     public static final QLikedPostId likedPostId = new QLikedPostId("likedPostId");
 

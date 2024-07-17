@@ -2,24 +2,35 @@ package com.hunnit_beasts.kelog.user.serviceimpl;
 
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
+import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
 import com.hunnit_beasts.kelog.user.entity.compositekey.FollowerId;
+import com.hunnit_beasts.kelog.user.entity.compositekey.SocialInfoId;
 import com.hunnit_beasts.kelog.user.entity.domain.Follower;
+import com.hunnit_beasts.kelog.user.entity.domain.Social;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.FollowerJpaRepository;
+import com.hunnit_beasts.kelog.user.repository.jpa.SocialJpaRepository;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
+import com.hunnit_beasts.kelog.user.repository.querydsl.UserQueryDSLRepository;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final FollowerJpaRepository followerJpaRepository;
+    private final SocialJpaRepository socialJpaRepository;
     private final UserJpaRepository userJpaRepository;
+
+    private final UserQueryDSLRepository userQueryDSLRepository;
 
     @Override
     public FollowIngResponseDTO following(Long userId, FollowIngRequestDTO dto) {
@@ -41,5 +52,32 @@ public class UserServiceImpl implements UserService {
         else
             throw new ExpectException(ErrorCode.NO_FOLLOW_DATA_ERROR);
         return new FollowDeleteResponseDTO(follower, followee);
+    }
+
+    @Override
+    public SocialUpdateResponseDTO socialUpdate(Long userId, List<SocialInfos> socials) {
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+        for (SocialInfos social : socials) {
+            SocialInfoId id = new SocialInfoId(userId, social.getSocialType());
+            processSocialInfo(social, id, user);
+        }
+
+        return userQueryDSLRepository.findUserSocialsById(userId);
+    }
+
+    private void processSocialInfo(SocialInfos social, SocialInfoId id, User user) {
+        if (social.getUrl().isEmpty()) {
+            if (socialJpaRepository.existsById(id))
+                socialJpaRepository.deleteById(id);
+        }else {
+            if (socialJpaRepository.existsById(id)){
+                Social socialInfo = socialJpaRepository.findById(id)
+                        .orElseThrow(() -> new ExpectException(ErrorCode.NO_SOCIAL_DATA_ERROR));
+                if (!socialInfo.getLink().equals(social.getUrl()))
+                    socialJpaRepository.save(socialInfo.changeUrl(social.getUrl()));
+            }else
+                socialJpaRepository.save(new Social(social, user));
+        }
     }
 }

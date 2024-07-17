@@ -21,7 +21,7 @@ public class TagPost {
     private Tag tag;
 
     @MapsId("postId")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 

@@ -1,7 +1,6 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.user.entity.compositekey;
 
-import com.hunnit_beasts.kelog.post.entity.domain.Post;
-import com.hunnit_beasts.kelog.user.entity.domain.User;
+import com.hunnit_beasts.kelog.user.enumeration.SocialType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -16,16 +15,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class LikedPostId implements Serializable {
+public class SocialInfoId implements Serializable {
 
     @Column(nullable = false)
     private Long userId;
 
     @Column(nullable = false)
-    private Long postId;
+    private SocialType socialType;
 
-    public LikedPostId(User user, Post post){
-        this.userId = user.getId();
-        this.postId = post.getId();
-    }
 }

@@ -16,7 +16,7 @@ public class ReComment extends RegEntity {
     private Comment parentComment;
 
     @MapsId("childCommentId")
-    @ManyToOne
+    @ManyToOne // 1 TO 1 일듯
     @JoinColumn(name = "child_comment_id")
     private Comment childComment;
 }

@@ -5,7 +5,7 @@ import com.hunnit_beasts.kelog.user.entity.domain.User;
 import jakarta.persistence.*;
 
 @Entity
-public class IncompletePost {
+public class IncompletePost { // 없어도 될것 같긴함
 
     @EmbeddedId
     private IncompletePostId id;

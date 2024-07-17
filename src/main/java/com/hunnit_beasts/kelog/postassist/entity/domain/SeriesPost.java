@@ -25,7 +25,7 @@ public class SeriesPost {
     private Series series;
 
     @MapsId("postId")
-    @OneToOne
+    @OneToOne // m to 1
     @JoinColumn(name = "post_id")
     private Post post;
 

@@ -28,11 +28,9 @@ public class QPost extends EntityPathBase<Post> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final QIncompletePost incompletePost;
-
     public final BooleanPath isPublic = createBoolean("isPublic");
 
-    public final QLikedPost likedPost;
+    public final ListPath<LikedPost, QLikedPost> likedPosts = this.<LikedPost, QLikedPost>createList("likedPosts", LikedPost.class, QLikedPost.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
@@ -41,16 +39,16 @@ public class QPost extends EntityPathBase<Post> {
 
     public final ListPath<PostViewCnt, QPostViewCnt> postViewCnts = this.<PostViewCnt, QPostViewCnt>createList("postViewCnts", PostViewCnt.class, QPostViewCnt.class, PathInits.DIRECT2);
 
-    public final QRecentPost recentPost;
+    public final ListPath<RecentPost, QRecentPost> recentPosts = this.<RecentPost, QRecentPost>createList("recentPosts", RecentPost.class, QRecentPost.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
 
-    public final com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost seriesPost;
+    public final ListPath<com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost, com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost> seriesPosts = this.<com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost, com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost>createList("seriesPosts", com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost.class, com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost.class, PathInits.DIRECT2);
 
     public final StringPath shortContent = createString("shortContent");
 
-    public final com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost tagPost;
+    public final ListPath<com.hunnit_beasts.kelog.postassist.entity.domain.TagPost, com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost> tagPosts = this.<com.hunnit_beasts.kelog.postassist.entity.domain.TagPost, com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost>createList("tagPosts", com.hunnit_beasts.kelog.postassist.entity.domain.TagPost.class, com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost.class, PathInits.DIRECT2);
 
     public final StringPath thumbImage = createString("thumbImage");
 
@@ -80,12 +78,7 @@ public class QPost extends EntityPathBase<Post> {
 
     public QPost(Class<? extends Post> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.incompletePost = inits.isInitialized("incompletePost") ? new QIncompletePost(forProperty("incompletePost"), inits.get("incompletePost")) : null;
-        this.likedPost = inits.isInitialized("likedPost") ? new QLikedPost(forProperty("likedPost"), inits.get("likedPost")) : null;
         this.postContent = inits.isInitialized("postContent") ? new QPostContent(forProperty("postContent"), inits.get("postContent")) : null;
-        this.recentPost = inits.isInitialized("recentPost") ? new QRecentPost(forProperty("recentPost"), inits.get("recentPost")) : null;
-        this.seriesPost = inits.isInitialized("seriesPost") ? new com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost(forProperty("seriesPost"), inits.get("seriesPost")) : null;
-        this.tagPost = inits.isInitialized("tagPost") ? new com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost(forProperty("tagPost"), inits.get("tagPost")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

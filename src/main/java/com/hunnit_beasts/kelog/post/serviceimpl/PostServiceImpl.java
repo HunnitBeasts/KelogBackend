@@ -6,6 +6,9 @@ import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.*;
+import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.entity.domain.PostViewCnt;
@@ -16,17 +19,12 @@ import com.hunnit_beasts.kelog.post.repository.jpa.PostViewCntJpaRepository;
 import com.hunnit_beasts.kelog.post.repository.jpa.RecentPostJpaRepository;
 import com.hunnit_beasts.kelog.post.repository.querydsl.PostQueryDSLRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.LikedPostId;
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.PostViewCntId;
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.RecentPostId;
 import com.hunnit_beasts.kelog.postassist.service.TagService;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,20 +41,17 @@ public class PostServiceImpl implements PostService {
 
     private final TagService tagService;
 
-    @Override
+    @Transactional
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
         User creator = userJpaRepository.findById(userId)
-                .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        Post createPostEntity = new Post(dto,creator);
-        Post createdPost = postJpaRepository.save(createPostEntity);
-        if(dto.getTags() != null)
-            tagInsert(dto.getTags(), createdPost);
-        return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
-    }
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
 
-    private void tagInsert(List<String> tags, Post post){
-        for (String tag : tags) tagService.createTag(tag);
-        tagService.addTagPost(tags, post);
+        Post createdPost = postJpaRepository.save(new Post(dto, creator));
+
+        if(dto.getTags() != null)
+            tagService.createTagPost(dto.getTags(), createdPost);
+
+        return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
     }
 
     @Override

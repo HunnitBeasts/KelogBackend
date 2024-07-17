@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.post.entity.compositekey;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEmbeddableSerializer")
 public class QIncompletePostId extends BeanPath<IncompletePostId> {
 
-    private static final long serialVersionUID = 466427535L;
+    private static final long serialVersionUID = -1054299602L;
 
     public static final QIncompletePostId incompletePostId = new QIncompletePostId("incompletePostId");
 

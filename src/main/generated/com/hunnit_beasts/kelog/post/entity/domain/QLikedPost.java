@@ -24,7 +24,7 @@ public class QLikedPost extends EntityPathBase<LikedPost> {
 
     public final com.hunnit_beasts.kelog.common.entity.superclass.QRegEntity _super = new com.hunnit_beasts.kelog.common.entity.superclass.QRegEntity(this);
 
-    public final com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QLikedPostId likedPostId;
+    public final com.hunnit_beasts.kelog.post.entity.compositekey.QLikedPostId likedPostId;
 
     public final QPost post;
 
@@ -51,7 +51,7 @@ public class QLikedPost extends EntityPathBase<LikedPost> {
 
     public QLikedPost(Class<? extends LikedPost> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.likedPostId = inits.isInitialized("likedPostId") ? new com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.QLikedPostId(forProperty("likedPostId")) : null;
+        this.likedPostId = inits.isInitialized("likedPostId") ? new com.hunnit_beasts.kelog.post.entity.compositekey.QLikedPostId(forProperty("likedPostId")) : null;
         this.post = inits.isInitialized("post") ? new QPost(forProperty("post"), inits.get("post")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }

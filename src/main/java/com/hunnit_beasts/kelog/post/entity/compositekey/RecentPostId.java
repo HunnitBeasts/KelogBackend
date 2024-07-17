@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.post.entity.compositekey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -7,11 +7,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class IncompletePostId implements Serializable {
+public class RecentPostId implements Serializable {
 
     @Column(nullable = false)
     private Long userId;

@@ -1,7 +1,11 @@
 package com.hunnit_beasts.kelog.tag;
 
 
-import com.hunnit_beasts.kelog.postassist.service.TagService;
+import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
+import com.hunnit_beasts.kelog.auth.service.AuthService;
+import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.post.enumeration.PostType;
+import com.hunnit_beasts.kelog.post.service.PostService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,15 +32,35 @@ class AllTagsTest {
     MockMvc mockMvc;
 
     @Autowired
-    TagService tagService;
+    AuthService authService;
+
+    @Autowired
+    PostService postService;
 
     @BeforeEach
     void setUp(){
-        tagService.createTag("사랑에 푹 빠졌나봐");
-        tagService.createTag("사랑의 이름표");
-        tagService.createTag("추억의 테헤란로");
-        tagService.createTag("봉선화 연정");
-        tagService.createTag("싫다 싫어");
+        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+                .userId("testUserId")
+                .password("testPassword")
+                .nickname("testNickname")
+                .briefIntro("testBriefIntro")
+                .email("testEmail")
+                .build();
+
+        Long userId = authService.signUp(userDto).getId();
+
+        PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
+                .title("testTitle")
+                .type(PostType.NORMAL)
+                .thumbImage("testThumbImage")
+                .isPublic(Boolean.TRUE)
+                .shortContent("testShortContent")
+                .url("testUrl")
+                .content("testContent")
+                .tags(Arrays.asList("사랑에 푹 빠졌나봐", "사랑의 이름표", "추억의 테헤란로", "봉선화 연정", "싫다 싫어"))
+                .build();
+
+        postService.postCreate(userId,dto);
     }
 
     @Test

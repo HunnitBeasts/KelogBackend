@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.post.entity.compositekey;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEmbeddableSerializer")
 public class QPostViewCntId extends BeanPath<PostViewCntId> {
 
-    private static final long serialVersionUID = 483631625L;
+    private static final long serialVersionUID = 719442634L;
 
     public static final QPostViewCntId postViewCntId = new QPostViewCntId("postViewCntId");
 

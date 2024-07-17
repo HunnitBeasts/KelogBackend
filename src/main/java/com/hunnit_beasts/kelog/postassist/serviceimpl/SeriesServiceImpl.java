@@ -5,9 +5,7 @@ import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.*;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.SeriesPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Series;
 import com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost;
@@ -42,12 +40,22 @@ public class SeriesServiceImpl implements SeriesService {
     }
 
     @Override
+    public SeriesReadResponseDTO readSeries(Long seriesId) {
+        return seriesQueryDSLRepository.findSeriesReadResponseDTOById(seriesId);
+    }
+
+    @Override
     public Long deleteSeries(Long seriesId) {
         if(seriesJpaRepository.existsById(seriesId))
             seriesJpaRepository.deleteById(seriesId);
         else
             throw new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR);
         return seriesId;
+    }
+
+    @Override
+    public UserSeriesResponseDTO readUserSeries(Long userId) {
+        return seriesQueryDSLRepository.findUserSeriesResponseDTOByUserId(userId);
     }
 
     @Override

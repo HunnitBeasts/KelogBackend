@@ -56,20 +56,17 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private final List<PostViewCnt> postViewCnts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private IncompletePost incompletePost;
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<LikedPost> likedPosts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private LikedPost likedPost;
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<RecentPost> recentPosts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private RecentPost recentPost;
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<SeriesPost> seriesPosts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private SeriesPost seriesPost;
-
-    @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private TagPost tagPost;
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<TagPost> tagPosts = new ArrayList<>();
 
 
     public Post(PostCreateRequestDTO dto, User user){

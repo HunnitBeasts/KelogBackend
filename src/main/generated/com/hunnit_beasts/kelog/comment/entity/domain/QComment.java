@@ -24,7 +24,7 @@ public class QComment extends EntityPathBase<Comment> {
 
     public final com.hunnit_beasts.kelog.common.entity.superclass.QBaseEntity _super = new com.hunnit_beasts.kelog.common.entity.superclass.QBaseEntity(this);
 
-    public final ListPath<ReComment, QReComment> childComments = this.<ReComment, QReComment>createList("childComments", ReComment.class, QReComment.class, PathInits.DIRECT2);
+    public final ListPath<ReComment, QReComment> childReComments = this.<ReComment, QReComment>createList("childReComments", ReComment.class, QReComment.class, PathInits.DIRECT2);
 
     public final QCommentContent commentContent;
 
@@ -33,7 +33,7 @@ public class QComment extends EntityPathBase<Comment> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
-    public final QReComment parentComment;
+    public final QReComment parentReComment;
 
     public final com.hunnit_beasts.kelog.post.entity.domain.QPost post;
 
@@ -61,7 +61,7 @@ public class QComment extends EntityPathBase<Comment> {
     public QComment(Class<? extends Comment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.commentContent = inits.isInitialized("commentContent") ? new QCommentContent(forProperty("commentContent"), inits.get("commentContent")) : null;
-        this.parentComment = inits.isInitialized("parentComment") ? new QReComment(forProperty("parentComment"), inits.get("parentComment")) : null;
+        this.parentReComment = inits.isInitialized("parentReComment") ? new QReComment(forProperty("parentReComment"), inits.get("parentReComment")) : null;
         this.post = inits.isInitialized("post") ? new com.hunnit_beasts.kelog.post.entity.domain.QPost(forProperty("post"), inits.get("post")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }

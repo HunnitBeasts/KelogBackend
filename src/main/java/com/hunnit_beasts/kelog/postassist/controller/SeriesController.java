@@ -4,9 +4,7 @@ import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.postassist.dto.request.PostAddRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.PostAddResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.PostPopResponseDTO;
-import com.hunnit_beasts.kelog.postassist.dto.response.SeriesCreateResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.*;
 import com.hunnit_beasts.kelog.postassist.service.SeriesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,9 +20,16 @@ public class SeriesController {
     private final SeriesService seriesService;
     private final AuthenticatedService authenticatedService;
 
-    @GetMapping("/{post-id}")
-    public void readSeries(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    @GetMapping("/{series-id}")
+    public ResponseEntity<SeriesReadResponseDTO> readSeries(@PathVariable(value = "series-id") Long seriesId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(seriesService.readSeries(seriesId));
+    }
+
+    @GetMapping("/{user-id}/users")
+    public ResponseEntity<UserSeriesResponseDTO> readUserSeries(@PathVariable(value = "user-id") Long userId){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(seriesService.readUserSeries(userId));
     }
 
     @PostMapping

@@ -33,11 +33,11 @@ public class Comment extends BaseEntity {
     private Post post;
 
     //Recomment
-    @OneToOne(mappedBy = "parentComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private ReComment parentComment;
+    @OneToMany(mappedBy = "parentComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private final List<ReComment> childReComments = new ArrayList<>();;
 
-    @OneToMany(mappedBy = "childComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<ReComment> childComments = new ArrayList<>();
+    @OneToOne(mappedBy = "childComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private ReComment parentReComment;
 
     public Comment(CommentCreateRequestDTO dto, Post post, User user){
         this.commentContent = new CommentContent(dto.getContent(), this);

@@ -11,12 +11,12 @@ public class ReComment extends RegEntity {
     private ReCommentId id;
 
     @MapsId("parentCommentId")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
     @MapsId("childCommentId")
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "child_comment_id")
     private Comment childComment;
 }

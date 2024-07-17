@@ -22,7 +22,7 @@ public class LikedPost extends RegEntity {
     private User user;
 
     @MapsId("postId")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 

@@ -6,7 +6,6 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.entity.superclass.BaseEntity;
-import com.hunnit_beasts.kelog.post.entity.domain.IncompletePost;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.entity.domain.RecentPost;
@@ -91,10 +90,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private final List<Follower> followees = new ArrayList<>();
-
-    //IncompletePost
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<IncompletePost> incompletePostUsers = new ArrayList<>();
 
     //LikedPost
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)

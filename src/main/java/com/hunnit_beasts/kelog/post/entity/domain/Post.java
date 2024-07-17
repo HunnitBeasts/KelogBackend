@@ -78,7 +78,6 @@ public class Post extends BaseEntity {
         this.url = dto.getUrl();
         this.postContent = new PostContent(dto.getContent(),this);
         this.user = user;
-        this.tagPost =
     }
 
     public Post changePost(PostUpdateRequestDTO dto){

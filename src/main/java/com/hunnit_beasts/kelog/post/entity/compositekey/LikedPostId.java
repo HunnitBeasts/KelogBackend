@@ -1,4 +1,4 @@
-package com.hunnit_beasts.kelog.postassist.entity.domain.compositekey;
+package com.hunnit_beasts.kelog.post.entity.compositekey;
 
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.user.entity.domain.User;

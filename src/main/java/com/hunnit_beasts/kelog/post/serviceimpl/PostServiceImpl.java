@@ -16,9 +16,11 @@ import com.hunnit_beasts.kelog.post.repository.jpa.PostViewCntJpaRepository;
 import com.hunnit_beasts.kelog.post.repository.jpa.RecentPostJpaRepository;
 import com.hunnit_beasts.kelog.post.repository.querydsl.PostQueryDSLRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.LikedPostId;
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.PostViewCntId;
-import com.hunnit_beasts.kelog.postassist.entity.domain.compositekey.RecentPostId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
+import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
+import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
+import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
 import com.hunnit_beasts.kelog.postassist.service.TagService;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
@@ -26,6 +28,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,16 +46,18 @@ public class PostServiceImpl implements PostService {
 
     private final TagService tagService;
 
-    @Override
+    @Transactional
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
         User creator = userJpaRepository.findById(userId)
-                .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        tagService.createTags(dto.getTags());
-        Post createPostEntity = new Post(dto,creator);
-        Post createdPost = postJpaRepository.save(createPostEntity);
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+
+        Post createdPost = postJpaRepository.save(new Post(dto, creator));
+
+        if(dto.getTags() != null)
+            tagService.createTagPost(dto.getTags(), createdPost);
+
         return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
     }
-
 
     @Override
     public Long postDelete(Long postId) {

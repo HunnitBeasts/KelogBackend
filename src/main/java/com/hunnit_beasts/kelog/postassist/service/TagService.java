@@ -8,8 +8,6 @@ import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
 import java.util.List;
 
 public interface TagService {
-    TagCreateResponseDTO createTag(String tag);
-    void createTags(List<String> tags);
-    List<TagPost> addTagPost(List<String> tags, Post post);
+    void createTagPost(List<String> tags, Post createdPost);
     AllTagsResponseDTO allTags();
 }

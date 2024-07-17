@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -27,33 +28,17 @@ public class TagServiceImpl implements TagService {
     private final TagPostJpaRepository tagPostJpaRepository;
 
     @Override
-    public TagCreateResponseDTO createTag(String tag) {
-        if(!tagJpaRepository.existsById(tag)) {
-            Tag createTag = tagJpaRepository.save(new Tag(tag));
-            return new TagCreateResponseDTO(createTag.getTagName());
+    public void createTagPost(List<String> tags, Post createdPost) {
+        List<TagPost> tagPosts = new ArrayList<>();
+        for (String tagName : tags) {
+            Tag tag = tagJpaRepository.findById(tagName)
+                    .orElseGet(() -> tagJpaRepository.save(new Tag(tagName)));
+
+            TagPost tagPost = new TagPost(tag, createdPost);
+            tagPosts.add(tagPost);
         }
-        return new TagCreateResponseDTO(tag);
-    }
 
-    @Override
-    public void createTags(List<String> tags) {
-        List<Tag> tagEntities = tags.stream()
-                .map(Tag::new)
-                .toList();
-        tagJpaRepository.saveAll(tagEntities);
-    }
-
-    @Override
-    public List<TagPost> addTagPost(List<String> tags, Post post) {
-        List<TagPost> tagPosts = tags.stream()
-                .map(tagName -> tagJpaRepository.findById(tagName)
-                        .orElseThrow(() -> new ExpectException(ErrorCode.NO_TAG_DATA_ERROR)))
-                .map(tag -> new TagPost(tag, post))
-                .collect(Collectors.toList());
-
-        Iterable<TagPost> savedTagPosts = tagPostJpaRepository.saveAll(tagPosts);
-        return StreamSupport.stream(savedTagPosts.spliterator(), false)
-                .collect(Collectors.toList());
+        tagPostJpaRepository.saveAll(tagPosts);
     }
 
     @Override

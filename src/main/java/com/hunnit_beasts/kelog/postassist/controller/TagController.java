@@ -22,14 +22,6 @@ public class TagController {
         throw new UnsupportedOperationException();
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<TagCreateResponseDTO> addTag(
-                                                @RequestBody TagCreateRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(tagService.createTag(dto.getTagName()));
-    }
-
     @GetMapping
     public ResponseEntity<AllTagsResponseDTO> allTags() {
         return ResponseEntity.status(HttpStatus.OK)

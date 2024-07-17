@@ -1,7 +1,10 @@
 package com.hunnit_beasts.kelog.postassist.repository;
 
+import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
+
 import java.util.List;
 
 public interface TagQueryDSLRepository {
-    void deleteTags(String tag, Long postId);
+    List<Tag> findUnusedTags();
+    List<String> findTagNameByPostId(Long postId);
 }

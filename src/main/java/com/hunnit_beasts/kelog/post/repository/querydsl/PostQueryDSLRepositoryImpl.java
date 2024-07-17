@@ -60,19 +60,30 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     @Override
     public PostUpdateResponseDTO findPostUpdateResponseDTOById(Long id) {
         QPost post = QPost.post;
-        return jpaQueryFactory
-                .select(Projections.constructor(PostUpdateResponseDTO.class,
+        QTagPost tagPost = QTagPost.tagPost;
+
+        PostInfos postInfos = jpaQueryFactory
+                .select(Projections.constructor(PostInfos.class,
                         post.id,
+                        post.user.id,
                         post.title,
                         post.type,
                         post.thumbImage,
                         post.isPublic,
                         post.shortContent,
                         post.url,
-                        post.postContent.content))
+                        post.postContent.content,
+                        post.regDate,
+                        post.modDate))
                 .from(post)
                 .where(post.id.eq(id))
                 .fetchOne();
+        List<String> tags = jpaQueryFactory
+                .select(tagPost.tag.tagName)
+                .from(tagPost)
+                .where(tagPost.id.postId.eq(id))
+                .fetch();
+        return new PostUpdateResponseDTO(Objects.requireNonNull(postInfos),tags);
     }
 
     @Override

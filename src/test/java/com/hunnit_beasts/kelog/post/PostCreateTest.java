@@ -142,9 +142,9 @@ class PostCreateTest {
                 .andExpect(jsonPath("$.modDate").isString())
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags", hasSize(3)))
-                .andExpect(jsonPath("$.tags[2]").value("헤이 저기"))
                 .andExpect(jsonPath("$.tags[0]").value("그래 자기"))
                 .andExpect(jsonPath("$.tags[1]").value("웬 만하면 내게 오지"))
+                .andExpect(jsonPath("$.tags[2]").value("헤이 저기"))
                 .andReturn();
     }
 }

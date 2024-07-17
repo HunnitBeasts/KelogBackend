@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface TagService {
     TagCreateResponseDTO createTag(String tag);
+    void createTags(List<String> tags);
     List<TagPost> addTagPost(List<String> tags, Post post);
 }

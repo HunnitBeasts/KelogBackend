@@ -35,6 +35,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public void createTags(List<String> tags) {
+        List<Tag> tagEntities = tags.stream()
+                .map(Tag::new)
+                .toList();
+        tagJpaRepository.saveAll(tagEntities);
+    }
+
+    @Override
     public List<TagPost> addTagPost(List<String> tags, Post post) {
         List<TagPost> tagPosts = tags.stream()
                 .map(tagName -> tagJpaRepository.findById(tagName)

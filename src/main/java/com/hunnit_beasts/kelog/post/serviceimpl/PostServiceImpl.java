@@ -47,17 +47,12 @@ public class PostServiceImpl implements PostService {
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
         User creator = userJpaRepository.findById(userId)
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+        tagService.createTags(dto.getTags());
         Post createPostEntity = new Post(dto,creator);
         Post createdPost = postJpaRepository.save(createPostEntity);
-        if(dto.getTags() != null)
-            tagInsert(dto.getTags(), createdPost);
         return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
     }
 
-    private void tagInsert(List<String> tags, Post post){
-        for (String tag : tags) tagService.createTag(tag);
-        tagService.addTagPost(tags, post);
-    }
 
     @Override
     public Long postDelete(Long postId) {

@@ -14,4 +14,5 @@ public interface PostService {
     RecentViewCreateResponseDTO recentViewAdd(Long userId, Long postId);
     PostUpdateResponseDTO postUpdate(Long postId, PostUpdateRequestDTO dto);
     PostViewCountResponseDTO viewCntInfos(Long postId);
+    PostReadResponseDTO postRead(Long postId, Long userId);
 }

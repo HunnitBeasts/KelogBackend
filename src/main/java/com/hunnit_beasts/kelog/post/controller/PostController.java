@@ -24,8 +24,10 @@ public class PostController {
     private final AuthenticatedService authenticatedService;
 
     @GetMapping("/{post-id}")
-    public void readPost(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<PostReadResponseDTO> readPost(@PathVariable(value = "post-id") Long postId,
+                                                        Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.postRead(postId,authenticatedService.getId(authentication)));
     }
 
     @GetMapping

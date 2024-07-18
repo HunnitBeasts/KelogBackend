@@ -31,3 +31,4 @@ error:
       NOT_EXIST_SERIES_POST_ERROR: "[ERROR] 게시물이 시리즈에 없습니다."
       NO_TAG_DATA_ERROR: "[ERROR] 태그가 존재하지 않습니다!"
       NO_SOCIAL_DATA_ERROR: "[ERROR] 소셜데이터가 없습니다."
+      NOT_OPENED_POST_ERROR: "[ERROR} 공개 게시물이 아닙니다!"

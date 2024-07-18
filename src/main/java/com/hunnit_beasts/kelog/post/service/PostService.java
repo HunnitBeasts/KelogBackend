@@ -15,4 +15,5 @@ public interface PostService {
     PostUpdateResponseDTO postUpdate(Long postId, PostUpdateRequestDTO dto);
     PostViewCountResponseDTO viewCntInfos(Long postId);
     PostReadResponseDTO postRead(Long postId, Long userId);
+    Long getPostId(String userId, String url);
 }

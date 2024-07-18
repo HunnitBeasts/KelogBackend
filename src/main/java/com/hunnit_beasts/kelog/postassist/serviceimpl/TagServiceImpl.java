@@ -3,7 +3,8 @@ package com.hunnit_beasts.kelog.postassist.serviceimpl;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
-import com.hunnit_beasts.kelog.postassist.dto.response.AllTagsResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.TagsResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.UserTagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.TagPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
 import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
@@ -48,14 +49,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public AllTagsResponseDTO allTags() {
+    public TagsResponseDTO allTags() {
         Iterable<Tag> allTags = tagJpaRepository.findAll();
 
-        List<String> tagNames = StreamSupport.stream(allTags.spliterator(), false)
+        Set<String> tagNames = StreamSupport.stream(allTags.spliterator(), false)
                 .map(Tag::getTagName)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        return new AllTagsResponseDTO(tagNames);
+        return new TagsResponseDTO(tagNames);
     }
 
     @Override
@@ -100,5 +101,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public Set<String> getExistingTags(Long postId) {
         return Set.copyOf(tagQueryDSLRepository.findTagNameByPostId(postId));
+    }
+
+    @Override
+    public UserTagsResponseDTO userTags(Long userId) {
+        return new UserTagsResponseDTO(tagQueryDSLRepository.findUserTagsByUserId(userId));
     }
 }

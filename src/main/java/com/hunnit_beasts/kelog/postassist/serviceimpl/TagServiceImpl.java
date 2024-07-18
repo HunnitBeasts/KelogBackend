@@ -4,6 +4,7 @@ import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.postassist.dto.response.TagsResponseDTO;
+import com.hunnit_beasts.kelog.postassist.dto.response.UserTagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.TagPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
 import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
@@ -17,7 +18,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -104,8 +104,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagsResponseDTO userTags(Long userId) {
-        Set<String> tags = new HashSet<>(tagQueryDSLRepository.findUserTagsByUserId(userId));
-        return new TagsResponseDTO(tags);
+    public UserTagsResponseDTO userTags(Long userId) {
+        return new UserTagsResponseDTO(tagQueryDSLRepository.findUserTagsByUserId(userId));
     }
 }

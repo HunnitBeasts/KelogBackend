@@ -1,9 +1,11 @@
 package com.hunnit_beasts.kelog.postassist.repository;
 
 import com.hunnit_beasts.kelog.post.entity.domain.QPost;
+import com.hunnit_beasts.kelog.postassist.dto.convert.TagInfos;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTag;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -40,15 +42,17 @@ public class TagQueryDSLRepositoryImpl implements TagQueryDSLRepository{
     }
 
     @Override
-    public List<String> findUserTagsByUserId(Long userId) {
+    public List<TagInfos> findUserTagsByUserId(Long userId) {
         QPost post = QPost.post;
         QTagPost tagPost = QTagPost.tagPost;
         return jpaQueryFactory
-                .select(tagPost.tag.tagName)
+                .select(Projections.constructor(TagInfos.class,
+                        tagPost.tag.tagName,
+                        tagPost.tag.tagName.count()))
                 .from(post)
                 .join(post.tagPosts, tagPost)
                 .where(post.user.id.eq(userId))
-                .distinct()
+                .groupBy(tagPost.tag.tagName)
                 .fetch();
     }
 }

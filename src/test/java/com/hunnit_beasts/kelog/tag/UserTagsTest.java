@@ -91,16 +91,20 @@ class UserTagsTest {
     }
 
     @Test
-    @DisplayName("사용자의 모든 태그 조회 테스트")
-    void getUserTagsTest() throws Exception {
+    @DisplayName("사용자의 태그별 게시물 수 조회 테스트")
+    void getUserTagsCountTest() throws Exception {
         mockMvc.perform(get("/tags/{user-id}", userId)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags", hasSize(5)))
-                .andExpect(jsonPath("$.tags", containsInAnyOrder("tag1", "tag2", "tag3", "tag4", "tag5")))
+                .andExpect(jsonPath("$.tags[*].tagName", containsInAnyOrder("tag1", "tag2", "tag3", "tag4", "tag5")))
+                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag1')].tagCount").value(1))
+                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag2')].tagCount").value(2))
+                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag3')].tagCount").value(2))
+                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag4')].tagCount").value(1))
+                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag5')].tagCount").value(1))
                 .andDo(print());
     }
-
 }

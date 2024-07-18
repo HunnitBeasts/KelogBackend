@@ -3,6 +3,7 @@ package com.hunnit_beasts.kelog.user.repository.querydsl;
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
 import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
+import com.hunnit_beasts.kelog.user.entity.domain.QFollower;
 import com.hunnit_beasts.kelog.user.entity.domain.QSocial;
 import com.hunnit_beasts.kelog.user.entity.domain.QUser;
 import com.hunnit_beasts.kelog.user.entity.domain.QUserIntro;
@@ -57,5 +58,18 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
                 .where(social.id.userId.eq(id))
                 .fetch();
         return new SocialUpdateResponseDTO(id,socialInfos);
+    }
+
+    @Override
+    public boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId) {
+        if (followerId == null) return false;
+
+        QFollower follow = QFollower.follower1;
+        return jpaQueryFactory
+                .selectOne()
+                .from(follow)
+                .where(follow.follower.id.eq(followerId)
+                        .and(follow.followee.id.eq(followeeId)))
+                .fetchFirst() != null;
     }
 }

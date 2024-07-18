@@ -10,6 +10,8 @@ public class AuthenticatedServiceImpl implements AuthenticatedService {
 
     @Override
     public Long getId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated())
+            return null;
         return ((CustomUserDetails) authentication.getPrincipal()).getId();
     }
 }

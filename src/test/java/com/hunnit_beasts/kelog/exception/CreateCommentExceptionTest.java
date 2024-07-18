@@ -49,7 +49,6 @@ class CreateCommentExceptionTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private Long userId;
     private Long postId;
     private String token;
 
@@ -85,10 +84,10 @@ class CreateCommentExceptionTest {
                 .email("testCommentWriterEmail")
                 .build();
 
-        this.userId = authService.signUp(commentWriter).getId();
+        Long commentWriterId = authService.signUp(commentWriter).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                .id(this.userId)
+                .id(commentWriterId)
                 .userId("testUserId")
                 .password("testPassword")
                 .userType(UserType.USER)

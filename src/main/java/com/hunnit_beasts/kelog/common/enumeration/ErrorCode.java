@@ -39,6 +39,7 @@ public enum ErrorCode {
     NOT_SAME_POST_ID_ERROR("CODE D-002"),
     NOT_SAME_COMMENT_ID_ERROR("CODE D-003"),
     NOT_SAME_SERIES_ID_ERROR("CODE D-004"),
+    NOT_OPENED_POST_ERROR("CODE D-005"),
 
     /*E error type: 서비스 실패 에러, default status: 500*/
     FILE_UPLOAD_FAILURE_ERROR("CODE E-001"),

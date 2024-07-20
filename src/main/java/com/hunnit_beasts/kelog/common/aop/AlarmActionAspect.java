@@ -9,18 +9,16 @@ import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Aspect
 @Component
@@ -30,13 +28,37 @@ public class AlarmActionAspect {
     private final AuthenticatedService authenticatedService;
     private final AlarmService alarmService;
 
-    @AfterReturning(value = "@annotation(com.hunnit_beasts.kelog.common.aop.AlarmAction) && args(type, ..)", returning = "returnObj", argNames = "joinPoint,type,returnObj")
-    public void alarm(JoinPoint joinPoint, AlarmType type,Object returnObj){
+    @After("@annotation(com.hunnit_beasts.kelog.common.aop.AlarmAction)")
+    public void alarm(JoinPoint joinPoint){
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+        AlarmAction alarmAction = method.getAnnotation(AlarmAction.class);
+        AlarmType type = alarmAction.value();
 
+        Map<String, Object> parameters = extractParameters(joinPoint);
+        Long id = (Long) parameters.remove("id");
+        Object dto = parameters.remove("dto");
+
+        switch (type){
+            case LIKE:
+                alarmService.newLikeAlarm(id,(PostLikeRequestDTO) dto);
+                break;
+            case FOLLOW:
+                alarmService.newFollowAlarm(id,(FollowIngRequestDTO) dto);
+                break;
+            case COMMENT:
+                alarmService.newCommentAlarm(id,(CommentCreateRequestDTO) dto);
+                break;
+            case SUBSCRIBE:
+                alarmService.newPostAlarm(id);
+                break;
+            default: throw new ExpectException(ErrorCode.NO_ALARM_TYPE_ERROR);
+        }
+        //TODO: 대댓글 알람도 만들어야함
     }
 
-    private Map<String, Long> extractParameters(JoinPoint joinPoint) {
-        Map<String, Long> parameters = new HashMap<>();
+    private Map<String, Object> extractParameters(JoinPoint joinPoint) {
+        Map<String, Object> parameters = new HashMap<>();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 
         String[] parameterNames = signature.getParameterNames();
@@ -47,22 +69,12 @@ public class AlarmActionAspect {
 
         for (int i = 0; i < parameterNames.length; i++) {
             if ("authentication".equals(parameterNames[i])) {
-                Long id = authenticatedService.getId((Authentication) args[i]);
-                parameters.put("sender", id);
-            } else if ("dto".equals(parameterNames[i]))
-                parameters.put(parameterNames[i], (Long) args[i]);
-            else if (parameterNames[i].equals("params"))
-                addParameter(parameters, args[i]);
+                Object id = authenticatedService.getId((Authentication) args[i]);
+                parameters.put("id", id);
+            }
+            else if ("dto".equals(parameterNames[i]))
+                parameters.put(parameterNames[i], args[i]);
         }
         return parameters;
     }
-    @SneakyThrows
-    private void addParameter(Map<String, Long> parameters, Object args) {
-        for (Field field : args.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            if(argTypes.contains(field.getName()))
-                parameters.put(field.getName(), (Long) field.get(args));
-        }
-    }
-
 }

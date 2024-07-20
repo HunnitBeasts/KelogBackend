@@ -1,16 +1,19 @@
-package com.hunnit_beasts.kelog.comment;
+package com.hunnit_beasts.kelog.alarm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
-import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
+import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class CommentCreateTest {
-
+class CreateLikeAlarmTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -44,6 +46,10 @@ class CommentCreateTest {
     @Autowired
     JwtUtil jwtUtil;
 
+    @Autowired
+    AlarmJpaRepository alarmJpaRepository;
+
+    private Long userId;
     private Long postId;
     private String token;
 
@@ -57,7 +63,7 @@ class CommentCreateTest {
                 .email("testEmail")
                 .build();
 
-        Long userId = authService.signUp(userDto).getId();
+        userId = authService.signUp(userDto).getId();
 
         PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
                 .title("testTitle")
@@ -71,48 +77,38 @@ class CommentCreateTest {
 
         postId = postService.postCreate(userId, postDto).getId();
 
-        UserCreateRequestDTO commentWriter = UserCreateRequestDTO.builder()
-                .userId("testCommentWriterId")
-                .password("testCommentWriterPassword")
-                .nickname("testCommentWriterNickname")
-                .briefIntro("testBriefIntro")
-                .email("testCommentWriterEmail")
-                .build();
-
-        Long commentWriterId = authService.signUp(commentWriter).getId();
-
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                .id(commentWriterId)
+                .id(this.userId)
                 .userId("testUserId")
                 .password("testPassword")
                 .userType(UserType.USER)
                 .build();
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
-    }
 
+    }
     @Test
-    @DisplayName("댓글 생성")
-    void createComment() throws Exception {
-        CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
+    @DisplayName("게시물 좋아요 알람 테스트")
+    void postLikeAlarm() throws Exception {
+
+        PostLikeRequestDTO dto = PostLikeRequestDTO.builder()
                 .postId(postId)
-                .content("testCommentContent")
                 .build();
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
-        mockMvc.perform(post("/comments")
+        mockMvc.perform(post("/posts/like")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.postId").value(postId))
+                .andReturn();
 
+        Assertions
+                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,userId, AlarmType.LIKE))
+                .isTrue();
     }
 }

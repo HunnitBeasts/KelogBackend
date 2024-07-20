@@ -1,11 +1,14 @@
 package com.hunnit_beasts.kelog.post.repository.querydsl;
 
 import com.hunnit_beasts.kelog.post.dto.convert.PostInfos;
+import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
 import com.hunnit_beasts.kelog.post.dto.info.ViewCntInfo;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
+import com.hunnit_beasts.kelog.post.entity.domain.QLikedPost;
 import com.hunnit_beasts.kelog.post.entity.domain.QPost;
+import com.hunnit_beasts.kelog.post.entity.domain.QPostContent;
 import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
 import com.querydsl.core.types.Projections;
@@ -60,19 +63,30 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     @Override
     public PostUpdateResponseDTO findPostUpdateResponseDTOById(Long id) {
         QPost post = QPost.post;
-        return jpaQueryFactory
-                .select(Projections.constructor(PostUpdateResponseDTO.class,
+        QTagPost tagPost = QTagPost.tagPost;
+
+        PostInfos postInfos = jpaQueryFactory
+                .select(Projections.constructor(PostInfos.class,
                         post.id,
+                        post.user.id,
                         post.title,
                         post.type,
                         post.thumbImage,
                         post.isPublic,
                         post.shortContent,
                         post.url,
-                        post.postContent.content))
+                        post.postContent.content,
+                        post.regDate,
+                        post.modDate))
                 .from(post)
                 .where(post.id.eq(id))
                 .fetchOne();
+        List<String> tags = jpaQueryFactory
+                .select(tagPost.tag.tagName)
+                .from(tagPost)
+                .where(tagPost.id.postId.eq(id))
+                .fetch();
+        return new PostUpdateResponseDTO(Objects.requireNonNull(postInfos),tags);
     }
 
     @Override
@@ -98,6 +112,89 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .fetchOne();
 
         return new PostViewCountResponseDTO(totalViewCnt,todayViewCnt,yesterdayViewCnt,views,regDate);
+    }
+
+    @Override
+    public boolean existsByUserIdAndPostId(Long userId, Long postId) {
+        if (userId == null) return false;
+
+        QLikedPost likedPost = QLikedPost.likedPost;
+        return jpaQueryFactory
+                .selectOne()
+                .from(likedPost)
+                .where(likedPost.user.id.eq(userId)
+                        .and(likedPost.post.id.eq(postId)))
+                .fetchFirst() != null;
+    }
+
+    @Override
+    public Long countByPostId(Long postId) {
+        QLikedPost likedPost = QLikedPost.likedPost;
+        return jpaQueryFactory
+                .select(likedPost.count())
+                .from(likedPost)
+                .where(likedPost.post.id.eq(postId))
+                .fetchOne();
+    }
+
+    @Override
+    public List<String> findTagsByPostId(Long postId) {
+        QTagPost tagPost = QTagPost.tagPost;
+        return jpaQueryFactory
+                .select(tagPost.tag.tagName)
+                .from(tagPost)
+                .where(tagPost.post.id.eq(postId))
+                .fetch();
+    }
+
+    @Override
+    public String findContentByPostId(Long postId) {
+        QPostContent postContent = QPostContent.postContent;
+        return jpaQueryFactory
+                .select(postContent.content)
+                .from(postContent)
+                .where(postContent.post.id.eq(postId))
+                .fetchOne();
+    }
+
+    @Override
+    public PostOrderInfo findNextPostByUser(Long userId, Long postId) {
+        QPost post = QPost.post;
+        return jpaQueryFactory
+                .select(Projections.constructor(PostOrderInfo.class,
+                        post.title,
+                        post.id,
+                        post.url))
+                .from(post)
+                .where(post.user.id.eq(userId)
+                        .and(post.id.gt(postId)))
+                .orderBy(post.id.asc())
+                .fetchFirst();
+    }
+
+    @Override
+    public PostOrderInfo findPreviousPostByUser(Long userId, Long postId) {
+        QPost post = QPost.post;
+        return jpaQueryFactory
+                .select(Projections.constructor(PostOrderInfo.class,
+                        post.title,
+                        post.id,
+                        post.url))
+                .from(post)
+                .where(post.user.id.eq(userId)
+                        .and(post.id.lt(postId)))
+                .orderBy(post.id.desc())
+                .fetchFirst();
+    }
+
+    @Override
+    public Long findPostIdByUserIdAndPostUrl(String userId, String url) {
+        QPost post = QPost.post;
+        return jpaQueryFactory
+                .select(post.id)
+                .from(post)
+                .where(post.user.userId.eq(userId).and(post.url.eq(url)))
+                .fetchOne();
     }
 
     private Long todayViewCnt(Long postId){

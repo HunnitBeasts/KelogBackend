@@ -7,4 +7,5 @@ public interface UserQueryDSLRepository {
 
     UserCreateResponseDTO findUserCreateResponseDTOById(Long id);
     SocialUpdateResponseDTO findUserSocialsById(Long id);
+    boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
 }

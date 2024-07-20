@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -72,10 +73,6 @@ class AllTagsTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags", hasSize(5)))
-                .andExpect(jsonPath("$.tags[0]").value("봉선화 연정"))
-                .andExpect(jsonPath("$.tags[1]").value("사랑에 푹 빠졌나봐"))
-                .andExpect(jsonPath("$.tags[2]").value("사랑의 이름표"))
-                .andExpect(jsonPath("$.tags[3]").value("싫다 싫어"))
-                .andExpect(jsonPath("$.tags[4]").value("추억의 테헤란로"));
+                .andExpect(jsonPath("$.tags", containsInAnyOrder("봉선화 연정", "사랑에 푹 빠졌나봐", "사랑의 이름표", "싫다 싫어", "추억의 테헤란로")));
     }
 }

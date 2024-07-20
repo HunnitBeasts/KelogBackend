@@ -24,8 +24,19 @@ public class PostController {
     private final AuthenticatedService authenticatedService;
 
     @GetMapping("/{post-id}")
-    public void readPost(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<PostReadResponseDTO> readPost(@PathVariable(value = "post-id") Long postId,
+                                                        Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.postRead(postId,authenticatedService.getId(authentication)));
+    }
+
+    @GetMapping("/{user-id}/{url}")
+    public ResponseEntity<PostReadResponseDTO> urlReadPost(@PathVariable(value = "user-id") String userId,
+                                                           @PathVariable(value = "url") String url,
+                                                           Authentication authentication) {
+        Long postId = postService.getPostId(userId,url);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.postRead(postId,authenticatedService.getId(authentication)));
     }
 
     @GetMapping

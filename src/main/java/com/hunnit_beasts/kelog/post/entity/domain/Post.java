@@ -80,20 +80,24 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-    public Post changePost(PostUpdateRequestDTO dto){
+    public Post changePost(PostUpdateRequestDTO dto) {
         this.title = dto.getTitle() != null ? dto.getTitle() : title;
         this.type = dto.getType() != null ? dto.getType() : type;
         this.thumbImage = dto.getThumbImage() != null ? dto.getThumbImage() : thumbImage;
         this.isPublic = dto.getIsPublic() != null ? dto.getIsPublic() : isPublic;
         this.shortContent = dto.getShortContent() != null ? dto.getShortContent() : shortContent;
-        if (dto.getContent() != null) {
-            this.postContent = PostContent.builder()
-                    .id(this.postContent.getId())
-                    .content(dto.getContent())
-                    .post(this)
-                    .build();
-        }
         this.url = dto.getUrl() != null ? dto.getUrl() : url;
+
+        if (dto.getContent() != null) {
+            if (this.postContent == null) {
+                this.postContent = PostContent.builder()
+                        .content(dto.getContent())
+                        .post(this)
+                        .build();
+            } else
+                this.postContent.updateContent(dto.getContent());
+        }
+
         return this;
     }
 }

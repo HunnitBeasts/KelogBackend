@@ -54,7 +54,6 @@ public class AlarmActionAspect {
                 break;
             default: throw new ExpectException(ErrorCode.NO_ALARM_TYPE_ERROR);
         }
-        //TODO: 대댓글 알람도 만들어야함
     }
 
     private Map<String, Object> extractParameters(JoinPoint joinPoint) {

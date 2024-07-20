@@ -74,10 +74,4 @@ public class AlarmServiceImpl implements AlarmService {
             alarmJpaRepository.saveAll(alarms);
         }
     }
-
-//    public AlarmResponseDTO readAlarm(AlarmId alarmId) { //안되면 queryDsl 로 짤것
-//        Alarm alarm = alarmJpaRepository.findByUserId();
-//
-//        return new AlarmResponseDTO(alarm);
-//    }
 }

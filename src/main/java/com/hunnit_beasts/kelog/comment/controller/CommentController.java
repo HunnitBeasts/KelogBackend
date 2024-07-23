@@ -8,6 +8,8 @@ import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
+import com.hunnit_beasts.kelog.common.aop.AlarmAction;
+import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,7 @@ public class CommentController {
 
     @PostMapping
     @PreAuthorize("hasRole('USER')")
+    @AlarmAction(AlarmType.COMMENT)
     public ResponseEntity<CommentCreateResponseDTO> addComment(Authentication authentication,
                                                                @RequestBody CommentCreateRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK)

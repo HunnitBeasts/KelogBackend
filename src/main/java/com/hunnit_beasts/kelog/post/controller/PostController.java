@@ -2,6 +2,8 @@ package com.hunnit_beasts.kelog.post.controller;
 
 import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
+import com.hunnit_beasts.kelog.common.aop.AlarmAction;
+import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.post.dto.request.*;
 import com.hunnit_beasts.kelog.post.dto.response.*;
 import com.hunnit_beasts.kelog.post.service.PostService;
@@ -46,6 +48,7 @@ public class PostController {
 
     @PostMapping
     @PreAuthorize("hasRole('USER')")
+    @AlarmAction(AlarmType.SUBSCRIBE)
     public ResponseEntity<PostCreateResponseDTO> addPost(@RequestBody PostCreateRequestDTO dto,
                                                          Authentication authentication) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -53,6 +56,7 @@ public class PostController {
     }
 
     @PostMapping("/like")
+    @AlarmAction(AlarmType.LIKE)
     public ResponseEntity<PostLikeResponseDTO> addPostLike(@RequestBody PostLikeRequestDTO dto,
                                                            Authentication authentication) {
         return ResponseEntity.status(HttpStatus.OK)

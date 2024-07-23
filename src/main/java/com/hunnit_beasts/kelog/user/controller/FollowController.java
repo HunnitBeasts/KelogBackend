@@ -2,6 +2,8 @@ package com.hunnit_beasts.kelog.user.controller;
 
 
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
+import com.hunnit_beasts.kelog.common.aop.AlarmAction;
+import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
@@ -21,6 +23,7 @@ public class FollowController {
     private final AuthenticatedService authenticatedService;
 
     @PostMapping
+    @AlarmAction(AlarmType.FOLLOW)
     public ResponseEntity<FollowIngResponseDTO> addFollow(@RequestBody FollowIngRequestDTO dto,
                                                           Authentication authentication) {
         Long userId = authenticatedService.getId(authentication);

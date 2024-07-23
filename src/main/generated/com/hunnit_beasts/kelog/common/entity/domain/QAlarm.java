@@ -24,7 +24,9 @@ public class QAlarm extends EntityPathBase<Alarm> {
 
     public final com.hunnit_beasts.kelog.common.entity.superclass.QRegEntity _super = new com.hunnit_beasts.kelog.common.entity.superclass.QRegEntity(this);
 
-    public final com.hunnit_beasts.kelog.common.entity.compositekey.QAlarmId id;
+    public final EnumPath<com.hunnit_beasts.kelog.common.enumeration.AlarmType> alarmType = createEnum("alarmType", com.hunnit_beasts.kelog.common.enumeration.AlarmType.class);
+
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final BooleanPath isCheck = createBoolean("isCheck");
 
@@ -53,7 +55,6 @@ public class QAlarm extends EntityPathBase<Alarm> {
 
     public QAlarm(Class<? extends Alarm> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.common.entity.compositekey.QAlarmId(forProperty("id")) : null;
         this.target = inits.isInitialized("target") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("target"), inits.get("target")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }

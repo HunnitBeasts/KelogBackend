@@ -1,16 +1,17 @@
-package com.hunnit_beasts.kelog.comment;
+package com.hunnit_beasts.kelog.alarm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
-import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
-import com.hunnit_beasts.kelog.post.enumeration.PostType;
+import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
+import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
+import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class CommentCreateTest {
-
+class CreateFollowAlarmTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -44,8 +44,12 @@ class CommentCreateTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private Long postId;
+    @Autowired
+    AlarmJpaRepository alarmJpaRepository;
+
+    private Long userId;
     private String token;
+    private Long followedUserId;
 
     @BeforeEach
     void setUp(){
@@ -57,62 +61,49 @@ class CommentCreateTest {
                 .email("testEmail")
                 .build();
 
-        Long userId = authService.signUp(userDto).getId();
+        userId = authService.signUp(userDto).getId();
 
-        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
-                .title("testTitle")
-                .type(PostType.NORMAL)
-                .thumbImage("testThumbImage")
-                .isPublic(Boolean.TRUE)
-                .shortContent("testShortContent")
-                .url("testUrl")
-                .content("testContent")
+        UserCreateRequestDTO followeeUserDTO = UserCreateRequestDTO.builder()
+                .userId("testUserId1")
+                .password("testPassword1")
+                .nickname("testNickname1")
+                .briefIntro("testBriefIntro1")
+                .email("testEmail1")
                 .build();
 
-        postId = postService.postCreate(userId, postDto).getId();
-
-        UserCreateRequestDTO commentWriter = UserCreateRequestDTO.builder()
-                .userId("testCommentWriterId")
-                .password("testCommentWriterPassword")
-                .nickname("testCommentWriterNickname")
-                .briefIntro("testBriefIntro")
-                .email("testCommentWriterEmail")
-                .build();
-
-        Long commentWriterId = authService.signUp(commentWriter).getId();
+        followedUserId = authService.signUp(followeeUserDTO).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                .id(commentWriterId)
+                .id(this.userId)
                 .userId("testUserId")
                 .password("testPassword")
                 .userType(UserType.USER)
                 .build();
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
-    }
 
+    }
     @Test
-    @DisplayName("댓글 생성")
-    void createComment() throws Exception {
-        CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
-                .postId(postId)
-                .content("testCommentContent")
+    @DisplayName("팔로우 알람 테스트")
+    void followAlarm() throws Exception {
+        FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
+                .followee(followedUserId)
                 .build();
 
-        String jsonContent = objectMapper.writeValueAsString(dto);
+        String jsonContent = objectMapper.writeValueAsString(followIngRequestDTO);
 
-        mockMvc.perform(post("/comments")
+        mockMvc.perform(post("/following")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
                         .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andExpect(jsonPath("$.follower").value(userId))
+                .andExpect(jsonPath("$.followee").value(followedUserId))
+                .andReturn();
 
+        Assertions
+                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,followedUserId, AlarmType.FOLLOW))
+                .isTrue();
     }
 }

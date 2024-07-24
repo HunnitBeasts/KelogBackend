@@ -35,4 +35,9 @@ public class SeriesPost {
         this.series = series;
         this.post = post;
     }
+
+    public SeriesPost changeOrder(Long seriesOrder){
+        this.seriesOrder = seriesOrder;
+        return this;
+    }
 }

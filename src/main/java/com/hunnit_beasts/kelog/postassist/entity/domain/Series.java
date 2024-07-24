@@ -38,4 +38,9 @@ public class Series extends BaseEntity {
         this.url = dto.getUrl();
         this.user = user;
     }
+
+    public Series changeName(String seriesName){
+        this.seriesName = seriesName;
+        return this;
+    }
 }

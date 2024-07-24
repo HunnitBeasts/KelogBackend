@@ -6,12 +6,16 @@ import com.hunnit_beasts.kelog.postassist.dto.response.SeriesReadResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QSeries;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QSeriesPost;
+import com.hunnit_beasts.kelog.postassist.entity.domain.SeriesPost;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -65,4 +69,28 @@ public class SeriesQueryDSLRepositoryImpl implements SeriesQueryDSLRepository{
                 .fetch();
         return new UserSeriesResponseDTO(userSeriesInfos);
     }
+
+    @Override
+    public List<SeriesPost> updateOrder(Long seriesId, List<Long> posts) {
+        QSeriesPost seriesPost = QSeriesPost.seriesPost;
+        List<SeriesPost> seriesPosts = jpaQueryFactory
+                .selectFrom(seriesPost)
+                .where(seriesPost.id.seriesId.eq(seriesId))
+                .fetch();
+
+        Map<Long, SeriesPost> seriesPostMap = seriesPosts.stream()
+                .collect(Collectors.toMap(sp -> sp.getPost().getId(), sp -> sp));
+
+        for (int i = 0; i < posts.size(); i++) {
+            Long postId = posts.get(i);
+            SeriesPost sp = seriesPostMap.get(postId);
+            if (sp != null)
+                sp.changeOrder((long) i + 1);
+        }
+
+        return seriesPosts.stream()
+                .sorted(Comparator.comparing(SeriesPost::getSeriesOrder))
+                .collect(Collectors.toList());
+    }
+
 }

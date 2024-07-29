@@ -4,6 +4,7 @@ import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.postassist.dto.request.PostAddRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
+import com.hunnit_beasts.kelog.postassist.dto.request.SeriesUpdateRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.*;
 import com.hunnit_beasts.kelog.postassist.service.SeriesService;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +48,13 @@ public class SeriesController {
                 .body(seriesService.seriesAddPost(params.getPostId(), params.getSeriesId()));
     }
 
-    @PutMapping("/{post-id}")
-    public void updateSeries(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    @PatchMapping("/{series-id}")
+    @Identification
+    public ResponseEntity<SeriesReadResponseDTO> updateSeries(@PathVariable(value = "series-id") Long seriesId,
+                                                              @RequestBody SeriesUpdateRequestDTO dto,
+                                                              Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(seriesService.updateSeries(seriesId,dto));
     }
 
     @DeleteMapping("/{series-id}")

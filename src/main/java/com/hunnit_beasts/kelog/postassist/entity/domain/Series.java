@@ -20,6 +20,7 @@ public class Series extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(length = 64,nullable = false)
     private String seriesName;
 
@@ -39,8 +40,4 @@ public class Series extends BaseEntity {
         this.user = user;
     }
 
-    public Series changeName(String seriesName){
-        this.seriesName = seriesName;
-        return this;
-    }
 }

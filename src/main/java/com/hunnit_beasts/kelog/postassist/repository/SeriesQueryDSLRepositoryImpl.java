@@ -85,7 +85,7 @@ public class SeriesQueryDSLRepositoryImpl implements SeriesQueryDSLRepository{
             Long postId = posts.get(i);
             SeriesPost sp = seriesPostMap.get(postId);
             if (sp != null)
-                sp.changeOrder((long) i + 1);
+                sp.setSeriesOrder((long) i + 1);
         }
 
         return seriesPosts.stream()

@@ -16,6 +16,7 @@ public class SeriesPost {
     @EmbeddedId
     private SeriesPostId id;
 
+    @Setter
     @Column(nullable = false)
     private Long seriesOrder;
 
@@ -34,10 +35,5 @@ public class SeriesPost {
         this.seriesOrder = seriesOrder + 1;
         this.series = series;
         this.post = post;
-    }
-
-    public SeriesPost changeOrder(Long seriesOrder){
-        this.seriesOrder = seriesOrder;
-        return this;
     }
 }

@@ -51,8 +51,10 @@ public class SeriesServiceImpl implements SeriesService {
     public SeriesReadResponseDTO updateSeries(Long seriesId, SeriesUpdateRequestDTO dto) {
         Series series = seriesJpaRepository.findById(seriesId)
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR));
-        if(!dto.getSeriesName().equals(series.getSeriesName()))
-            seriesJpaRepository.save(series.changeName(dto.getSeriesName()));
+        if(!dto.getSeriesName().equals(series.getSeriesName())) {
+            series.setSeriesName(dto.getSeriesName());
+            seriesJpaRepository.save(series);
+        }
         List<SeriesPost> seriesPosts = seriesQueryDSLRepository.updateOrder(seriesId, dto.getPosts());
         seriesPostJpaRepository.saveAll(seriesPosts);
         return seriesQueryDSLRepository.findSeriesReadResponseDTOById(seriesId);

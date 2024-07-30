@@ -43,7 +43,10 @@ public class SeriesQueryDSLRepositoryImpl implements SeriesQueryDSLRepository{
                         seriesPost.post.id,
                         seriesPost.post.user.userId,
                         seriesPost.post.url,
-                        seriesPost.post.title))
+                        seriesPost.post.thumbImage,
+                        seriesPost.post.title,
+                        seriesPost.post.regDate,
+                        seriesPost.post.shortContent))
                 .from(seriesPost)
                 .where(seriesPost.id.seriesId.eq(seriesId))
                 .orderBy(seriesPost.seriesOrder.asc())

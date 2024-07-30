@@ -9,5 +9,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class UserTagsResponseDTO {
+    private Long allPostCount;
     private List<TagInfos> tags;
 }

@@ -197,6 +197,16 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .fetchOne();
     }
 
+    @Override
+    public Long findAllUserCountByUserId(Long userId) {
+        QPost post = QPost.post;
+        return jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.user.id.eq(userId))
+                .fetchOne();
+    }
+
     private Long todayViewCnt(Long postId){
         QPostViewCnt postViewCnt = QPostViewCnt.postViewCnt;
         return jpaQueryFactory

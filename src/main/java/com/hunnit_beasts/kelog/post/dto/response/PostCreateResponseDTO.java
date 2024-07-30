@@ -4,11 +4,13 @@ import com.hunnit_beasts.kelog.post.dto.convert.PostInfos;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostCreateResponseDTO {
     private Long id;

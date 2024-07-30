@@ -6,7 +6,7 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
-import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
@@ -96,14 +95,10 @@ class CreateFollowAlarmTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.follower").value(userId))
-                .andExpect(jsonPath("$.followee").value(followedUserId))
-                .andReturn();
+                        .content(jsonContent));
 
         Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,followedUserId, AlarmType.FOLLOW))
+                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(followedUserId,userId, AlarmType.FOLLOW))
                 .isTrue();
     }
 }

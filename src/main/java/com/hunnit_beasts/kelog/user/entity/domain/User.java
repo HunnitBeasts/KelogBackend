@@ -81,9 +81,6 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private final List<Alarm> alarmUsers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<Alarm> targets = new ArrayList<>();
-
     //Follower
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private final List<Follower> followers = new ArrayList<>();

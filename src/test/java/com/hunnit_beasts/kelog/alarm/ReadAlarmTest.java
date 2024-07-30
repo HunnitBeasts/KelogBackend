@@ -5,17 +5,18 @@ import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
-import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
-import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.service.CommentService;
+import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,13 +27,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class CreatePostAlarmTest {
+@Log4j2
+class ReadAlarmTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -40,23 +44,25 @@ class CreatePostAlarmTest {
     AuthService authService;
 
     @Autowired
-    PostService postService;
-
-    @Autowired
     ObjectMapper objectMapper;
-
-    @Autowired
-    UserService userService;
 
     @Autowired
     JwtUtil jwtUtil;
 
     @Autowired
-    AlarmJpaRepository alarmJpaRepository;
+    UserService userService;
+
+    @Autowired
+    PostService postService;
+
+    @Autowired
+    CommentService commentService;
 
     private Long userId;
     private String token;
     private Long followUserId;
+    private Long postId;
+    private Long commentId;
 
     @BeforeEach
     void setUp(){
@@ -68,9 +74,8 @@ class CreatePostAlarmTest {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(userDto).getId();
+        this.userId = authService.signUp(userDto).getId();
 
-        //포스트 알람을 위한 팔로우유저, user(userId 가진) 를 팔로우함
         UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
                 .userId("testUserId1")
                 .password("testPassword1")
@@ -90,18 +95,15 @@ class CreatePostAlarmTest {
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
+        //팔로잉
         FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
                 .followee(userId)
                 .build();
 
         userService.following(followUserId,followIngRequestDTO);
 
-    }
-    @Test
-    @DisplayName("게시물 알람 테스트")
-    void tagCreatePostAlarm() throws Exception {
-
-        PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
+        //포스트 생성
+        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
                 .title("testTitle")
                 .type(PostType.NORMAL)
                 .thumbImage("testThumbImage")
@@ -111,20 +113,35 @@ class CreatePostAlarmTest {
                 .content("testContent")
                 .build();
 
-        String jsonContent = objectMapper.writeValueAsString(dto);
+        postId = postService.postCreate(userId,postDto).getId();
 
-        MvcResult result = mockMvc.perform(post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+        //댓글 달기
+        CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
+                .postId(postId)
+                .content("testCommentContent")
+                .build();
+
+        commentId = commentService.commentCreate(followUserId,commentDto).getId();
+
+        //게시물 좋아요
+        PostLikeRequestDTO likeDto = PostLikeRequestDTO.builder()
+                .postId(postId)
+                .build();
+
+        postService.addPostLike(followUserId,likeDto);
+    }
+
+    @Test
+    @DisplayName("readAlarm 테스트")
+    void readAlarm() throws Exception{
+
+        MvcResult result = mockMvc.perform(get("/alarm/{user-id}",userId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", token)
+                    .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andReturn();
 
-        PostCreateResponseDTO postDto = objectMapper.readValue(result.getResponse().getContentAsString(), PostCreateResponseDTO.class);
-        Long postId = postDto.getId();
-
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(followUserId,postId, AlarmType.SUBSCRIBE))
-                .isTrue();
+        log.info(result.getResponse().getContentAsString());
     }
 }

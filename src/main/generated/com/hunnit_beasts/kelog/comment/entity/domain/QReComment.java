@@ -26,7 +26,7 @@ public class QReComment extends EntityPathBase<ReComment> {
 
     public final QComment childComment;
 
-    public final com.hunnit_beasts.kelog.comment.entity.compositekey.QReCommentId id;
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final QComment parentComment;
 
@@ -52,7 +52,6 @@ public class QReComment extends EntityPathBase<ReComment> {
     public QReComment(Class<? extends ReComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.childComment = inits.isInitialized("childComment") ? new QComment(forProperty("childComment"), inits.get("childComment")) : null;
-        this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.comment.entity.compositekey.QReCommentId(forProperty("id")) : null;
         this.parentComment = inits.isInitialized("parentComment") ? new QComment(forProperty("parentComment"), inits.get("parentComment")) : null;
     }
 

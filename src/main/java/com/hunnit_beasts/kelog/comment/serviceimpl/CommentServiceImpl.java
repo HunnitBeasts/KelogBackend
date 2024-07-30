@@ -11,8 +11,10 @@ import com.hunnit_beasts.kelog.comment.repository.CommentContentJpaRepository;
 import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
 import com.hunnit_beasts.kelog.comment.repository.CommentQueryDSLRepository;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
+import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
+import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
@@ -31,6 +33,8 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentQueryDSLRepository commentQueryDSLRepository;
 
+    private final AlarmService alarmService;
+
     @Override
     public CommentCreateResponseDTO commentCreate(Long userId, CommentCreateRequestDTO dto) {
         User commentWriter = userJpaRepository.findById(userId)
@@ -39,7 +43,10 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         Comment createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
         Comment createdComment = commentJpaRepository.save(createdCommentEntity);
-        return commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
+        CommentCreateResponseDTO commentDto = commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
+        alarmService.newCommentAlarm(commentDto);
+
+        return commentDto;
     }
 
     @Override

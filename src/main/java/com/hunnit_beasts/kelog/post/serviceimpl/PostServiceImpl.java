@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.post.serviceimpl;
 
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
+import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
@@ -49,6 +50,7 @@ public class PostServiceImpl implements PostService {
     private final UserQueryDSLRepository userQueryDSLRepository;
 
     private final TagService tagService;
+    private final AlarmService alarmService;
 
     @Override
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {
@@ -60,7 +62,9 @@ public class PostServiceImpl implements PostService {
         if(dto.getTags() != null)
             tagService.createTagPost(dto.getTags(), createdPost);
 
-        return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
+        PostCreateResponseDTO postDto = postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
+        alarmService.newPostAlarm(postDto);
+        return postDto;
     }
 
     @Override
@@ -76,11 +80,15 @@ public class PostServiceImpl implements PostService {
         Post post = postJpaRepository.findById(dto.getPostId())
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
 
-        if(likedPostJpaRepository.existsById(new LikedPostId(user,post)))
+        if(likedPostJpaRepository.existsByPost_IdAndUser_Id(post.getId(),user.getId()))
             throw new ExpectException(ErrorCode.POST_LIKE_DUPLICATION_ERROR);
         else{
             LikedPost likedPost = likedPostJpaRepository.save(new LikedPost(user,post));
-            return new PostLikeResponseDTO(likedPost);
+            PostLikeResponseDTO likePostDto = new PostLikeResponseDTO(likedPost);
+            log.info("Alarm Before");
+            alarmService.newLikeAlarm(likePostDto);
+            log.info("Alarm After");
+            return likePostDto;
         }
     }
 
@@ -104,9 +112,10 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        LikedPostId likedPostId = new LikedPostId(user, post);
-        if (likedPostJpaRepository.existsById(likedPostId))
-            likedPostJpaRepository.deleteById(likedPostId);
+        if (likedPostJpaRepository.existsByPost_IdAndUser_Id(post.getId(),user.getId())) {
+            LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(post.getId(),user.getId());
+            likedPostJpaRepository.deleteById(likedPost.getId());
+        }
         else
             throw new ExpectException(ErrorCode.POST_LIKE_DUPLICATION_ERROR);
         return new PostLikeResponseDTO(userId,postId);

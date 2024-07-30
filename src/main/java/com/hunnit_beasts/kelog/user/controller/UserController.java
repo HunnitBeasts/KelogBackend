@@ -22,6 +22,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(authService.signUp(dto));
     }
+
     @GetMapping("/{user-id}")
     public void searchUser(@PathVariable(value = "user-id") Long userId) {
         throw new UnsupportedOperationException();

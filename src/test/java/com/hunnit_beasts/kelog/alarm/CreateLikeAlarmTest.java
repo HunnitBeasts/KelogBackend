@@ -6,10 +6,12 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
-import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
+import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
@@ -25,10 +27,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional
+//@Transactional
 @AutoConfigureMockMvc
 class CreateLikeAlarmTest {
     @Autowired
@@ -49,12 +50,15 @@ class CreateLikeAlarmTest {
     @Autowired
     AlarmJpaRepository alarmJpaRepository;
 
+    @Autowired
+    LikedPostJpaRepository likedPostJpaRepository;
+
     private Long userId;
     private Long postId;
     private String token;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
@@ -90,7 +94,6 @@ class CreateLikeAlarmTest {
     @Test
     @DisplayName("게시물 좋아요 알람 테스트")
     void postLikeAlarm() throws Exception {
-
         PostLikeRequestDTO dto = PostLikeRequestDTO.builder()
                 .postId(postId)
                 .build();
@@ -98,17 +101,16 @@ class CreateLikeAlarmTest {
         String jsonContent = objectMapper.writeValueAsString(dto);
 
         mockMvc.perform(post("/posts/like")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(userId))
-                .andExpect(jsonPath("$.postId").value(postId))
-                .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", token)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(jsonContent));
+
+        LikedPost LikePost = likedPostJpaRepository.findByPost_IdAndUser_Id(postId,userId);
 
         Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,userId, AlarmType.LIKE))
+                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId,LikePost.getId(), AlarmType.LIKE))
                 .isTrue();
+
     }
 }

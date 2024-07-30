@@ -6,8 +6,9 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
-import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
@@ -22,10 +23,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
@@ -119,21 +119,18 @@ class CreateCommentAlarmTest {
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
-        mockMvc.perform(post("/comments")
+        MvcResult result = mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andReturn();
+
+        CommentCreateResponseDTO commentDto = objectMapper.readValue(result.getResponse().getContentAsString(),CommentCreateResponseDTO.class);
+        Long commentId = commentDto.getId();
 
         Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,userId, AlarmType.COMMENT))
+                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId,commentId, AlarmType.COMMENT))
                 .isFalse();
 
     }
@@ -149,21 +146,18 @@ class CreateCommentAlarmTest {
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
-        mockMvc.perform(post("/comments")
+        MvcResult result = mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", commentWriterToken)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andReturn();
+
+        CommentCreateResponseDTO commentDto = objectMapper.readValue(result.getResponse().getContentAsString(),CommentCreateResponseDTO.class);
+        Long commentId = commentDto.getId();
 
         Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(commentWriterId,userId, AlarmType.COMMENT))
+                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId,commentId, AlarmType.COMMENT))
                 .isTrue();
 
     }

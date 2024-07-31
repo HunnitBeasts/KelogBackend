@@ -10,15 +10,13 @@ import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
-import com.hunnit_beasts.kelog.post.entity.domain.QLikedPost;
-import com.hunnit_beasts.kelog.post.entity.domain.QPost;
-import com.hunnit_beasts.kelog.post.entity.domain.QPostContent;
-import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
+import com.hunnit_beasts.kelog.post.entity.domain.*;
+import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
-import com.querydsl.core.Tuple;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,10 +24,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -211,85 +211,109 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     @Override
     public PostPageResponseDTO findByPostPageDTO(PostPageRequestDTO dto) {
         QPost post = QPost.post;
-        QComment comment = QComment.comment;
-        QLikedPost likedPost = QLikedPost.likedPost;
-        QTagPost tagPost = QTagPost.tagPost;
 
-        JPAQuery<Tuple> query = jpaQueryFactory
-                .select(post.id,
-                        post.thumbImage,
-                        post.title,
-                        post.shortContent,
-                        post.regDate,
-                        post.user.thumbImage,
-                        post.user.nickname,
-                        comment.id.countDistinct().as("commentCount"),
-                        likedPost.likedPostId.userId.countDistinct().as("likeCount"))
-                .from(post)
-                .leftJoin(comment).on(comment.post.eq(post))
-                .leftJoin(likedPost).on(likedPost.post.eq(post))
-                .leftJoin(tagPost).on(tagPost.post.eq(post))
-                .where(createWhereConditions(dto))
-                .groupBy(post.id, post.thumbImage, post.title, post.shortContent, post.regDate, post.user.thumbImage, post.user.nickname);
+        BooleanBuilder whereConditions = createWhereConditions(dto);
 
-        applySort(query, dto.getSort());
-
-        Long totalCountResult = jpaQueryFactory
-                .select(post.count())
-                .from(post)
-                .where(createWhereConditions(dto))
-                .fetchOne();
-
-        long totalCount = totalCountResult != null ? totalCountResult : 0L;
-
-        List<Tuple> results = query
+        List<Post> posts = jpaQueryFactory
+                .selectFrom(post)
+                .where(whereConditions)
+                .orderBy(getOrderSpecifier(dto.getSort()))
                 .offset((dto.getPage() - 1) * dto.getSize())
                 .limit(dto.getSize())
                 .fetch();
 
-        List<PostPageConvert> posts = results.stream()
-                .map(tuple -> new PostPageConvert(
-                        tuple.get(post.id),
-                        tuple.get(post.thumbImage),
-                        tuple.get(post.title),
-                        tuple.get(post.shortContent),
-                        tuple.get(post.regDate),
-                        tuple.get(7, Long.class) != null ? tuple.get(7, Long.class) : 0L,
-                        tuple.get(post.user.thumbImage),
-                        tuple.get(post.user.nickname),
-                        tuple.get(8, Long.class) != null ? tuple.get(8, Long.class) : 0L
-                ))
+        List<Long> postIds = posts.stream().map(Post::getId).collect(Collectors.toList());
+
+        Map<Long, Long> commentCounts = getCommentCounts(postIds);
+        Map<Long, Long> likeCounts = getLikeCounts(postIds);
+
+        List<PostPageConvert> postConverts = posts.stream()
+                .map(p -> mapToPostPageConvert(p, commentCounts.get(p.getId()), likeCounts.get(p.getId())))
                 .collect(Collectors.toList());
 
-        return new PostPageResponseDTO(totalCount, posts);
+        long totalCount = Optional.ofNullable(jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(whereConditions)
+                .fetchOne()).orElse(0L);
+
+        return new PostPageResponseDTO(totalCount, postConverts);
     }
 
-    private BooleanExpression[] createWhereConditions(PostPageRequestDTO dto) {
-        List<BooleanExpression> conditions = new ArrayList<>();
+    private BooleanBuilder createWhereConditions(PostPageRequestDTO dto) {
         QPost post = QPost.post;
         QTagPost tagPost = QTagPost.tagPost;
+        BooleanBuilder builder = new BooleanBuilder();
 
-        if (dto.getTagName() != null && !dto.getTagName().isEmpty())
-            conditions.add(tagPost.tag.tagName.eq(dto.getTagName()));
+        builder.and(post.isPublic.eq(Boolean.TRUE))
+                .and(post.type.eq(PostType.NORMAL));
 
-        if (dto.getSearch() != null && !dto.getSearch().isEmpty())
-            conditions.add(post.title.contains(dto.getSearch()));
+        Optional.ofNullable(dto.getTagName()).ifPresent(tag ->
+                builder.and(post.id.in(
+                        JPAExpressions.select(tagPost.post.id)
+                                .from(tagPost)
+                                .where(tagPost.tag.tagName.eq(tag))
+                ))
+        );
+        Optional.ofNullable(dto.getSearch()).ifPresent(search ->
+                builder.and(post.title.contains(search)));
+        Optional.ofNullable(dto.getUserId()).ifPresent(userId ->
+                builder.and(post.user.id.eq(userId)));
 
-        if (dto.getUserId() != null)
-            conditions.add(post.user.id.eq(dto.getUserId()));
-
-        return conditions.toArray(new BooleanExpression[0]);
+        return builder;
     }
 
-    private void applySort(JPAQuery<Tuple> query, String sort) {
+    private OrderSpecifier<?> getOrderSpecifier(String sort) {
         QPost post = QPost.post;
-        QLikedPost likedPost = QLikedPost.likedPost;
-
-        if ("likes".equals(sort))
-            query.orderBy(likedPost.likedPostId.userId.countDistinct().desc(), post.regDate.desc());
+        // TODO : 추후 sort 요건에 따라 추가 하겠습니다.
+        if (sort.equals("title"))
+            return post.title.desc();
         else
-            query.orderBy(post.regDate.desc());
+            return post.regDate.desc();
+    }
 
+    private Map<Long, Long> getCommentCounts(List<Long> postIds) {
+        QComment comment = QComment.comment;
+        return jpaQueryFactory
+                .select(comment.post.id, comment.count())
+                .from(comment)
+                .where(comment.post.id.in(postIds))
+                .groupBy(comment.post.id)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0, Long.class),
+                        tuple -> Optional.ofNullable(tuple.get(1, Long.class)).orElse(0L)
+                ));
+    }
+
+    private Map<Long, Long> getLikeCounts(List<Long> postIds) {
+        QLikedPost likedPost = QLikedPost.likedPost;
+        return jpaQueryFactory
+                .select(likedPost.post.id, likedPost.count())
+                .from(likedPost)
+                .where(likedPost.post.id.in(postIds))
+                .groupBy(likedPost.post.id)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0, Long.class),
+                        tuple -> Optional.ofNullable(tuple.get(1, Long.class)).orElse(0L)
+                ));
+    }
+
+    private PostPageConvert mapToPostPageConvert(Post post, Long commentCount, Long likeCount) {
+        return new PostPageConvert(
+                post.getId(),
+                post.getThumbImage(),
+                post.getTitle(),
+                post.getShortContent(),
+                post.getRegDate(),
+                commentCount != null ? commentCount : 0L,
+                post.getUser().getThumbImage(),
+                post.getUser().getNickname(),
+                likeCount != null ? likeCount : 0L
+        );
     }
 
     private Long todayViewCnt(Long postId){

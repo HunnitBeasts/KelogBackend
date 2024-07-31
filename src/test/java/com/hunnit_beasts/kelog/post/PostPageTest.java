@@ -1,6 +1,5 @@
 package com.hunnit_beasts.kelog.post;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.KelogApplication;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
@@ -36,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = KelogApplication.class)
 @Transactional
 @AutoConfigureMockMvc
-class PostListTest {
+class PostPageTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -51,14 +50,11 @@ class PostListTest {
     CommentService commentService;
 
     @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
     JwtUtil jwtUtil;
 
     private final List<Long> userIds = new ArrayList<>();
     private final List<Long> postIds = new ArrayList<>();
-    private String token;
+    String token;
     private final Random random = new Random();
 
     @BeforeEach
@@ -77,7 +73,6 @@ class PostListTest {
             userIds.add(userId);
         }
 
-        // Create token for the first user
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(userIds.getFirst())
                 .userId("testUserId0")
@@ -87,8 +82,7 @@ class PostListTest {
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
-        // Create 100 posts with random authors
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             Long authorId = userIds.get(random.nextInt(userIds.size()));
             PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
                     .title("testTitle" + i)
@@ -104,7 +98,6 @@ class PostListTest {
             Long postId = postService.postCreate(authorId, postDto).getId();
             postIds.add(postId);
 
-            // Add likes from odd-indexed users
             for (int j = 1; j < userIds.size(); j += 2) {
                 Long likerId = userIds.get(j);
                 PostLikeRequestDTO likeDto = PostLikeRequestDTO.builder()
@@ -113,7 +106,6 @@ class PostListTest {
                 postService.addPostLike(likerId, likeDto);
             }
 
-            // Add random number of comments (0-3)
             int commentsCount = random.nextInt(4);
             for (int j = 0; j < commentsCount; j++) {
                 Long commenterId = userIds.get(random.nextInt(userIds.size()));
@@ -198,7 +190,7 @@ class PostListTest {
     @Test
     @DisplayName("게시물 리스트 조회 - 사용자별 게시물 테스트")
     void getPostListByUser() throws Exception {
-        Long testUserId = userIds.get(0);
+        Long testUserId = userIds.getFirst();
         mockMvc.perform(get("/posts")
                         .param("user-id", testUserId.toString())
                         .contentType(MediaType.APPLICATION_JSON)

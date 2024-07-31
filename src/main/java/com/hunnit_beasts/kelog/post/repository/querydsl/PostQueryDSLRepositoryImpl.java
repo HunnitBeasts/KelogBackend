@@ -1,9 +1,13 @@
 package com.hunnit_beasts.kelog.post.repository.querydsl;
 
+import com.hunnit_beasts.kelog.comment.entity.domain.QComment;
 import com.hunnit_beasts.kelog.post.dto.convert.PostInfos;
+import com.hunnit_beasts.kelog.post.dto.convert.PostPageConvert;
 import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
 import com.hunnit_beasts.kelog.post.dto.info.ViewCntInfo;
+import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
 import com.hunnit_beasts.kelog.post.entity.domain.QLikedPost;
@@ -11,18 +15,25 @@ import com.hunnit_beasts.kelog.post.entity.domain.QPost;
 import com.hunnit_beasts.kelog.post.entity.domain.QPostContent;
 import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
+@Log4j2
 public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -195,6 +206,90 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .from(post)
                 .where(post.user.userId.eq(userId).and(post.url.eq(url)))
                 .fetchOne();
+    }
+
+    @Override
+    public PostPageResponseDTO findByPostPageDTO(PostPageRequestDTO dto) {
+        QPost post = QPost.post;
+        QComment comment = QComment.comment;
+        QLikedPost likedPost = QLikedPost.likedPost;
+        QTagPost tagPost = QTagPost.tagPost;
+
+        JPAQuery<Tuple> query = jpaQueryFactory
+                .select(post.id,
+                        post.thumbImage,
+                        post.title,
+                        post.shortContent,
+                        post.regDate,
+                        post.user.thumbImage,
+                        post.user.nickname,
+                        comment.id.countDistinct().as("commentCount"),
+                        likedPost.likedPostId.userId.countDistinct().as("likeCount"))
+                .from(post)
+                .leftJoin(comment).on(comment.post.eq(post))
+                .leftJoin(likedPost).on(likedPost.post.eq(post))
+                .leftJoin(tagPost).on(tagPost.post.eq(post))
+                .where(createWhereConditions(dto))
+                .groupBy(post.id, post.thumbImage, post.title, post.shortContent, post.regDate, post.user.thumbImage, post.user.nickname);
+
+        applySort(query, dto.getSort());
+
+        Long totalCountResult = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(createWhereConditions(dto))
+                .fetchOne();
+
+        long totalCount = totalCountResult != null ? totalCountResult : 0L;
+
+        List<Tuple> results = query
+                .offset((dto.getPage() - 1) * dto.getSize())
+                .limit(dto.getSize())
+                .fetch();
+
+        List<PostPageConvert> posts = results.stream()
+                .map(tuple -> new PostPageConvert(
+                        tuple.get(post.id),
+                        tuple.get(post.thumbImage),
+                        tuple.get(post.title),
+                        tuple.get(post.shortContent),
+                        tuple.get(post.regDate),
+                        tuple.get(7, Long.class) != null ? tuple.get(7, Long.class) : 0L,
+                        tuple.get(post.user.thumbImage),
+                        tuple.get(post.user.nickname),
+                        tuple.get(8, Long.class) != null ? tuple.get(8, Long.class) : 0L
+                ))
+                .collect(Collectors.toList());
+
+        return new PostPageResponseDTO(totalCount, posts);
+    }
+
+    private BooleanExpression[] createWhereConditions(PostPageRequestDTO dto) {
+        List<BooleanExpression> conditions = new ArrayList<>();
+        QPost post = QPost.post;
+        QTagPost tagPost = QTagPost.tagPost;
+
+        if (dto.getTagName() != null && !dto.getTagName().isEmpty())
+            conditions.add(tagPost.tag.tagName.eq(dto.getTagName()));
+
+        if (dto.getSearch() != null && !dto.getSearch().isEmpty())
+            conditions.add(post.title.contains(dto.getSearch()));
+
+        if (dto.getUserId() != null)
+            conditions.add(post.user.id.eq(dto.getUserId()));
+
+        return conditions.toArray(new BooleanExpression[0]);
+    }
+
+    private void applySort(JPAQuery<Tuple> query, String sort) {
+        QPost post = QPost.post;
+        QLikedPost likedPost = QLikedPost.likedPost;
+
+        if ("likes".equals(sort))
+            query.orderBy(likedPost.likedPostId.userId.countDistinct().desc(), post.regDate.desc());
+        else
+            query.orderBy(post.regDate.desc());
+
     }
 
     private Long todayViewCnt(Long postId){

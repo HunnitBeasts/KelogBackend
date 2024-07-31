@@ -18,6 +18,6 @@ public interface PostQueryDSLRepository {
     String findContentByPostId(Long postId);
     PostOrderInfo findNextPostByUser(Long userId, Long postId);
     PostOrderInfo findPreviousPostByUser(Long userId, Long postId);
-    Long findPostIdByUserIdAndPostUrl(String userId, String url);
-    Long findAllUserCountByUserId(Long userId);
+    Long getPostIdByUserIdAndPostUrl(String userId, String url);
+    Long getUserCountByUserId(Long userId);
 }

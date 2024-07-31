@@ -108,7 +108,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public UserTagsResponseDTO userTags(Long userId) {
-        Long userPostCount = postQueryDSLRepository.findAllUserCountByUserId(userId);
+        Long userPostCount = postQueryDSLRepository.getUserCountByUserId(userId);
         List<TagInfos> tagInfos = tagQueryDSLRepository.findUserTagsByUserId(userId);
         return new UserTagsResponseDTO(userPostCount,tagInfos);
     }

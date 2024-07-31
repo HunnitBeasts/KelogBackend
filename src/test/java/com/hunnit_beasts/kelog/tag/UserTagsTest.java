@@ -97,7 +97,7 @@ class UserTagsTest {
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.allPostCount ").value(3))
+                .andExpect(jsonPath("$.postCount ").value(3))
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags", hasSize(5)))
                 .andExpect(jsonPath("$.tags[*].tagName", containsInAnyOrder("tag1", "tag2", "tag3", "tag4", "tag5")))

@@ -188,7 +188,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     }
 
     @Override
-    public Long findPostIdByUserIdAndPostUrl(String userId, String url) {
+    public Long getPostIdByUserIdAndPostUrl(String userId, String url) {
         QPost post = QPost.post;
         return jpaQueryFactory
                 .select(post.id)
@@ -198,7 +198,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     }
 
     @Override
-    public Long findAllUserCountByUserId(Long userId) {
+    public Long getUserCountByUserId(Long userId) {
         QPost post = QPost.post;
         return jpaQueryFactory
                 .select(post.count())

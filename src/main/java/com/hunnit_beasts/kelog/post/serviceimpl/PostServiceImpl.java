@@ -186,7 +186,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Long getPostId(String userId, String url) {
-        Long postId = postQueryDSLRepository.findPostIdByUserIdAndPostUrl(userId, url);
+        Long postId = postQueryDSLRepository.getPostIdByUserIdAndPostUrl(userId, url);
         if (postId == null)
             throw new ExpectException(ErrorCode.NO_POST_DATA_ERROR);
         return postId;

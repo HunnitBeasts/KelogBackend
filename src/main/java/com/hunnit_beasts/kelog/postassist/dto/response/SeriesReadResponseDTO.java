@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.postassist.dto.response;
 
-import com.hunnit_beasts.kelog.postassist.dto.convert.SeriesPostInfos;
+import com.hunnit_beasts.kelog.postassist.dto.convert.SeriesPostInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,5 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 public class SeriesReadResponseDTO {
     private String seriesName;
-    private List<SeriesPostInfos> posts;
+    private List<SeriesPostInfo> posts;
 }

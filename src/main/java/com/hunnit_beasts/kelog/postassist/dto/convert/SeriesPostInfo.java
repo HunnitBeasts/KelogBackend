@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class SeriesPostInfos {
+public class SeriesPostInfo {
     private Long postId;
     private String userId;
     private String postUrl;

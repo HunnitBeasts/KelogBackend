@@ -1,7 +1,7 @@
 package com.hunnit_beasts.kelog.postassist.repository;
 
-import com.hunnit_beasts.kelog.postassist.dto.convert.SeriesPostInfos;
-import com.hunnit_beasts.kelog.postassist.dto.convert.UserSeriesInfos;
+import com.hunnit_beasts.kelog.postassist.dto.convert.SeriesPostInfo;
+import com.hunnit_beasts.kelog.postassist.dto.convert.UserSeriesInfo;
 import com.hunnit_beasts.kelog.postassist.dto.response.SeriesReadResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.UserSeriesResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QSeries;
@@ -38,8 +38,8 @@ public class SeriesQueryDSLRepositoryImpl implements SeriesQueryDSLRepository{
     public SeriesReadResponseDTO findSeriesReadResponseDTOById(Long seriesId) {
         QSeriesPost seriesPost = QSeriesPost.seriesPost;
         QSeries series = QSeries.series1;
-        List<SeriesPostInfos> seriesPostInfos = jpaQueryFactory
-                .select(Projections.constructor(SeriesPostInfos.class,
+        List<SeriesPostInfo> seriesPostInfos = jpaQueryFactory
+                .select(Projections.constructor(SeriesPostInfo.class,
                         seriesPost.post.id,
                         seriesPost.post.user.userId,
                         seriesPost.post.url,
@@ -59,8 +59,8 @@ public class SeriesQueryDSLRepositoryImpl implements SeriesQueryDSLRepository{
     @Override
     public UserSeriesResponseDTO findUserSeriesResponseDTOByUserId(Long userId) {
         QSeries series = QSeries.series1;
-        List<UserSeriesInfos> userSeriesInfos = jpaQueryFactory
-                .select(Projections.constructor(UserSeriesInfos.class,
+        List<UserSeriesInfo> userSeriesInfos = jpaQueryFactory
+                .select(Projections.constructor(UserSeriesInfo.class,
                         series.id,
                         series.url,
                         series.seriesName))

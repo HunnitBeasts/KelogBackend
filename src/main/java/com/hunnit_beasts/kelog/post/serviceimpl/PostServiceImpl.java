@@ -2,7 +2,6 @@ package com.hunnit_beasts.kelog.post.serviceimpl;
 
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
-import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
@@ -49,7 +48,6 @@ public class PostServiceImpl implements PostService {
     private final UserQueryDSLRepository userQueryDSLRepository;
 
     private final TagService tagService;
-    private final AlarmService alarmService;
 
     @Override
     public PostCreateResponseDTO postCreate(Long userId, PostCreateRequestDTO dto) {

@@ -13,7 +13,6 @@ import com.hunnit_beasts.kelog.comment.repository.CommentQueryDSLRepository;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
-import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
@@ -31,8 +30,6 @@ public class CommentServiceImpl implements CommentService {
     private final CommentContentJpaRepository commentContentJpaRepository;
 
     private final CommentQueryDSLRepository commentQueryDSLRepository;
-
-    private final AlarmService alarmService;
 
     @Override
     public CommentCreateResponseDTO commentCreate(Long userId, CommentCreateRequestDTO dto) {

@@ -2,7 +2,6 @@ package com.hunnit_beasts.kelog.user.serviceimpl;
 
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
-import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
@@ -32,8 +31,6 @@ public class UserServiceImpl implements UserService {
     private final UserJpaRepository userJpaRepository;
 
     private final UserQueryDSLRepository userQueryDSLRepository;
-
-    private final AlarmService alarmService;
 
     @Override
     public FollowIngResponseDTO following(Long userId, FollowIngRequestDTO dto) {

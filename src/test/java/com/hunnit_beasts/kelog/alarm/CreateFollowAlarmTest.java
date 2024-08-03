@@ -10,7 +10,6 @@ import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
-import com.hunnit_beasts.kelog.user.repository.jpa.FollowerJpaRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,8 +56,6 @@ class CreateFollowAlarmTest {
     private Long userId;
     private String token;
     private Long followedUserId;
-    @Autowired
-    private FollowerJpaRepository followerJpaRepository;
 
     @BeforeEach
     void setUp(){

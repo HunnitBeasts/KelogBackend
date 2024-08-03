@@ -35,8 +35,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,16 +74,8 @@ class DeleteAllAlarmTest {
     @Autowired
     AlarmService alarmService;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
-
     private Long userId;
     private String token;
-    private Long followUserId;
-    private Long postId;
-    private Long commentId;
     @Autowired
     private UserJpaRepository userJpaRepository;
 
@@ -110,7 +100,7 @@ class DeleteAllAlarmTest {
                 .email("testEmail1")
                 .build();
 
-        followUserId = authService.signUp(followUserDTO).getId();
+        Long followUserId = authService.signUp(followUserDTO).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(this.userId)
@@ -139,7 +129,7 @@ class DeleteAllAlarmTest {
                 .content("testContent")
                 .build();
 
-        postId = postService.postCreate(userId, postDto).getId();
+        Long postId = postService.postCreate(userId, postDto).getId();
 
         //댓글 달기
         CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
@@ -147,7 +137,7 @@ class DeleteAllAlarmTest {
                 .content("testCommentContent")
                 .build();
 
-        commentId = commentService.commentCreate(followUserId, commentDto).getId();
+        Long commentId = commentService.commentCreate(followUserId, commentDto).getId();
 
         //게시물 좋아요
         PostLikeRequestDTO likeDto = PostLikeRequestDTO.builder()

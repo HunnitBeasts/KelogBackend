@@ -37,8 +37,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -78,17 +76,10 @@ class ReadAlarmTest {
     LikedPostJpaRepository likedPostJpaRepository;
 
     @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
+    private UserJpaRepository userJpaRepository;
 
     private Long userId;
     private String token;
-    private Long followUserId;
-    private Long postId;
-    private Long commentId;
-    @Autowired
-    private UserJpaRepository userJpaRepository;
 
     @BeforeEach
     void setUp() {
@@ -111,7 +102,7 @@ class ReadAlarmTest {
                 .email("testEmail1")
                 .build();
 
-        followUserId = authService.signUp(followUserDTO).getId();
+        Long followUserId = authService.signUp(followUserDTO).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(this.userId)
@@ -140,7 +131,7 @@ class ReadAlarmTest {
                 .content("testContent")
                 .build();
 
-        postId = postService.postCreate(userId, postDto).getId();
+        Long postId = postService.postCreate(userId, postDto).getId();
 
         //댓글 달기
         CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
@@ -148,7 +139,7 @@ class ReadAlarmTest {
                 .content("testCommentContent")
                 .build();
 
-        commentId = commentService.commentCreate(followUserId, commentDto).getId();
+        Long commentId = commentService.commentCreate(followUserId, commentDto).getId();
 
         //게시물 좋아요
         PostLikeRequestDTO likeDto = PostLikeRequestDTO.builder()

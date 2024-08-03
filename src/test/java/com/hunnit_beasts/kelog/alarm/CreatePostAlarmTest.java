@@ -10,7 +10,6 @@ import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
-import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
@@ -66,8 +65,7 @@ class CreatePostAlarmTest {
     private String token;
     private Long followUserId;
     private Long postId;
-    @Autowired
-    private PostJpaRepository postJpaRepository;
+
 
     @BeforeEach
     void setUp(){

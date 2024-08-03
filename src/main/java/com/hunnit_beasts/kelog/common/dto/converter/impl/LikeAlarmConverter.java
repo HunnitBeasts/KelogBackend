@@ -10,7 +10,6 @@ import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
-import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,7 @@ public class LikeAlarmConverter implements AlarmConverter {
     @Override
     public AlarmReadResponseDTO convert(Alarm alarm) {
 
-        LikedPost likedPost = likedPostJpaRepository.findById(alarm.getTargetId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
+        LikedPost likedPost = likedPostJpaRepository.findById(alarm.getTargetId()).orElseThrow(()->new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         Post post = likedPost.getPost();
         String postTitle = post.getTitle();
         Object detail = new AlarmLikeInfos(postTitle);

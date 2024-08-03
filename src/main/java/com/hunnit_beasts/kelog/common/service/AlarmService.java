@@ -13,6 +13,6 @@ public interface AlarmService {
     void newFollowAlarm(FollowIngResponseDTO dto);
     void newCommentAlarm(CommentCreateResponseDTO dto);
     void newPostAlarm(PostCreateResponseDTO dto);
-    void newReplyAlarm(PostCreateResponseDTO dto);
     List<AlarmReadResponseDTO> readAlarm(Long userId);
+    List<Long> deleteAllAlarm(Long userId);
 }

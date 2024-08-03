@@ -10,8 +10,9 @@ import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
-import jakarta.transaction.Transactional;
+import com.hunnit_beasts.kelog.user.repository.jpa.FollowerJpaRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureMockMvc
 class CreateFollowAlarmTest {
     @Autowired
@@ -46,40 +49,54 @@ class CreateFollowAlarmTest {
     @Autowired
     AlarmJpaRepository alarmJpaRepository;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
+    private TransactionTemplate transactionTemplate;
+
     private Long userId;
     private String token;
     private Long followedUserId;
+    @Autowired
+    private FollowerJpaRepository followerJpaRepository;
 
     @BeforeEach
     void setUp(){
-        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
-                .userId("testUserId")
-                .password("testPassword")
-                .nickname("testNickname")
-                .briefIntro("testBriefIntro")
-                .email("testEmail")
-                .build();
 
-        userId = authService.signUp(userDto).getId();
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
 
-        UserCreateRequestDTO followeeUserDTO = UserCreateRequestDTO.builder()
-                .userId("testUserId1")
-                .password("testPassword1")
-                .nickname("testNickname1")
-                .briefIntro("testBriefIntro1")
-                .email("testEmail1")
-                .build();
+        transactionTemplate.execute(status -> {
+            UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+                    .userId("testUserId")
+                    .password("testPassword")
+                    .nickname("testNickname")
+                    .briefIntro("testBriefIntro")
+                    .email("testEmail")
+                    .build();
 
-        followedUserId = authService.signUp(followeeUserDTO).getId();
+            userId = authService.signUp(userDto).getId();
 
-        CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                .id(this.userId)
-                .userId("testUserId")
-                .password("testPassword")
-                .userType(UserType.USER)
-                .build();
+            UserCreateRequestDTO followeeUserDTO = UserCreateRequestDTO.builder()
+                    .userId("testUserId1")
+                    .password("testPassword1")
+                    .nickname("testNickname1")
+                    .briefIntro("testBriefIntro1")
+                    .email("testEmail1")
+                    .build();
 
-        token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+            followedUserId = authService.signUp(followeeUserDTO).getId();
+
+            CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
+                    .id(this.userId)
+                    .userId("testUserId")
+                    .password("testPassword")
+                    .userType(UserType.USER)
+                    .build();
+
+            token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+
+            return null;
+        });
 
     }
     @Test
@@ -97,8 +114,25 @@ class CreateFollowAlarmTest {
                         .header("Authorization", token)
                         .content(jsonContent));
 
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(followedUserId,userId, AlarmType.FOLLOW))
-                .isTrue();
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(followedUserId, userId, AlarmType.FOLLOW);
+            Assertions.assertThat(check).isTrue();
+        });
+    }
+    @AfterEach
+    void tearDown() {
+        transactionTemplate.execute(status -> {
+            // 알람 삭제
+            alarmJpaRepository.deleteAll();
+
+            // 팔로워 삭제
+            authService.withDraw(followedUserId);
+
+            // 사용자 삭제
+            authService.withDraw(userId);
+
+            return null;
+        });
     }
 }

@@ -8,7 +8,9 @@ import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
+import com.hunnit_beasts.kelog.common.event.CommentEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +24,7 @@ public class CommentController {
 
     private final CommentService commentService;
     private final AuthenticatedService authenticatedService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/{comment-id}")
     public void readComment(@PathVariable(value = "comment-id") Long commentId) {
@@ -37,8 +40,12 @@ public class CommentController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommentCreateResponseDTO> addComment(Authentication authentication,
                                                                @RequestBody CommentCreateRequestDTO dto) {
+
+        CommentCreateResponseDTO responseDTO =
+                commentService.commentCreate(authenticatedService.getId(authentication), dto);
+        eventPublisher.publishEvent(new CommentEvent(responseDTO));
         return ResponseEntity.status(HttpStatus.OK)
-                .body(commentService.commentCreate(authenticatedService.getId(authentication), dto));
+                .body(responseDTO);
     }
 
     @PutMapping("/{comment-id}")

@@ -11,7 +11,6 @@ import com.hunnit_beasts.kelog.comment.repository.CommentContentJpaRepository;
 import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
 import com.hunnit_beasts.kelog.comment.repository.CommentQueryDSLRepository;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
-import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.service.AlarmService;
@@ -43,10 +42,8 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         Comment createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
         Comment createdComment = commentJpaRepository.save(createdCommentEntity);
-        CommentCreateResponseDTO commentDto = commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
-        alarmService.newCommentAlarm(commentDto);
 
-        return commentDto;
+        return commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
     }
 
     @Override

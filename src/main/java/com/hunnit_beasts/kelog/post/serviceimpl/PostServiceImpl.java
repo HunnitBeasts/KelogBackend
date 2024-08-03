@@ -8,7 +8,6 @@ import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.*;
-import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
 import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
@@ -62,9 +61,7 @@ public class PostServiceImpl implements PostService {
         if(dto.getTags() != null)
             tagService.createTagPost(dto.getTags(), createdPost);
 
-        PostCreateResponseDTO postDto = postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
-        alarmService.newPostAlarm(postDto);
-        return postDto;
+        return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
     }
 
     @Override
@@ -84,11 +81,8 @@ public class PostServiceImpl implements PostService {
             throw new ExpectException(ErrorCode.POST_LIKE_DUPLICATION_ERROR);
         else{
             LikedPost likedPost = likedPostJpaRepository.save(new LikedPost(user,post));
-            PostLikeResponseDTO likePostDto = new PostLikeResponseDTO(likedPost);
-            log.info("Alarm Before");
-            alarmService.newLikeAlarm(likePostDto);
-            log.info("Alarm After");
-            return likePostDto;
+
+            return new PostLikeResponseDTO(likedPost);
         }
     }
 

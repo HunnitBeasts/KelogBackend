@@ -46,18 +46,12 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public void newLikeAlarm(PostLikeResponseDTO dto) {
 
-        log.info("Async Method Start");
-        try {
-            Thread.sleep(5000);  // 5초간 대기
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         Post post = postJpaRepository.findById(dto.getPostId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         User receiver = userJpaRepository.findById(post.getUser().getId()).orElseThrow(()->new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(dto.getPostId(), dto.getUserId());
 
         alarmJpaRepository.save(new Alarm(receiver, likedPost.getId(), AlarmType.LIKE));
-        log.info("Async Method End");
+
     }
 
     @Async
@@ -100,12 +94,6 @@ public class AlarmServiceImpl implements AlarmService {
         }
     }
 
-    @Async
-    @Override
-    public void newReplyAlarm(PostCreateResponseDTO dto) {
-
-    }
-
     @Override
     public List<AlarmReadResponseDTO> readAlarm(Long userId) {
         List<Alarm> alarms = alarmJpaRepository.findByUser_Id(userId);
@@ -114,5 +102,17 @@ public class AlarmServiceImpl implements AlarmService {
             dtos.add(converter.convert(alarm));
         }
         return dtos;
+    }
+
+    @Override
+    public List<Long> deleteAllAlarm(Long userId){
+        List<Alarm> alarms = alarmJpaRepository.findByUser_Id(userId);
+        List<Long> deletedIds = new ArrayList<>();
+        for (Alarm deleteAlarm : alarms){
+            deletedIds.add(deleteAlarm.getId());
+        }
+        alarmJpaRepository.deleteAll(alarms);
+
+        return deletedIds;
     }
 }

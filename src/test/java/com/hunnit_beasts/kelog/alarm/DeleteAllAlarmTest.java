@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.alarm;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
@@ -8,15 +8,14 @@ import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
-import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
-import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
@@ -36,20 +35,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @Log4j2
-class ReadAlarmTest {
+class DeleteAllAlarmTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -76,6 +72,9 @@ class ReadAlarmTest {
 
     @Autowired
     LikedPostJpaRepository likedPostJpaRepository;
+
+    @Autowired
+    AlarmService alarmService;
 
     @Autowired
     private PlatformTransactionManager transactionManager;
@@ -155,16 +154,14 @@ class ReadAlarmTest {
                 .postId(postId)
                 .build();
 
-        postService.addPostLike(userId, likeDto);
+        postService.addPostLike(followUserId, likeDto);
 
         User user = userJpaRepository.findById(userId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        User follower = userJpaRepository.findById(followUserId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(postId,userId);
         //좋아요 알람
-        alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE));
+        alarmJpaRepository.save(new Alarm(user, postId, AlarmType.LIKE));
 
         //게시물 알람
-        alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE));
+        alarmJpaRepository.save(new Alarm(user, postId, AlarmType.SUBSCRIBE));
 
         //팔로우 알람
         alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW));
@@ -175,23 +172,16 @@ class ReadAlarmTest {
     }
 
     @Test
-    @DisplayName("readAlarm 테스트")
-    void readAlarm() throws Exception {
+    @DisplayName("알람 전체 삭제 테스트")
+    void deleteAlarm() throws Exception {
 
-        MvcResult result = mockMvc.perform(get("/alarm/{user-id}", userId)
+        mockMvc.perform(delete("/alarm/{user-id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isOk());
 
-        String responseBody = result.getResponse().getContentAsString();
-        List<AlarmReadResponseDTO> alarms = objectMapper.readValue(responseBody, new TypeReference<>() {
-        });
-
-        Assertions.assertThat(alarms).isNotNull().isNotEmpty();
-
-        log.info(responseBody);
+        Assertions.assertThat(alarmService.readAlarm(userId)).isEmpty();
 
     }
 

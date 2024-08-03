@@ -7,14 +7,18 @@ import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
+import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
+import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
+import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
+import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
-import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,11 +28,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureMockMvc
 class CreateCommentAlarmTest {
     @Autowired
@@ -49,6 +56,14 @@ class CreateCommentAlarmTest {
     @Autowired
     AlarmJpaRepository alarmJpaRepository;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private CommentJpaRepository commentJpaRepository;
+
     private Long userId;
     private Long commentWriterId;
     private Long postId;
@@ -57,55 +72,62 @@ class CreateCommentAlarmTest {
 
     @BeforeEach
     void setUp(){
-        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
-                .userId("testUserId")
-                .password("testPassword")
-                .nickname("testNickname")
-                .briefIntro("testBriefIntro")
-                .email("testEmail")
-                .build();
 
-        userId = authService.signUp(userDto).getId();
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
 
-        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
-                .title("testTitle")
-                .type(PostType.NORMAL)
-                .thumbImage("testThumbImage")
-                .isPublic(Boolean.TRUE)
-                .shortContent("testShortContent")
-                .url("testUrl")
-                .content("testContent")
-                .build();
+        transactionTemplate.execute(status -> {
 
-        postId = postService.postCreate(userId, postDto).getId();
+            UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+                    .userId("testUserId")
+                    .password("testPassword")
+                    .nickname("testNickname")
+                    .briefIntro("testBriefIntro")
+                    .email("testEmail")
+                    .build();
 
-        UserCreateRequestDTO commentWriter = UserCreateRequestDTO.builder()
-                .userId("testCommentWriterId")
-                .password("testCommentWriterPassword")
-                .nickname("testCommentWriterNickname")
-                .briefIntro("testBriefIntro")
-                .email("testCommentWriterEmail")
-                .build();
+            userId = authService.signUp(userDto).getId();
 
-        commentWriterId = authService.signUp(commentWriter).getId();
+            PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
+                    .title("testTitle")
+                    .type(PostType.NORMAL)
+                    .thumbImage("testThumbImage")
+                    .isPublic(Boolean.TRUE)
+                    .shortContent("testShortContent")
+                    .url("testUrl")
+                    .content("testContent")
+                    .build();
 
-        CustomUserInfoDTO commentUserInfoDTO = CustomUserInfoDTO.builder()
-                .id(this.commentWriterId)
-                .userId("testCommentWriterId")
-                .password("testCommentWriterPassword")
-                .userType(UserType.USER)
-                .build();
+            postId = postService.postCreate(userId, postDto).getId();
 
-        commentWriterToken = "Bearer " + jwtUtil.createToken(commentUserInfoDTO);
+            UserCreateRequestDTO commentWriter = UserCreateRequestDTO.builder()
+                    .userId("testCommentWriterId")
+                    .password("testCommentWriterPassword")
+                    .nickname("testCommentWriterNickname")
+                    .briefIntro("testBriefIntro")
+                    .email("testCommentWriterEmail")
+                    .build();
 
-        CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                .id(this.userId)
-                .userId("testCommentId")
-                .password("testCommentPassword")
-                .userType(UserType.USER)
-                .build();
+            commentWriterId = authService.signUp(commentWriter).getId();
 
-        token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+            CustomUserInfoDTO commentUserInfoDTO = CustomUserInfoDTO.builder()
+                    .id(this.commentWriterId)
+                    .userId("testCommentWriterId")
+                    .password("testCommentWriterPassword")
+                    .userType(UserType.USER)
+                    .build();
+
+            commentWriterToken = "Bearer " + jwtUtil.createToken(commentUserInfoDTO);
+
+            CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
+                    .id(this.userId)
+                    .userId("testCommentId")
+                    .password("testCommentPassword")
+                    .userType(UserType.USER)
+                    .build();
+
+            token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+            return null;
+        });
 
     }
     @Test
@@ -129,9 +151,11 @@ class CreateCommentAlarmTest {
         CommentCreateResponseDTO commentDto = objectMapper.readValue(result.getResponse().getContentAsString(),CommentCreateResponseDTO.class);
         Long commentId = commentDto.getId();
 
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId,commentId, AlarmType.COMMENT))
-                .isFalse();
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Comment comment = commentJpaRepository.findById(commentId).orElseThrow(()->new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
+            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId, comment.getId(), AlarmType.COMMENT);
+            Assertions.assertThat(check).isFalse();
+        });
 
     }
 
@@ -156,10 +180,33 @@ class CreateCommentAlarmTest {
         CommentCreateResponseDTO commentDto = objectMapper.readValue(result.getResponse().getContentAsString(),CommentCreateResponseDTO.class);
         Long commentId = commentDto.getId();
 
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId,commentId, AlarmType.COMMENT))
-                .isTrue();
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Comment comment = commentJpaRepository.findById(commentId).orElseThrow(()->new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
+            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId, comment.getId(), AlarmType.COMMENT);
+            Assertions.assertThat(check).isTrue();
+        });
 
+    }
+    @AfterEach
+    void tearDown() {
+        transactionTemplate.execute(status -> {
+            // 알람 삭제
+            alarmJpaRepository.deleteAll();
+
+            // 댓글 삭제
+            commentJpaRepository.deleteAll();
+
+            // 게시물 삭제
+            postService.postDelete(postId);
+
+            // 사용자 삭제
+            authService.withDraw(userId);
+
+            //댓글 작성자 삭제
+            authService.withDraw(commentWriterId);
+
+            return null;
+        });
     }
 
 }

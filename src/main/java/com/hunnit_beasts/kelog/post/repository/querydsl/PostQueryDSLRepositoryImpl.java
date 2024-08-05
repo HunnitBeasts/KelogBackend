@@ -1,28 +1,39 @@
 package com.hunnit_beasts.kelog.post.repository.querydsl;
 
+import com.hunnit_beasts.kelog.comment.entity.domain.QComment;
 import com.hunnit_beasts.kelog.post.dto.convert.PostInfos;
+import com.hunnit_beasts.kelog.post.dto.convert.PostPageConvert;
 import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
 import com.hunnit_beasts.kelog.post.dto.info.ViewCntInfo;
+import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
-import com.hunnit_beasts.kelog.post.entity.domain.QLikedPost;
-import com.hunnit_beasts.kelog.post.entity.domain.QPost;
-import com.hunnit_beasts.kelog.post.entity.domain.QPostContent;
-import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
+import com.hunnit_beasts.kelog.post.entity.domain.*;
+import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Repository
 @RequiredArgsConstructor
+@Log4j2
 public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -195,6 +206,114 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .from(post)
                 .where(post.user.userId.eq(userId).and(post.url.eq(url)))
                 .fetchOne();
+    }
+
+    @Override
+    public PostPageResponseDTO findByPostPageDTO(PostPageRequestDTO dto) {
+        QPost post = QPost.post;
+
+        BooleanBuilder whereConditions = createWhereConditions(dto);
+
+        List<Post> posts = jpaQueryFactory
+                .selectFrom(post)
+                .where(whereConditions)
+                .orderBy(getOrderSpecifier(dto.getSort()))
+                .offset((dto.getPage() - 1) * dto.getSize())
+                .limit(dto.getSize())
+                .fetch();
+
+        List<Long> postIds = posts.stream().map(Post::getId).collect(Collectors.toList());
+
+        Map<Long, Long> commentCounts = getCommentCounts(postIds);
+        Map<Long, Long> likeCounts = getLikeCounts(postIds);
+
+        List<PostPageConvert> postConverts = posts.stream()
+                .map(p -> mapToPostPageConvert(p, commentCounts.get(p.getId()), likeCounts.get(p.getId())))
+                .collect(Collectors.toList());
+
+        long totalCount = Optional.ofNullable(jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(whereConditions)
+                .fetchOne()).orElse(0L);
+
+        return new PostPageResponseDTO(totalCount, postConverts);
+    }
+
+    private BooleanBuilder createWhereConditions(PostPageRequestDTO dto) {
+        QPost post = QPost.post;
+        QTagPost tagPost = QTagPost.tagPost;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(post.isPublic.eq(Boolean.TRUE))
+                .and(post.type.eq(PostType.NORMAL));
+
+        Optional.ofNullable(dto.getTagName()).ifPresent(tag ->
+                builder.and(post.id.in(
+                        JPAExpressions.select(tagPost.post.id)
+                                .from(tagPost)
+                                .where(tagPost.tag.tagName.eq(tag))
+                ))
+        );
+        Optional.ofNullable(dto.getSearch()).ifPresent(search ->
+                builder.and(post.title.contains(search)));
+        Optional.ofNullable(dto.getUserId()).ifPresent(userId ->
+                builder.and(post.user.id.eq(userId)));
+
+        return builder;
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sort) {
+        QPost post = QPost.post;
+        // TODO : 추후 sort 요건에 따라 추가 하겠습니다.
+        if (sort.equals("title"))
+            return post.title.desc();
+        else
+            return post.regDate.desc();
+    }
+
+    private Map<Long, Long> getCommentCounts(List<Long> postIds) {
+        QComment comment = QComment.comment;
+        return jpaQueryFactory
+                .select(comment.post.id, comment.count())
+                .from(comment)
+                .where(comment.post.id.in(postIds))
+                .groupBy(comment.post.id)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0, Long.class),
+                        tuple -> Optional.ofNullable(tuple.get(1, Long.class)).orElse(0L)
+                ));
+    }
+
+    private Map<Long, Long> getLikeCounts(List<Long> postIds) {
+        QLikedPost likedPost = QLikedPost.likedPost;
+        return jpaQueryFactory
+                .select(likedPost.post.id, likedPost.count())
+                .from(likedPost)
+                .where(likedPost.post.id.in(postIds))
+                .groupBy(likedPost.post.id)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0, Long.class),
+                        tuple -> Optional.ofNullable(tuple.get(1, Long.class)).orElse(0L)
+                ));
+    }
+
+    private PostPageConvert mapToPostPageConvert(Post post, Long commentCount, Long likeCount) {
+        return new PostPageConvert(
+                post.getId(),
+                post.getThumbImage(),
+                post.getTitle(),
+                post.getShortContent(),
+                post.getRegDate(),
+                commentCount != null ? commentCount : 0L,
+                post.getUser().getThumbImage(),
+                post.getUser().getNickname(),
+                likeCount != null ? likeCount : 0L
+        );
     }
 
     private Long todayViewCnt(Long postId){

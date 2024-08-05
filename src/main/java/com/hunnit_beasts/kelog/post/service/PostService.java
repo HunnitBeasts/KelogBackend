@@ -2,6 +2,7 @@ package com.hunnit_beasts.kelog.post.service;
 
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.*;
 
@@ -16,4 +17,5 @@ public interface PostService {
     PostViewCountResponseDTO viewCntInfos(Long postId);
     PostReadResponseDTO postRead(Long postId, Long userId);
     Long getPostId(String userId, String url);
+    PostPageResponseDTO readPostList(PostPageRequestDTO dto);
 }

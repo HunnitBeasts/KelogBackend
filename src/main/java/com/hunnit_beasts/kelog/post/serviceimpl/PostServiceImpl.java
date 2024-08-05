@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.*;
 import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
@@ -187,10 +188,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Long getPostId(String userId, String url) {
-        Long postId = postQueryDSLRepository.findPostIdByUserIdAndPostUrl(userId, url);
+        Long postId = postQueryDSLRepository.getPostIdByUserIdAndPostUrl(userId, url);
         if (postId == null)
             throw new ExpectException(ErrorCode.NO_POST_DATA_ERROR);
         return postId;
+    }
+
+    @Override
+    public PostPageResponseDTO readPostList(PostPageRequestDTO dto) {
+        return postQueryDSLRepository.findByPostPageDTO(dto);
     }
 
     private boolean isFollowing(Long followerId, Long followeeId) {

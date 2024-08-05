@@ -44,8 +44,15 @@ public class PostController {
     }
 
     @GetMapping
-    public void getPostList() {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<PostPageResponseDTO> getPostList(@RequestParam(value = "tag-name", required = false) String tagName,
+                                                           @RequestParam(value = "sort", defaultValue = "reg-date", required = false) String sort,
+                                                           @RequestParam(value = "page", defaultValue = "1", required = false) Long page,
+                                                           @RequestParam(value = "size", defaultValue = "20", required = false) Long size,
+                                                           @RequestParam(value = "search", required = false) String search,
+                                                           @RequestParam(value = "user-id", required = false) Long userId) {
+        PostPageRequestDTO dto = new PostPageRequestDTO(tagName,sort,page,size,search,userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postService.readPostList(dto));
     }
 
     @PostMapping

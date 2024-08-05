@@ -16,6 +16,7 @@ public class SeriesPost {
     @EmbeddedId
     private SeriesPostId id;
 
+    @Setter
     @Column(nullable = false)
     private Long seriesOrder;
 

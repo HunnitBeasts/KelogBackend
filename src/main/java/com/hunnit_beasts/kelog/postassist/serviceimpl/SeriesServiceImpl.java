@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.postassist.dto.request.SeriesCreateRequestDTO;
+import com.hunnit_beasts.kelog.postassist.dto.request.SeriesUpdateRequestDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.*;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.SeriesPostId;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Series;
@@ -18,6 +19,8 @@ import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,19 @@ public class SeriesServiceImpl implements SeriesService {
 
     @Override
     public SeriesReadResponseDTO readSeries(Long seriesId) {
+        return seriesQueryDSLRepository.findSeriesReadResponseDTOById(seriesId);
+    }
+
+    @Override
+    public SeriesReadResponseDTO updateSeries(Long seriesId, SeriesUpdateRequestDTO dto) {
+        Series series = seriesJpaRepository.findById(seriesId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR));
+        if(!dto.getSeriesName().equals(series.getSeriesName())) {
+            series.setSeriesName(dto.getSeriesName());
+            seriesJpaRepository.save(series);
+        }
+        List<SeriesPost> seriesPosts = seriesQueryDSLRepository.updateOrder(seriesId, dto.getPosts());
+        seriesPostJpaRepository.saveAll(seriesPosts);
         return seriesQueryDSLRepository.findSeriesReadResponseDTOById(seriesId);
     }
 

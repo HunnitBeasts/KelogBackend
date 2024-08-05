@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class LikedPost extends RegEntity {
 
     @Id

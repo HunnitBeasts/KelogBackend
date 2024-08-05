@@ -31,7 +31,7 @@ spring:
     import: classpath:/system-constant.yml
 
 spring-doc:
-  packages-to-scan: com.hunnit_beasts.kelog.controller
+  packages-to-scan: com.hunnit_beasts.kelog
   swagger-ui:
     operations-sorter: alpha
     tags-sorter: alpha

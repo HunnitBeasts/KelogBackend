@@ -20,6 +20,7 @@ public class Series extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(length = 64,nullable = false)
     private String seriesName;
 
@@ -38,4 +39,5 @@ public class Series extends BaseEntity {
         this.url = dto.getUrl();
         this.user = user;
     }
+
 }

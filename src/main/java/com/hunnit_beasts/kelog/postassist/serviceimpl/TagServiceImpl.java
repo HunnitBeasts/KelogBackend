@@ -3,6 +3,8 @@ package com.hunnit_beasts.kelog.postassist.serviceimpl;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
+import com.hunnit_beasts.kelog.post.repository.querydsl.PostQueryDSLRepository;
+import com.hunnit_beasts.kelog.postassist.dto.convert.TagInfos;
 import com.hunnit_beasts.kelog.postassist.dto.response.TagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.UserTagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.TagPostId;
@@ -32,6 +34,7 @@ public class TagServiceImpl implements TagService {
     private final TagJpaRepository tagJpaRepository;
     private final TagPostJpaRepository tagPostJpaRepository;
 
+    private final PostQueryDSLRepository postQueryDSLRepository;
     private final TagQueryDSLRepository tagQueryDSLRepository;
 
     @Override
@@ -105,6 +108,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public UserTagsResponseDTO userTags(Long userId) {
-        return new UserTagsResponseDTO(tagQueryDSLRepository.findUserTagsByUserId(userId));
+        Long userPostCount = postQueryDSLRepository.getUserCountByUserId(userId);
+        List<TagInfos> tagInfos = tagQueryDSLRepository.findUserTagsByUserId(userId);
+        return new UserTagsResponseDTO(userPostCount,tagInfos);
     }
 }

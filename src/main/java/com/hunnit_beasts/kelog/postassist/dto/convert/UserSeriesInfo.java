@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserSeriesInfos {
+public class UserSeriesInfo {
     private Long id;
     private String url;
     private String name;

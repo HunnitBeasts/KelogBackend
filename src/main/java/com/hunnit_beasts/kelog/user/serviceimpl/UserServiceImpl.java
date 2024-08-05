@@ -2,10 +2,12 @@ package com.hunnit_beasts.kelog.user.serviceimpl;
 
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
+import com.hunnit_beasts.kelog.user.dto.convert.FollowerInfos;
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.FollowerReadResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
 import com.hunnit_beasts.kelog.user.entity.compositekey.FollowerId;
 import com.hunnit_beasts.kelog.user.entity.compositekey.SocialInfoId;
@@ -65,6 +67,20 @@ public class UserServiceImpl implements UserService {
         }
 
         return userQueryDSLRepository.findUserSocialsById(userId);
+    }
+
+    @Override
+    public FollowerReadResponseDTO readFollower(Long userId) {
+        List<FollowerInfos> infos = userQueryDSLRepository.findFollowerInfosByUserId(userId);
+        Long count = userQueryDSLRepository.followerCountByUserId(userId);
+        return new FollowerReadResponseDTO(count,infos);
+    }
+
+    @Override
+    public FollowerReadResponseDTO readFollowee(Long userId) {
+        List<FollowerInfos> infos = userQueryDSLRepository.findFolloweeInfosByUserId(userId);
+        Long count = userQueryDSLRepository.followeeCountByUserId(userId);
+        return new FollowerReadResponseDTO(count,infos);
     }
 
     private void processSocialInfo(SocialInfos social, SocialInfoId id, User user) {

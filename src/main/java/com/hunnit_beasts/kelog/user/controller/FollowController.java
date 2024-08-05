@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.common.event.FollowEvent;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.FollowerReadResponseDTO;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,6 +42,18 @@ public class FollowController {
                                                                 Authentication authentication) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(userService.unFollow(authenticatedService.getId(authentication),followeeId));
+    }
+
+    @GetMapping("/{user-id}/your")
+    public ResponseEntity<FollowerReadResponseDTO> followerYour(@PathVariable(value = "user-id") Long userId){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.readFollower(userId));
+    }
+
+    @GetMapping("/{user-id}/me")
+    public ResponseEntity<FollowerReadResponseDTO> followeeMe(@PathVariable(value = "user-id") Long userId){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.readFollowee(userId));
     }
 
 }

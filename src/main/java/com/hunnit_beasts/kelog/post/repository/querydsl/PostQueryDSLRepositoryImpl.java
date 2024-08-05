@@ -19,7 +19,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-@Log4j2
 public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -199,12 +197,22 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     }
 
     @Override
-    public Long findPostIdByUserIdAndPostUrl(String userId, String url) {
+    public Long getPostIdByUserIdAndPostUrl(String userId, String url) {
         QPost post = QPost.post;
         return jpaQueryFactory
                 .select(post.id)
                 .from(post)
                 .where(post.user.userId.eq(userId).and(post.url.eq(url)))
+                .fetchOne();
+    }
+
+    @Override
+    public Long getUserCountByUserId(Long userId) {
+        QPost post = QPost.post;
+        return jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.user.id.eq(userId))
                 .fetchOne();
     }
 

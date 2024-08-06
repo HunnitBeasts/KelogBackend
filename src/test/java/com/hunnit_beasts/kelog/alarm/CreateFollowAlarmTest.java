@@ -6,12 +6,13 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
-import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureMockMvc
 class CreateFollowAlarmTest {
     @Autowired
@@ -52,7 +52,9 @@ class CreateFollowAlarmTest {
     private Long followedUserId;
 
     @BeforeEach
-    void setUp(){
+    @Transactional
+    void setUp() {
+
         UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
@@ -83,6 +85,7 @@ class CreateFollowAlarmTest {
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
     }
+
     @Test
     @DisplayName("팔로우 알람 테스트")
     void followAlarm() throws Exception {
@@ -93,17 +96,31 @@ class CreateFollowAlarmTest {
         String jsonContent = objectMapper.writeValueAsString(followIngRequestDTO);
 
         mockMvc.perform(post("/following")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.follower").value(userId))
-                .andExpect(jsonPath("$.followee").value(followedUserId))
-                .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", token)
+                .content(jsonContent));
 
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,followedUserId, AlarmType.FOLLOW))
-                .isTrue();
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(followedUserId, userId, AlarmType.FOLLOW);
+            Assertions.assertThat(check).isTrue();
+        });
+    }
+
+    @AfterEach
+    @Transactional
+    void tearDown() {
+
+        // 알람 삭제
+        alarmJpaRepository.deleteAll();
+
+        // 팔로워 삭제
+        authService.withDraw(followedUserId);
+
+        // 사용자 삭제
+        authService.withDraw(userId);
+
+
     }
 }

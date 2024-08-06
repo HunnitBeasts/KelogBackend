@@ -11,7 +11,7 @@ public class PostLikeResponseDTO {
     private Long postId;
 
     public PostLikeResponseDTO(LikedPost likedPost){
-        this.userId = likedPost.getLikedPostId().getUserId();
-        this.postId = likedPost.getLikedPostId().getPostId();
+        this.userId = likedPost.getUser().getId();
+        this.postId = likedPost.getPost().getId();
     }
 }

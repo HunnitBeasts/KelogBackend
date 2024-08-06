@@ -7,7 +7,6 @@ import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostUpdateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.*;
-import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.post.entity.compositekey.PostViewCntId;
 import com.hunnit_beasts.kelog.post.entity.compositekey.RecentPostId;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
@@ -76,10 +75,11 @@ public class PostServiceImpl implements PostService {
         Post post = postJpaRepository.findById(dto.getPostId())
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
 
-        if(likedPostJpaRepository.existsById(new LikedPostId(user,post)))
+        if(likedPostJpaRepository.existsByPost_IdAndUser_Id(post.getId(),user.getId()))
             throw new ExpectException(ErrorCode.POST_LIKE_DUPLICATION_ERROR);
         else{
             LikedPost likedPost = likedPostJpaRepository.save(new LikedPost(user,post));
+
             return new PostLikeResponseDTO(likedPost);
         }
     }
@@ -104,9 +104,10 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        LikedPostId likedPostId = new LikedPostId(user, post);
-        if (likedPostJpaRepository.existsById(likedPostId))
-            likedPostJpaRepository.deleteById(likedPostId);
+        if (likedPostJpaRepository.existsByPost_IdAndUser_Id(post.getId(),user.getId())) {
+            LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(post.getId(),user.getId());
+            likedPostJpaRepository.deleteById(likedPost.getId());
+        }
         else
             throw new ExpectException(ErrorCode.POST_LIKE_DUPLICATION_ERROR);
         return new PostLikeResponseDTO(userId,postId);

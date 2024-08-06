@@ -1,22 +1,32 @@
 package com.hunnit_beasts.kelog.alarm;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
+import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.service.CommentService;
+import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
+import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
+import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
-import com.hunnit_beasts.kelog.post.dto.convert.PostInfo;
+import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
+import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
+import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
+import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,15 +35,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class CreatePostAlarmTest {
+@Transactional
+@Log4j2
+class DeleteAllAlarmTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -41,27 +51,36 @@ class CreatePostAlarmTest {
     AuthService authService;
 
     @Autowired
-    PostService postService;
-
-    @Autowired
     ObjectMapper objectMapper;
-
-    @Autowired
-    UserService userService;
 
     @Autowired
     JwtUtil jwtUtil;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
+    PostService postService;
+
+    @Autowired
+    CommentService commentService;
+
+    @Autowired
     AlarmJpaRepository alarmJpaRepository;
+
+    @Autowired
+    LikedPostJpaRepository likedPostJpaRepository;
+
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+
+    @Autowired
+    AlarmService alarmService;
 
     private Long userId;
     private String token;
-    private Long followUserId;
-    private Long postId;
 
     @BeforeEach
-    @Transactional
     void setUp() {
 
         UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
@@ -72,9 +91,8 @@ class CreatePostAlarmTest {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(userDto).getId();
+        this.userId = authService.signUp(userDto).getId();
 
-        //포스트 알람을 위한 팔로우유저, user(userId 가진) 를 팔로우함
         UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
                 .userId("testUserId1")
                 .password("testPassword1")
@@ -83,7 +101,7 @@ class CreatePostAlarmTest {
                 .email("testEmail1")
                 .build();
 
-        followUserId = authService.signUp(followUserDTO).getId();
+        Long followUserId = authService.signUp(followUserDTO).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(this.userId)
@@ -94,19 +112,15 @@ class CreatePostAlarmTest {
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
+        //팔로잉
         FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
                 .followee(userId)
                 .build();
 
         userService.following(followUserId, followIngRequestDTO);
 
-    }
-
-    @Test
-    @DisplayName("게시물 알람 테스트")
-    void tagCreatePostAlarm() throws Exception {
-
-        PostCreateRequestDTO dto = PostCreateRequestDTO.builder()
+        //포스트 생성
+        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
                 .title("testTitle")
                 .type(PostType.NORMAL)
                 .thumbImage("testThumbImage")
@@ -116,39 +130,50 @@ class CreatePostAlarmTest {
                 .content("testContent")
                 .build();
 
-        String jsonContent = objectMapper.writeValueAsString(dto);
+        Long postId = postService.postCreate(userId, postDto).getId();
 
-        MvcResult result = mockMvc.perform(post("/posts")
+        //댓글 달기
+        CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
+                .postId(postId)
+                .content("testCommentContent")
+                .build();
+
+        Long commentId = commentService.commentCreate(followUserId, commentDto).getId();
+
+        //게시물 좋아요
+        PostLikeRequestDTO likeDto = PostLikeRequestDTO.builder()
+                .postId(postId)
+                .build();
+
+        postService.addPostLike(followUserId, likeDto);
+
+        User user = userJpaRepository.findById(userId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+        //좋아요 알람
+        alarmJpaRepository.save(new Alarm(user, postId, AlarmType.LIKE));
+
+        //게시물 알람
+        alarmJpaRepository.save(new Alarm(user, postId, AlarmType.SUBSCRIBE));
+
+        //팔로우 알람
+        alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW));
+
+        //댓글 알람
+        alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT));
+
+    }
+
+    @Test
+    @DisplayName("알람 전체 삭제 테스트")
+    void deleteAlarm() throws Exception {
+
+        mockMvc.perform(delete("/alarm/{user-id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andReturn();
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        PostInfo postDto = objectMapper.readValue(result.getResponse().getContentAsString(), PostInfo.class);
-        this.postId = postDto.getId();
-
-        await().atMost(10, SECONDS).untilAsserted(() -> {
-            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(followUserId, postId, AlarmType.SUBSCRIBE);
-            Assertions.assertThat(check).isTrue();
-        });
-    }
-
-    @AfterEach
-    @Transactional
-    void tearDown() {
-
-        // 알람 삭제
-        alarmJpaRepository.deleteAll();
-
-        // 게시물 삭제
-        postService.postDelete(postId);
-
-        // 사용자 삭제
-        authService.withDraw(userId);
-
-        //팔로워 삭제
-        authService.withDraw(followUserId);
+        Assertions.assertThat(alarmService.readAlarm(userId)).isEmpty();
 
     }
+
 }

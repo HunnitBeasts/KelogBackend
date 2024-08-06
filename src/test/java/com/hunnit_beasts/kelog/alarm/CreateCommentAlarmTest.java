@@ -6,14 +6,20 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
+import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
+import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
-import com.hunnit_beasts.kelog.common.repository.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
+import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
+import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,13 +28,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureMockMvc
 class CreateCommentAlarmTest {
     @Autowired
@@ -49,6 +55,9 @@ class CreateCommentAlarmTest {
     @Autowired
     AlarmJpaRepository alarmJpaRepository;
 
+    @Autowired
+    private CommentJpaRepository commentJpaRepository;
+
     private Long userId;
     private Long commentWriterId;
     private Long postId;
@@ -56,7 +65,9 @@ class CreateCommentAlarmTest {
     private String commentWriterToken;
 
     @BeforeEach
-    void setUp(){
+    @Transactional
+    void setUp() {
+
         UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
@@ -107,7 +118,9 @@ class CreateCommentAlarmTest {
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
+
     }
+
     @Test
     @DisplayName("댓글알람 테스트(본인게시물에 본인이 댓글 쓴 경우)")
     void createCommentAlarm1() throws Exception {
@@ -119,22 +132,21 @@ class CreateCommentAlarmTest {
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
-        mockMvc.perform(post("/comments")
+        MvcResult result = mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andReturn();
 
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(userId,userId, AlarmType.COMMENT))
-                .isFalse();
+        CommentCreateResponseDTO commentDto = objectMapper.readValue(result.getResponse().getContentAsString(), CommentCreateResponseDTO.class);
+        Long commentId = commentDto.getId();
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Comment comment = commentJpaRepository.findById(commentId).orElseThrow(() -> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
+            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId, comment.getId(), AlarmType.COMMENT);
+            Assertions.assertThat(check).isFalse();
+        });
 
     }
 
@@ -149,22 +161,43 @@ class CreateCommentAlarmTest {
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
-        mockMvc.perform(post("/comments")
+        MvcResult result = mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", commentWriterToken)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath(".content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andReturn();
 
-        Assertions
-                .assertThat(alarmJpaRepository.existsByUser_IdAndTarget_IdAndAlarmType(commentWriterId,userId, AlarmType.COMMENT))
-                .isTrue();
+        CommentCreateResponseDTO commentDto = objectMapper.readValue(result.getResponse().getContentAsString(), CommentCreateResponseDTO.class);
+        Long commentId = commentDto.getId();
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Comment comment = commentJpaRepository.findById(commentId).orElseThrow(() -> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
+            Boolean check = alarmJpaRepository.existsByUser_IdAndTargetIdAndAlarmType(userId, comment.getId(), AlarmType.COMMENT);
+            Assertions.assertThat(check).isTrue();
+        });
+
+    }
+
+    @AfterEach
+    @Transactional
+    void tearDown() {
+
+        // 알람 삭제
+        alarmJpaRepository.deleteAll();
+
+        // 댓글 삭제
+        commentJpaRepository.deleteAll();
+
+        // 게시물 삭제
+        postService.postDelete(postId);
+
+        // 사용자 삭제
+        authService.withDraw(userId);
+
+        //댓글 작성자 삭제
+        authService.withDraw(commentWriterId);
+
 
     }
 

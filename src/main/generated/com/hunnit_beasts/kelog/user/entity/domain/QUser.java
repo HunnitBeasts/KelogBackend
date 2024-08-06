@@ -64,8 +64,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<Social, QSocial> socials = this.<Social, QSocial>createList("socials", Social.class, QSocial.class, PathInits.DIRECT2);
 
-    public final ListPath<com.hunnit_beasts.kelog.common.entity.domain.Alarm, com.hunnit_beasts.kelog.common.entity.domain.QAlarm> targets = this.<com.hunnit_beasts.kelog.common.entity.domain.Alarm, com.hunnit_beasts.kelog.common.entity.domain.QAlarm>createList("targets", com.hunnit_beasts.kelog.common.entity.domain.Alarm.class, com.hunnit_beasts.kelog.common.entity.domain.QAlarm.class, PathInits.DIRECT2);
-
     public final StringPath thumbImage = createString("thumbImage");
 
     public final StringPath userId = createString("userId");

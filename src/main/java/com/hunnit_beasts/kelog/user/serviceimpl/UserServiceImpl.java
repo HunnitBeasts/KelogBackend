@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
         if(followerJpaRepository.existsById(new FollowerId(follower,followee)))
             throw new ExpectException(ErrorCode.DUPLICATION_FOLLOW_ERROR);
         Follower follow = followerJpaRepository.save(new Follower(follower,followee));
+
         return new FollowIngResponseDTO(follow);
     }
 

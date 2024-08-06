@@ -2,14 +2,14 @@ package com.hunnit_beasts.kelog.user.controller;
 
 
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
-import com.hunnit_beasts.kelog.common.aop.AlarmAction;
-import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
+import com.hunnit_beasts.kelog.common.event.FollowEvent;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowerReadResponseDTO;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,14 +22,19 @@ public class FollowController {
 
     private final UserService userService;
     private final AuthenticatedService authenticatedService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping
-    @AlarmAction(AlarmType.FOLLOW)
     public ResponseEntity<FollowIngResponseDTO> addFollow(@RequestBody FollowIngRequestDTO dto,
                                                           Authentication authentication) {
         Long userId = authenticatedService.getId(authentication);
+
+        FollowIngResponseDTO responseDTO = userService.following(userId,dto);
+
+        eventPublisher.publishEvent(new FollowEvent(responseDTO));
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.following(userId,dto));
+                .body(responseDTO);
     }
 
     @DeleteMapping("/{followee-id}")

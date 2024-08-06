@@ -1,7 +1,5 @@
 package com.hunnit_beasts.kelog.common.entity.domain;
 
-//import com.hunnit_beasts.kelog.common.entity.compositekey.AlarmId;
-
 import com.hunnit_beasts.kelog.common.entity.superclass.RegEntity;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
@@ -20,23 +18,22 @@ public class Alarm extends RegEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean isCheck; //얘가 sql 예약어랑 똑같아서 테이블 생성이 안되는 오류가 생김 -> isCheck 로 변경
+    private Boolean isCheck;
 
     @Column(nullable = false)
     private AlarmType alarmType;
+
+    @Column
+    private Long targetId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "target_id")
-    private User target;
-
-    public Alarm(User user, User target, AlarmType alarmType){
+    public Alarm(User user, Long targetId, AlarmType alarmType){
         this.alarmType = alarmType;
         this.user = user;
-        this.target = target;
+        this.targetId = targetId;
         this.isCheck = false;
     }
 

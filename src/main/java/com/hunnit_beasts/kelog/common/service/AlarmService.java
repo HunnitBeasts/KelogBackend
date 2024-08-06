@@ -1,12 +1,18 @@
 package com.hunnit_beasts.kelog.common.service;
 
-import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
-import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
+import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
+import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
+import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
+import com.hunnit_beasts.kelog.post.dto.response.PostLikeResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
+
+import java.util.List;
 
 public interface AlarmService {
-    void newLikeAlarm(Long senderId, PostLikeRequestDTO dto);
-    void newFollowAlarm(Long senderId, FollowIngRequestDTO dto);
-    void newCommentAlarm(Long senderId, CommentCreateRequestDTO dto);
-    void newPostAlarm(Long senderId);
+    void newLikeAlarm(PostLikeResponseDTO dto);
+    void newFollowAlarm(FollowIngResponseDTO dto);
+    void newCommentAlarm(CommentCreateResponseDTO dto);
+    void newPostAlarm(PostCreateResponseDTO dto);
+    List<AlarmReadResponseDTO> readAlarm(Long userId);
+    List<Long> deleteAllAlarm(Long userId);
 }

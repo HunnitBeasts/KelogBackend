@@ -1,7 +1,6 @@
 package com.hunnit_beasts.kelog.post.entity.domain;
 
 import com.hunnit_beasts.kelog.common.entity.superclass.RegEntity;
-import com.hunnit_beasts.kelog.post.entity.compositekey.LikedPostId;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,21 +13,19 @@ import lombok.*;
 @ToString
 public class LikedPost extends RegEntity {
 
-    @EmbeddedId
-    private LikedPostId likedPostId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @MapsId("userId")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @MapsId("postId")
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
     public LikedPost(User user, Post post){
-        this.likedPostId = new LikedPostId(user.getId(), post.getId());
         this.user = user;
         this.post = post;
     }

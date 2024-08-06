@@ -39,6 +39,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         Comment createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
         Comment createdComment = commentJpaRepository.save(createdCommentEntity);
+
         return commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
     }
 

@@ -33,7 +33,7 @@ public class QAlarm extends EntityPathBase<Alarm> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
 
-    public final com.hunnit_beasts.kelog.user.entity.domain.QUser target;
+    public final NumberPath<Long> targetId = createNumber("targetId", Long.class);
 
     public final com.hunnit_beasts.kelog.user.entity.domain.QUser user;
 
@@ -55,7 +55,6 @@ public class QAlarm extends EntityPathBase<Alarm> {
 
     public QAlarm(Class<? extends Alarm> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.target = inits.isInitialized("target") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("target"), inits.get("target")) : null;
         this.user = inits.isInitialized("user") ? new com.hunnit_beasts.kelog.user.entity.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

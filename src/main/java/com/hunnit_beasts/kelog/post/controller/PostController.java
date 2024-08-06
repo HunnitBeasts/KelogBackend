@@ -2,14 +2,15 @@ package com.hunnit_beasts.kelog.post.controller;
 
 import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
-import com.hunnit_beasts.kelog.common.aop.AlarmAction;
-import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
+import com.hunnit_beasts.kelog.common.event.PostEvent;
+import com.hunnit_beasts.kelog.common.event.PostLikeEvent;
 import com.hunnit_beasts.kelog.post.dto.request.*;
 import com.hunnit_beasts.kelog.post.dto.response.*;
 import com.hunnit_beasts.kelog.post.service.PostListService;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ public class PostController {
     private final PostService postService;
     private final PostListService postListService;
     private final AuthenticatedService authenticatedService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/{post-id}")
     public ResponseEntity<PostReadResponseDTO> readPost(@PathVariable(value = "post-id") Long postId,
@@ -45,19 +47,27 @@ public class PostController {
 
     @PostMapping
     @PreAuthorize("hasRole('USER')")
-    @AlarmAction(AlarmType.SUBSCRIBE)
     public ResponseEntity<PostCreateResponseDTO> addPost(@RequestBody PostCreateRequestDTO dto,
                                                          Authentication authentication) {
+        PostCreateResponseDTO responseDTO =
+                postService.postCreate(authenticatedService.getId(authentication), dto);
+
+        eventPublisher.publishEvent(new PostEvent(responseDTO));
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.postCreate(authenticatedService.getId(authentication), dto));
+                .body(responseDTO);
     }
 
     @PostMapping("/like")
-    @AlarmAction(AlarmType.LIKE)
     public ResponseEntity<PostLikeResponseDTO> addPostLike(@RequestBody PostLikeRequestDTO dto,
                                                            Authentication authentication) {
+        PostLikeResponseDTO responseDTO =
+                postService.addPostLike(authenticatedService.getId(authentication), dto);
+
+        eventPublisher.publishEvent(new PostLikeEvent(responseDTO));
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.addPostLike(authenticatedService.getId(authentication), dto));
+                .body(responseDTO);
     }
 
     @PostMapping("/count")

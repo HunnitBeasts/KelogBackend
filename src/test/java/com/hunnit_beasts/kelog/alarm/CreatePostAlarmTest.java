@@ -14,6 +14,7 @@ import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import com.hunnit_beasts.kelog.user.service.UserService;
+import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +57,6 @@ class CreatePostAlarmTest {
     @Autowired
     AlarmJpaRepository alarmJpaRepository;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
-
     private Long userId;
     private String token;
     private Long followUserId;
@@ -68,51 +64,47 @@ class CreatePostAlarmTest {
 
 
     @BeforeEach
-    void setUp(){
+    @Transactional
+    void setUp() {
 
-        this.transactionTemplate = new TransactionTemplate(transactionManager);
+        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+                .userId("testUserId")
+                .password("testPassword")
+                .nickname("testNickname")
+                .briefIntro("testBriefIntro")
+                .email("testEmail")
+                .build();
 
-        transactionTemplate.execute(status -> {
-            UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
-                    .userId("testUserId")
-                    .password("testPassword")
-                    .nickname("testNickname")
-                    .briefIntro("testBriefIntro")
-                    .email("testEmail")
-                    .build();
+        userId = authService.signUp(userDto).getId();
 
-            userId = authService.signUp(userDto).getId();
+        //포스트 알람을 위한 팔로우유저, user(userId 가진) 를 팔로우함
+        UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
+                .userId("testUserId1")
+                .password("testPassword1")
+                .nickname("testNickname1")
+                .briefIntro("testBriefIntro1")
+                .email("testEmail1")
+                .build();
 
-            //포스트 알람을 위한 팔로우유저, user(userId 가진) 를 팔로우함
-            UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
-                    .userId("testUserId1")
-                    .password("testPassword1")
-                    .nickname("testNickname1")
-                    .briefIntro("testBriefIntro1")
-                    .email("testEmail1")
-                    .build();
+        followUserId = authService.signUp(followUserDTO).getId();
 
-            followUserId = authService.signUp(followUserDTO).getId();
+        CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
+                .id(this.userId)
+                .userId("testUserId")
+                .password("testPassword")
+                .userType(UserType.USER)
+                .build();
 
-            CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                    .id(this.userId)
-                    .userId("testUserId")
-                    .password("testPassword")
-                    .userType(UserType.USER)
-                    .build();
+        token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
-            token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+        FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
+                .followee(userId)
+                .build();
 
-            FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
-                    .followee(userId)
-                    .build();
-
-            userService.following(followUserId,followIngRequestDTO);
-
-            return null;
-        });
+        userService.following(followUserId, followIngRequestDTO);
 
     }
+
     @Test
     @DisplayName("게시물 알람 테스트")
     void tagCreatePostAlarm() throws Exception {
@@ -144,22 +136,22 @@ class CreatePostAlarmTest {
             Assertions.assertThat(check).isTrue();
         });
     }
+
     @AfterEach
+    @Transactional
     void tearDown() {
-        transactionTemplate.execute(status -> {
-            // 알람 삭제
-            alarmJpaRepository.deleteAll();
 
-            // 게시물 삭제
-            postService.postDelete(postId);
+        // 알람 삭제
+        alarmJpaRepository.deleteAll();
 
-            // 사용자 삭제
-            authService.withDraw(userId);
+        // 게시물 삭제
+        postService.postDelete(postId);
 
-            //팔로워 삭제
-            authService.withDraw(followUserId);
+        // 사용자 삭제
+        authService.withDraw(userId);
 
-            return null;
-        });
+        //팔로워 삭제
+        authService.withDraw(followUserId);
+
     }
 }

@@ -9,37 +9,34 @@ import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostLikeResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AlarmEventListener {
 
     private final AlarmService alarmService;
 
     @EventListener
     public void handlePostEvent(PostEvent event) {
-        PostCreateResponseDTO resDto = event.getDto();
-        alarmService.newPostAlarm(resDto);
+        alarmService.newPostAlarm(event.dto());
     }
 
     @EventListener
     public void handlePostLikeEvent(PostLikeEvent event) {
-        PostLikeResponseDTO resDto = event.getDto();
-        alarmService.newLikeAlarm(resDto);
+        alarmService.newLikeAlarm(event.dto());
     }
 
     @EventListener
     public void handleFollowEvent(FollowEvent event) {
-        FollowIngResponseDTO resDto = event.getDto();
-        alarmService.newFollowAlarm(resDto);
+        alarmService.newFollowAlarm(event.dto());
     }
 
     @EventListener
     public void handleCommentEvent(CommentEvent event) {
-        CommentCreateResponseDTO resDto = event.getDto();
-        alarmService.newCommentAlarm(resDto);
+        alarmService.newCommentAlarm(event.dto());
     }
 }

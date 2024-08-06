@@ -10,6 +10,7 @@ import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
+import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,54 +49,45 @@ class CreateFollowAlarmTest {
     @Autowired
     AlarmJpaRepository alarmJpaRepository;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
-
     private Long userId;
     private String token;
     private Long followedUserId;
 
     @BeforeEach
-    void setUp(){
+    @Transactional
+    void setUp() {
 
-        this.transactionTemplate = new TransactionTemplate(transactionManager);
+        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+                .userId("testUserId")
+                .password("testPassword")
+                .nickname("testNickname")
+                .briefIntro("testBriefIntro")
+                .email("testEmail")
+                .build();
 
-        transactionTemplate.execute(status -> {
-            UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
-                    .userId("testUserId")
-                    .password("testPassword")
-                    .nickname("testNickname")
-                    .briefIntro("testBriefIntro")
-                    .email("testEmail")
-                    .build();
+        userId = authService.signUp(userDto).getId();
 
-            userId = authService.signUp(userDto).getId();
+        UserCreateRequestDTO followeeUserDTO = UserCreateRequestDTO.builder()
+                .userId("testUserId1")
+                .password("testPassword1")
+                .nickname("testNickname1")
+                .briefIntro("testBriefIntro1")
+                .email("testEmail1")
+                .build();
 
-            UserCreateRequestDTO followeeUserDTO = UserCreateRequestDTO.builder()
-                    .userId("testUserId1")
-                    .password("testPassword1")
-                    .nickname("testNickname1")
-                    .briefIntro("testBriefIntro1")
-                    .email("testEmail1")
-                    .build();
+        followedUserId = authService.signUp(followeeUserDTO).getId();
 
-            followedUserId = authService.signUp(followeeUserDTO).getId();
+        CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
+                .id(this.userId)
+                .userId("testUserId")
+                .password("testPassword")
+                .userType(UserType.USER)
+                .build();
 
-            CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                    .id(this.userId)
-                    .userId("testUserId")
-                    .password("testPassword")
-                    .userType(UserType.USER)
-                    .build();
-
-            token = "Bearer " + jwtUtil.createToken(userInfoDTO);
-
-            return null;
-        });
+        token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
     }
+
     @Test
     @DisplayName("팔로우 알람 테스트")
     void followAlarm() throws Exception {
@@ -106,10 +98,10 @@ class CreateFollowAlarmTest {
         String jsonContent = objectMapper.writeValueAsString(followIngRequestDTO);
 
         mockMvc.perform(post("/following")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .content(jsonContent));
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", token)
+                .content(jsonContent));
 
 
         await().atMost(10, SECONDS).untilAsserted(() -> {
@@ -117,19 +109,20 @@ class CreateFollowAlarmTest {
             Assertions.assertThat(check).isTrue();
         });
     }
+
     @AfterEach
+    @Transactional
     void tearDown() {
-        transactionTemplate.execute(status -> {
-            // 알람 삭제
-            alarmJpaRepository.deleteAll();
 
-            // 팔로워 삭제
-            authService.withDraw(followedUserId);
+        // 알람 삭제
+        alarmJpaRepository.deleteAll();
 
-            // 사용자 삭제
-            authService.withDraw(userId);
+        // 팔로워 삭제
+        authService.withDraw(followedUserId);
 
-            return null;
-        });
+        // 사용자 삭제
+        authService.withDraw(userId);
+
+
     }
 }

@@ -2,7 +2,7 @@ package com.hunnit_beasts.kelog.common.dto.converter.impl;
 
 import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
 import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
-import com.hunnit_beasts.kelog.common.dto.convert.AlarmCommentInfos;
+import com.hunnit_beasts.kelog.common.dto.convert.AlarmCommentInfo;
 import com.hunnit_beasts.kelog.common.dto.converter.factory.AlarmConverter;
 import com.hunnit_beasts.kelog.common.dto.converter.util.LinkUtil;
 import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
@@ -28,11 +28,11 @@ public class CommentAlarmConverter implements AlarmConverter {
     public AlarmReadResponseDTO convert(Alarm alarm) {
 
         Comment comment = commentJpaRepository.findById(alarm.getTargetId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
-        Post post1 = postJpaRepository.findById(comment.getPost().getId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        String postTitle1 = post1.getTitle();
-        Object detail = new AlarmCommentInfos(postTitle1,comment.getCommentContent().getContent());
-        User sender = userJpaRepository.findById(post1.getUser().getId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        String link = LinkUtil.createLink(sender.getUserId(), post1.getUrl());
+        Post post = postJpaRepository.findById(comment.getPost().getId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
+        User sender = userJpaRepository.findById(post.getUser().getId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+
+        String link = LinkUtil.createLink(sender.getUserId(), post.getUrl());
+        Object detail = new AlarmCommentInfo(post.getTitle(),comment.getCommentContent().getContent());
 
         return new AlarmReadResponseDTO(alarm,sender,link,detail);
     }

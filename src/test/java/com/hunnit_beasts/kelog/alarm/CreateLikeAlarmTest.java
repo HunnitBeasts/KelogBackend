@@ -14,6 +14,7 @@ import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
+import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,53 +56,45 @@ class CreateLikeAlarmTest {
     @Autowired
     LikedPostJpaRepository likedPostJpaRepository;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
-
     private Long userId;
     private Long postId;
     private String token;
 
     @BeforeEach
+    @Transactional
     void setUp() {
-        this.transactionTemplate = new TransactionTemplate(transactionManager);
 
-        transactionTemplate.execute(status -> {
-            UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
-                    .userId("testUserId")
-                    .password("testPassword")
-                    .nickname("testNickname")
-                    .briefIntro("testBriefIntro")
-                    .email("testEmail")
-                    .build();
+        UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
+                .userId("testUserId")
+                .password("testPassword")
+                .nickname("testNickname")
+                .briefIntro("testBriefIntro")
+                .email("testEmail")
+                .build();
 
-            userId = authService.signUp(userDto).getId();
+        userId = authService.signUp(userDto).getId();
 
-            PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
-                    .title("testTitle")
-                    .type(PostType.NORMAL)
-                    .thumbImage("testThumbImage")
-                    .isPublic(Boolean.TRUE)
-                    .shortContent("testShortContent")
-                    .url("testUrl")
-                    .content("testContent")
-                    .build();
+        PostCreateRequestDTO postDto = PostCreateRequestDTO.builder()
+                .title("testTitle")
+                .type(PostType.NORMAL)
+                .thumbImage("testThumbImage")
+                .isPublic(Boolean.TRUE)
+                .shortContent("testShortContent")
+                .url("testUrl")
+                .content("testContent")
+                .build();
 
-            postId = postService.postCreate(userId, postDto).getId();
+        postId = postService.postCreate(userId, postDto).getId();
 
-            CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
-                    .id(this.userId)
-                    .userId("testUserId")
-                    .password("testPassword")
-                    .userType(UserType.USER)
-                    .build();
+        CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
+                .id(this.userId)
+                .userId("testUserId")
+                .password("testPassword")
+                .userType(UserType.USER)
+                .build();
 
-            token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+        token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
-            return null;
-        });
     }
 
     @Test
@@ -129,22 +122,23 @@ class CreateLikeAlarmTest {
 
 
     }
+
     @AfterEach
+    @Transactional
     void tearDown() {
-        transactionTemplate.execute(status -> {
-            // 알람 삭제
-            alarmJpaRepository.deleteAll();
 
-            // 좋아요 삭제
-            likedPostJpaRepository.deleteAll();
+        // 알람 삭제
+        alarmJpaRepository.deleteAll();
 
-            // 게시물 삭제
-            postService.postDelete(postId);
+        // 좋아요 삭제
+        likedPostJpaRepository.deleteAll();
 
-            // 사용자 삭제
-            authService.withDraw(userId);
+        // 게시물 삭제
+        postService.postDelete(postId);
 
-            return null;
-        });
+        // 사용자 삭제
+        authService.withDraw(userId);
+
+
     }
 }

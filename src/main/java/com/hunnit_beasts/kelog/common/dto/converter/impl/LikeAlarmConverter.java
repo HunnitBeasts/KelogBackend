@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.common.dto.converter.impl;
 
-import com.hunnit_beasts.kelog.common.dto.convert.AlarmLikeInfos;
+import com.hunnit_beasts.kelog.common.dto.convert.AlarmLikeInfo;
 import com.hunnit_beasts.kelog.common.dto.converter.factory.AlarmConverter;
 import com.hunnit_beasts.kelog.common.dto.converter.util.LinkUtil;
 import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
@@ -27,9 +27,9 @@ public class LikeAlarmConverter implements AlarmConverter {
 
         LikedPost likedPost = likedPostJpaRepository.findById(alarm.getTargetId()).orElseThrow(()->new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
         Post post = likedPost.getPost();
-        String postTitle = post.getTitle();
-        Object detail = new AlarmLikeInfos(postTitle);
         User sender = userJpaRepository.findById(likedPost.getUser().getId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+
+        Object detail = new AlarmLikeInfo(post.getTitle());
         String link = LinkUtil.createLink(sender.getUserId(), post.getUrl());
 
         return new AlarmReadResponseDTO(alarm,sender,link,detail);

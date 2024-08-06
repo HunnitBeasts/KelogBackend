@@ -4,8 +4,4 @@ import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
-public class FollowEvent {
-    private final FollowIngResponseDTO dto;
-}
+public record FollowEvent(FollowIngResponseDTO dto) {}

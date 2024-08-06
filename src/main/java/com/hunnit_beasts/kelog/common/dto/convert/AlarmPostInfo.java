@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class AlarmCommentInfos{
+public class AlarmPostInfo {
     private String postTitle;
-    private String commentContent;
 }

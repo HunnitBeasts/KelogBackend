@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class AlarmReadResponseDTO {
     private Long alarmId;
     private AlarmType alarmType;

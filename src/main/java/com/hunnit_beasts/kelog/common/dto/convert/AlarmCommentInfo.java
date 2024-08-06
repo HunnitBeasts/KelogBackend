@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class AlarmFollowInfos{
-    private boolean isFollow;
+public class AlarmCommentInfo {
+    private String postTitle;
+    private String commentContent;
 }

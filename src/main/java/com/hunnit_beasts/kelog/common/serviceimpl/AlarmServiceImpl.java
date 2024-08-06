@@ -96,7 +96,8 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public List<AlarmReadResponseDTO> readAlarm(Long userId) {
-        List<Alarm> alarms = alarmJpaRepository.findByUser_Id(userId);
+        List<Alarm> alarms = alarmJpaRepository.orderByRegDateDesc(
+                alarmJpaRepository.findByUser_Id(userId));
         List<AlarmReadResponseDTO> dtos = new ArrayList<>();
         for(Alarm alarm : alarms) {
             dtos.add(converter.convert(alarm));

@@ -1,6 +1,6 @@
 package com.hunnit_beasts.kelog.common.dto.converter.impl;
 
-import com.hunnit_beasts.kelog.common.dto.convert.AlarmFollowInfos;
+import com.hunnit_beasts.kelog.common.dto.convert.AlarmFollowInfo;
 import com.hunnit_beasts.kelog.common.dto.converter.factory.AlarmConverter;
 import com.hunnit_beasts.kelog.common.dto.converter.util.LinkUtil;
 import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
@@ -23,10 +23,12 @@ public class FollowAlarmConverter implements AlarmConverter {
     @Override
     public AlarmReadResponseDTO convert(Alarm alarm) {
 
-        User sender = userJpaRepository.findById(alarm.getTargetId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+        User sender = userJpaRepository.findById(alarm.getTargetId()).orElseThrow(
+                ()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+
         String link = LinkUtil.createLink(sender.getUserId());
-        boolean isFollow = followerJpaRepository.existsById(new FollowerId(alarm.getUser(),sender));
-        Object detail = new AlarmFollowInfos(isFollow);
+        Object detail = new AlarmFollowInfo(followerJpaRepository.existsById(
+                new FollowerId(alarm.getUser(),sender)));
 
         return new AlarmReadResponseDTO(alarm,sender,link,detail);
     }

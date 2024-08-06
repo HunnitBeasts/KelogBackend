@@ -3,11 +3,12 @@ package com.hunnit_beasts.kelog.common.dto.converter;
 import com.hunnit_beasts.kelog.common.dto.converter.factory.AlarmConverterFactory;
 import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AlarmDtoConverter {
 
    private final AlarmConverterFactory alarmConverterFactory;

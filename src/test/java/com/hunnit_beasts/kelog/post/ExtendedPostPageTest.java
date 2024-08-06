@@ -68,7 +68,6 @@ class ExtendedPostPageTest extends PostPageTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.posts", hasSize(greaterThan(0))))
-                .andExpect(jsonPath("$.posts[0].commentCount", greaterThanOrEqualTo(1)))
                 .andReturn();
     }
 

@@ -21,28 +21,25 @@ import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.repository.querydsl.FollowerQueryDSLRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Log4j2
 public class AlarmServiceImpl implements AlarmService {
     private final AlarmJpaRepository alarmJpaRepository;
     private final PostJpaRepository postJpaRepository;
     private final UserJpaRepository userJpaRepository;
-    private final AlarmDtoConverter converter;
     private final LikedPostJpaRepository likedPostJpaRepository;
 
     private final FollowerQueryDSLRepository followerQueryDSLRepository;
+
+    private final AlarmDtoConverter converter;
 
     @Async
     @Override
@@ -93,8 +90,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public List<AlarmReadResponseDTO> readAlarm(Long userId) {
-        List<Alarm> alarms = alarmJpaRepository.orderByRegDateDesc(
-                alarmJpaRepository.findByUser_Id(userId));
+        List<Alarm> alarms = alarmJpaRepository.findByUser_IdOrderByRegDateDesc(userId);
         List<AlarmReadResponseDTO> dtos = new ArrayList<>();
         for(Alarm alarm : alarms) {
             dtos.add(converter.convert(alarm));

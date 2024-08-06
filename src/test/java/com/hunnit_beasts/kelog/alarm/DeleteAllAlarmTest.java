@@ -72,12 +72,13 @@ class DeleteAllAlarmTest {
     LikedPostJpaRepository likedPostJpaRepository;
 
     @Autowired
+    private UserJpaRepository userJpaRepository;
+
+    @Autowired
     AlarmService alarmService;
 
     private Long userId;
     private String token;
-    @Autowired
-    private UserJpaRepository userJpaRepository;
 
     @BeforeEach
     void setUp() {

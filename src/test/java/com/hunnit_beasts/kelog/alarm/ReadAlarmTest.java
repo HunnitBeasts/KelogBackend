@@ -1,6 +1,5 @@
 package com.hunnit_beasts.kelog.alarm;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
@@ -8,7 +7,6 @@ import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
-import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
@@ -27,7 +25,6 @@ import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,11 +33,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -79,7 +74,9 @@ class ReadAlarmTest {
     private UserJpaRepository userJpaRepository;
 
     private Long userId;
+    private Long followUserId;
     private String token;
+    private String followUserToken;
 
     @BeforeEach
     void setUp() {
@@ -102,7 +99,7 @@ class ReadAlarmTest {
                 .email("testEmail1")
                 .build();
 
-        Long followUserId = authService.signUp(followUserDTO).getId();
+        this.followUserId = authService.signUp(followUserDTO).getId();
 
         CustomUserInfoDTO userInfoDTO = CustomUserInfoDTO.builder()
                 .id(this.userId)
@@ -112,6 +109,15 @@ class ReadAlarmTest {
                 .build();
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+
+        CustomUserInfoDTO followUserInfoDTO = CustomUserInfoDTO.builder()
+                .id(this.followUserId)
+                .userId("testUserId1")
+                .password("testPassword1")
+                .userType(UserType.USER)
+                .build();
+
+        followUserToken = "Bearer " + jwtUtil.createToken(followUserInfoDTO);
 
         //팔로잉
         FollowIngRequestDTO followIngRequestDTO = FollowIngRequestDTO.builder()
@@ -169,20 +175,22 @@ class ReadAlarmTest {
     @DisplayName("readAlarm 테스트")
     void readAlarm() throws Exception {
 
-        MvcResult result = mockMvc.perform(get("/alarm/{user-id}", userId)
+        mockMvc.perform(get("/alarm/{user-id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
                 .andReturn();
 
-        String responseBody = result.getResponse().getContentAsString();
-        List<AlarmReadResponseDTO> alarms = objectMapper.readValue(responseBody, new TypeReference<>() {
-        });
+        mockMvc.perform(get("/alarm/{user-id}", followUserId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", followUserToken)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andReturn();
 
-        Assertions.assertThat(alarms).isNotNull().isNotEmpty();
-
-        log.info(responseBody);
 
     }
 

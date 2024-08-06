@@ -4,7 +4,6 @@ import com.hunnit_beasts.kelog.common.dto.converter.factory.AlarmConverterFactor
 import com.hunnit_beasts.kelog.common.dto.response.AlarmReadResponseDTO;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component

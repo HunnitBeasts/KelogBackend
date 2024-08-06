@@ -7,8 +7,8 @@ import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.post.dto.convert.PostInfo;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
@@ -26,8 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -61,7 +59,6 @@ class CreatePostAlarmTest {
     private String token;
     private Long followUserId;
     private Long postId;
-
 
     @BeforeEach
     @Transactional
@@ -128,7 +125,7 @@ class CreatePostAlarmTest {
                         .content(jsonContent))
                 .andReturn();
 
-        PostCreateResponseDTO postDto = objectMapper.readValue(result.getResponse().getContentAsString(), PostCreateResponseDTO.class);
+        PostInfo postDto = objectMapper.readValue(result.getResponse().getContentAsString(), PostInfo.class);
         this.postId = postDto.getId();
 
         await().atMost(10, SECONDS).untilAsserted(() -> {

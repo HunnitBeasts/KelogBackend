@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.common.aop.AlarmAction;
 import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.post.dto.request.*;
 import com.hunnit_beasts.kelog.post.dto.response.*;
+import com.hunnit_beasts.kelog.post.service.PostListService;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+    private final PostListService postListService;
     private final AuthenticatedService authenticatedService;
 
     @GetMapping("/{post-id}")
@@ -39,18 +41,6 @@ public class PostController {
         Long postId = postService.getPostId(userId,url);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postService.postRead(postId,authenticatedService.getId(authentication)));
-    }
-
-    @GetMapping
-    public ResponseEntity<PostPageResponseDTO> getPostList(@RequestParam(value = "tag-name", required = false) String tagName,
-                                                           @RequestParam(value = "sort", defaultValue = "reg-date", required = false) String sort,
-                                                           @RequestParam(value = "page", defaultValue = "1", required = false) Long page,
-                                                           @RequestParam(value = "size", defaultValue = "20", required = false) Long size,
-                                                           @RequestParam(value = "search", required = false) String search,
-                                                           @RequestParam(value = "user-id", required = false) Long userId) {
-        PostPageRequestDTO dto = new PostPageRequestDTO(tagName,sort,page,size,search,userId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.readPostList(dto));
     }
 
     @PostMapping

@@ -122,7 +122,6 @@ class PostPageTest {
     @DisplayName("게시물 리스트 조회 테스트")
     void getPostList() throws Exception {
         mockMvc.perform(get("/posts")
-                        .param("tag-name", "tag1")
                         .param("sort", "reg-date")
                         .param("page", "1")
                         .param("size", "20")
@@ -133,7 +132,9 @@ class PostPageTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").isNumber())
+                .andExpect(jsonPath("$.count").value(greaterThan(0)))
                 .andExpect(jsonPath("$.posts").isArray())
+                .andExpect(jsonPath("$.posts", hasSize(greaterThan(0))))
                 .andExpect(jsonPath("$.posts", hasSize(lessThanOrEqualTo(20))))
                 .andExpect(jsonPath("$.posts[0].postId").isNumber())
                 .andExpect(jsonPath("$.posts[0].postThumbImage").isString())

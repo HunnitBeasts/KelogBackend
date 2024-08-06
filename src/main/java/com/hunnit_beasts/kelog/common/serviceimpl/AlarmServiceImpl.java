@@ -99,6 +99,18 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    public List<AlarmReadResponseDTO> allAlarmCheck(Long userId) {
+        List<Alarm> alarms = alarmJpaRepository.findByUser_IdAndIsCheckOrderByRegDateDesc(userId, false);
+        List<AlarmReadResponseDTO> dtos = new ArrayList<>();
+        for (Alarm alarm : alarms) {
+            alarm.setIsCheck(true);
+            dtos.add(converter.convert(alarm));
+        }
+
+        return dtos;
+    }
+
+    @Override
     public List<Long> deleteAllAlarm(Long userId){
         List<Alarm> alarms = alarmJpaRepository.findByUser_Id(userId);
         List<Long> deletedIds = new ArrayList<>();

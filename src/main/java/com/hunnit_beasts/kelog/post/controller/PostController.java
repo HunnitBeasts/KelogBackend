@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
-    private final PostListService postListService;
     private final AuthenticatedService authenticatedService;
     private final ApplicationEventPublisher eventPublisher;
 

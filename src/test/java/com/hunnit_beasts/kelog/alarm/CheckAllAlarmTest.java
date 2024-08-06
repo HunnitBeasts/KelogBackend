@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
+import com.hunnit_beasts.kelog.comment.controller.CommentController;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
@@ -12,37 +13,39 @@ import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.post.controller.PostController;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
+import com.hunnit_beasts.kelog.user.controller.UserController;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
-@Log4j2
-class ReadAlarmTest {
+@AutoConfigureMockMvc
+class CheckAllAlarmTest {
+
     @Autowired
     MockMvc mockMvc;
 
@@ -172,26 +175,23 @@ class ReadAlarmTest {
     }
 
     @Test
-    @DisplayName("readAlarm 테스트")
-    void readAlarm() throws Exception {
+    void allCheck() throws Exception {
 
-        mockMvc.perform(get("/alarm/{user-id}", userId)
+        mockMvc.perform(patch("/alarm/{user-id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andReturn();
+                .andExpect(jsonPath("$[0].check").value("true"))
+                .andExpect(jsonPath("$[1].check").value("true"))
+                .andExpect(jsonPath("$[2].check").value("true"));
 
-        mockMvc.perform(get("/alarm/{user-id}", followUserId)
+        mockMvc.perform(patch("/alarm/{user-id}", followUserId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", followUserToken)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andReturn();
-
+                .andExpect(jsonPath("$[0].check").value("true"));
 
     }
-
 }

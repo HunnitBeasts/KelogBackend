@@ -1,9 +1,7 @@
 package com.hunnit_beasts.kelog.post.repository.querydsl;
 
 import com.hunnit_beasts.kelog.post.dto.info.PostOrderInfo;
-import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
-import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostUpdateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostViewCountResponseDTO;
 
@@ -22,5 +20,4 @@ public interface PostQueryDSLRepository {
     PostOrderInfo findPreviousPostByUser(Long userId, Long postId);
     Long getPostIdByUserIdAndPostUrl(String userId, String url);
     Long getUserCountByUserId(Long userId);
-    PostPageResponseDTO findByPostPageDTO(PostPageRequestDTO dto);
 }

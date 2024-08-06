@@ -5,7 +5,6 @@ import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
-import com.hunnit_beasts.kelog.comment.controller.CommentController;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
@@ -13,14 +12,12 @@ import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
-import com.hunnit_beasts.kelog.post.controller.PostController;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.PostLikeRequestDTO;
 import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.repository.jpa.LikedPostJpaRepository;
 import com.hunnit_beasts.kelog.post.service.PostService;
-import com.hunnit_beasts.kelog.user.controller.UserController;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
@@ -34,10 +31,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

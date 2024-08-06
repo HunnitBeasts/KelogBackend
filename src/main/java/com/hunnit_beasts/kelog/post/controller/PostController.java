@@ -6,7 +6,6 @@ import com.hunnit_beasts.kelog.common.event.PostEvent;
 import com.hunnit_beasts.kelog.common.event.PostLikeEvent;
 import com.hunnit_beasts.kelog.post.dto.request.*;
 import com.hunnit_beasts.kelog.post.dto.response.*;
-import com.hunnit_beasts.kelog.post.service.PostListService;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

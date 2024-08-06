@@ -22,12 +22,14 @@ import com.hunnit_beasts.kelog.user.repository.querydsl.FollowerQueryDSLReposito
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -45,10 +47,9 @@ public class AlarmServiceImpl implements AlarmService {
     @Async
     @Override
     public void newLikeAlarm(PostLikeResponseDTO dto) {
-
-        Post post = postJpaRepository.findById(dto.getPostId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        User receiver = userJpaRepository.findById(post.getUser().getId()).orElseThrow(()->new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(dto.getPostId(), dto.getUserId());
+        Post post = findPostById(dto.getPostId());
+        User receiver = findUserById(post.getUser().getId());
+        LikedPost likedPost = findLikedPost(dto.getPostId(), dto.getUserId());
 
         alarmJpaRepository.save(new Alarm(receiver, likedPost.getId(), AlarmType.LIKE));
 
@@ -57,24 +58,20 @@ public class AlarmServiceImpl implements AlarmService {
     @Async
     @Override
     public void newFollowAlarm(FollowIngResponseDTO dto) {
+        User receiver = findUserById(dto.getFollowee());
 
-        Long followerId = dto.getFollower();
-        User receiver = userJpaRepository.findById(dto.getFollowee()).orElseThrow(()->new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-
-        alarmJpaRepository.save(new Alarm(receiver, followerId, AlarmType.FOLLOW));
+        alarmJpaRepository.save(new Alarm(receiver, dto.getFollower(), AlarmType.FOLLOW));
     }
 
     @Async
     @Override
     public void newCommentAlarm(CommentCreateResponseDTO dto) {
-        User sender = userJpaRepository.findById(dto.getUserId()).orElseThrow(()->new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
-        Post post = postJpaRepository.findById(dto.getPostId()).orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
+        User sender = findUserById(dto.getUserId());
+        Post post = findPostById(dto.getPostId());
         User receiver = post.getUser();
 
-        Long commentId = dto.getId();
-
         if(!Objects.equals(sender, receiver)) {
-            alarmJpaRepository.save(new Alarm(receiver, commentId, AlarmType.COMMENT));
+            alarmJpaRepository.save(new Alarm(receiver, dto.getId(), AlarmType.COMMENT));
         }
     }
 
@@ -116,4 +113,19 @@ public class AlarmServiceImpl implements AlarmService {
 
         return deletedIds;
     }
+
+    private User findUserById(Long userId) {
+        return userJpaRepository.findById(userId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+    }
+
+    private Post findPostById(Long postId) {
+        return postJpaRepository.findById(postId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
+    }
+
+    private LikedPost findLikedPost(Long postId, Long userId) {
+        return likedPostJpaRepository.findByPost_IdAndUser_Id(postId, userId);
+    }
+
 }

@@ -99,15 +99,15 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
-    public List<AlarmReadResponseDTO> allAlarmCheck(Long userId) {
-        List<Alarm> alarms = alarmJpaRepository.findByUser_IdAndIsCheckOrderByRegDateDesc(userId, false);
-        List<AlarmReadResponseDTO> dtos = new ArrayList<>();
+    public List<Long> allAlarmCheck(Long userId) {
+        List<Alarm> alarms = alarmJpaRepository.findByUser_IdAndIsCheck(userId, false);
+        List<Long> checkedAlarmIds = new ArrayList<>();
         for (Alarm alarm : alarms) {
             alarm.setIsCheck(true);
-            dtos.add(converter.convert(alarm));
+            checkedAlarmIds.add(alarm.getId());
         }
 
-        return dtos;
+        return checkedAlarmIds;
     }
 
     @Override

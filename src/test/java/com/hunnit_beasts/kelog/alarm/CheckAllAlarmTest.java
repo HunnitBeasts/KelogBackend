@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -176,12 +177,25 @@ class CheckAllAlarmTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/alarm/{user-id}", followUserId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", followUserToken)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        mockMvc.perform(get("/alarm/{user-id}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].check").value("true"))
                 .andExpect(jsonPath("$[1].check").value("true"))
                 .andExpect(jsonPath("$[2].check").value("true"));
 
-        mockMvc.perform(patch("/alarm/{user-id}", followUserId)
+        mockMvc.perform(get("/alarm/{user-id}", followUserId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", followUserToken)
                         .accept(MediaType.APPLICATION_JSON))

@@ -36,7 +36,7 @@ public class AlarmController {
 
     @PatchMapping("/{user-id}")
     @Identification
-    public ResponseEntity<List<AlarmReadResponseDTO>> allAlarmCheck(@PathVariable(value = "user-id") Long userId,
+    public ResponseEntity<List<Long>> allAlarmCheck(@PathVariable(value = "user-id") Long userId,
                                                                     Authentication authentication){
 
         return ResponseEntity.status(HttpStatus.OK).body(alarmService.allAlarmCheck(userId));

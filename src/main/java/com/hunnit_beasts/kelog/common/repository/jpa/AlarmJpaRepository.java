@@ -10,5 +10,5 @@ public interface AlarmJpaRepository extends CrudRepository<Alarm, Long> {
     boolean existsByUser_IdAndTargetIdAndAlarmType(Long userId, Long receiverId, AlarmType alarmType);
     List<Alarm> findByUser_Id(Long userId);
     List<Alarm> findByUser_IdOrderByRegDateDesc(Long userId);
-
+    List<Alarm> findByUser_IdAndIsCheck(Long userId, Boolean isCheck);
 }

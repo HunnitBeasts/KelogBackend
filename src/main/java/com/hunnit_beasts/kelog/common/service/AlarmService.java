@@ -14,5 +14,6 @@ public interface AlarmService {
     void newCommentAlarm(CommentCreateResponseDTO dto);
     void newPostAlarm(PostCreateResponseDTO dto);
     List<AlarmReadResponseDTO> readAlarm(Long userId);
+    List<Long> allAlarmCheck(Long userId);
     List<Long> deleteAllAlarm(Long userId);
 }

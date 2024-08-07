@@ -34,4 +34,12 @@ public class AlarmController {
         return ResponseEntity.status(HttpStatus.OK).body(alarmService.deleteAllAlarm(userId));
     }
 
+    @PatchMapping("/{user-id}")
+    @Identification
+    public ResponseEntity<List<Long>> allAlarmCheck(@PathVariable(value = "user-id") Long userId,
+                                                                    Authentication authentication){
+
+        return ResponseEntity.status(HttpStatus.OK).body(alarmService.allAlarmCheck(userId));
+    }
+
 }

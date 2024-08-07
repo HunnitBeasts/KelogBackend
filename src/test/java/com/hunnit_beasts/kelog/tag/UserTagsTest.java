@@ -25,7 +25,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -105,7 +104,6 @@ class UserTagsTest {
                 .andExpect(jsonPath("$.tags[?(@.tagName == 'tag2')].tagCount").value(2))
                 .andExpect(jsonPath("$.tags[?(@.tagName == 'tag3')].tagCount").value(2))
                 .andExpect(jsonPath("$.tags[?(@.tagName == 'tag4')].tagCount").value(1))
-                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag5')].tagCount").value(1))
-                .andDo(print());
+                .andExpect(jsonPath("$.tags[?(@.tagName == 'tag5')].tagCount").value(1));
     }
 }

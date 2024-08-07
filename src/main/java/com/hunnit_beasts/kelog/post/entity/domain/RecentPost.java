@@ -12,6 +12,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "recent_post", indexes = {
+        @Index(name = "idx_reg_date", columnList = "reg_date")
+})
 public class RecentPost extends RegEntity {
 
     @EmbeddedId

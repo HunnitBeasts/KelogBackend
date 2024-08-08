@@ -4,7 +4,7 @@ import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.TrendPostRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.request.UserLikePostRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.UserRelatedPostRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.enumeration.TrendType;
 import com.hunnit_beasts.kelog.post.service.PostListService;
@@ -44,8 +44,8 @@ public class PostListController {
             @RequestParam(value = "size", defaultValue = "20", required = false) Long size,
             @RequestParam(value = "search", required = false) String search,
             Authentication authentication){
-        UserLikePostRequestDTO dto =
-                new UserLikePostRequestDTO(authenticatedService.getId(authentication),sort,page,size,search);
+        UserRelatedPostRequestDTO dto =
+                new UserRelatedPostRequestDTO(authenticatedService.getId(authentication),sort,page,size,search);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postListService.readLikePosts(dto));
     }
@@ -60,5 +60,19 @@ public class PostListController {
         TrendPostRequestDTO dto = new TrendPostRequestDTO(size,page,search,sort,type);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postListService.trendPosts(dto));
+    }
+
+    @GetMapping("/{user-id}/reading")
+    public ResponseEntity<PostPageResponseDTO> recentPosts(
+            @PathVariable(name = "user-id") Long userId,
+            @RequestParam(value = "sort", defaultValue = "reg-date", required = false) String sort,
+            @RequestParam(value = "page", defaultValue = "1", required = false) Long page,
+            @RequestParam(value = "size", defaultValue = "20", required = false) Long size,
+            @RequestParam(value = "search", required = false) String search,
+            Authentication authentication){
+        UserRelatedPostRequestDTO dto =
+                new UserRelatedPostRequestDTO(authenticatedService.getId(authentication),sort,page,size,search);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postListService.readRecentPosts(dto));
     }
 }

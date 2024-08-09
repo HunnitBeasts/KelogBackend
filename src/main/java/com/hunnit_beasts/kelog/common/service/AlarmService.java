@@ -16,4 +16,5 @@ public interface AlarmService {
     List<AlarmReadResponseDTO> readAlarm(Long userId);
     List<Long> allAlarmCheck(Long userId);
     List<Long> deleteAllAlarm(Long userId);
+    Long alarmCheck(Long alarmId);
 }

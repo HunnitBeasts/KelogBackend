@@ -2,8 +2,10 @@ package com.hunnit_beasts.kelog.common.serviceimpl;
 
 import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
 import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
+import com.hunnit_beasts.kelog.common.entity.domain.Alarm;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
+import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
 import com.hunnit_beasts.kelog.common.service.ValidateService;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
@@ -23,6 +25,7 @@ public class ValidateServiceImpl implements ValidateService {
     private final PostJpaRepository postJpaRepository;
     private final CommentJpaRepository commentJpaRepository;
     private final SeriesJpaRepository seriesJpaRepository;
+    private final AlarmJpaRepository alarmJpaRepository;
 
     @Override
     public void userIdAndUserIdSameCheck(Long id, Long userId) {
@@ -52,5 +55,13 @@ public class ValidateServiceImpl implements ValidateService {
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_SERIES_DATA_ERROR));
         if(!series.getUser().getId().equals(id))
             throw new ExpectException(ErrorCode.NOT_SAME_SERIES_ID_ERROR);
+    }
+
+    @Override
+    public void userIdAndAlarmIdSameCheck(Long id, Long alarmId) {
+        Alarm alarm = alarmJpaRepository.findById(alarmId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_ALARM_DATA_ERROR));
+        if(!alarm.getUser().getId().equals(id))
+            throw new ExpectException(ErrorCode.NOT_SAME_ALARM_ID_ERROR);
     }
 }

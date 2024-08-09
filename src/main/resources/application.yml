@@ -66,6 +66,7 @@ arg-types:
   postId,
   commentId,
   seriesId,
+  alarmId,
 
 upload:
   directory:

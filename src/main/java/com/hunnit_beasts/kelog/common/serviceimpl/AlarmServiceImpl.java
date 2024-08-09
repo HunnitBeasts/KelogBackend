@@ -111,6 +111,14 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    public Long alarmCheck(Long alarmId) {
+        Alarm alarm = findAlarmById(alarmId);
+        if(!alarm.getIsCheck()) alarm.setIsCheck(true);
+
+        return alarmId;
+    }
+
+    @Override
     public List<Long> deleteAllAlarm(Long userId){
         List<Alarm> alarms = alarmJpaRepository.findByUser_Id(userId);
         List<Long> deletedIds = new ArrayList<>();
@@ -134,6 +142,11 @@ public class AlarmServiceImpl implements AlarmService {
 
     private LikedPost findLikedPost(Long postId, Long userId) {
         return likedPostJpaRepository.findByPost_IdAndUser_Id(postId, userId);
+    }
+
+    private Alarm findAlarmById(Long alarmId) {
+        return alarmJpaRepository.findById(alarmId)
+                .orElseThrow(() -> new ExpectException(ErrorCode.NO_ALARM_DATA_ERROR));
     }
 
 }

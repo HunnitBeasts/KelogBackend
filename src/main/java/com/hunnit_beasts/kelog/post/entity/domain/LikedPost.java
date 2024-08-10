@@ -11,6 +11,9 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
+@Table(name = "liked_post", indexes = {
+        @Index(name = "idx_reg_date", columnList = "reg_date")
+})
 public class LikedPost extends RegEntity {
 
     @Id

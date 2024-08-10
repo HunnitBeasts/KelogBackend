@@ -3,8 +3,10 @@ package com.hunnit_beasts.kelog.post.controller;
 import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.TrendPostRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.UserLikePostRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
+import com.hunnit_beasts.kelog.post.enumeration.TrendType;
 import com.hunnit_beasts.kelog.post.service.PostListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,5 +48,17 @@ public class PostListController {
                 new UserLikePostRequestDTO(authenticatedService.getId(authentication),sort,page,size,search);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postListService.readLikePosts(dto));
+    }
+
+    @GetMapping("/trending/{trend-type}")
+    public ResponseEntity<PostPageResponseDTO> trendPosts(
+            @PathVariable(name = "trend-type") TrendType type,
+            @RequestParam(value = "sort", defaultValue = "reg-date", required = false) String sort,
+            @RequestParam(value = "page", defaultValue = "1", required = false) Long page,
+            @RequestParam(value = "size", defaultValue = "20", required = false) Long size,
+            @RequestParam(value = "search", required = false) String search){
+        TrendPostRequestDTO dto = new TrendPostRequestDTO(size,page,search,sort,type);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postListService.trendPosts(dto));
     }
 }

@@ -30,6 +30,9 @@ spring:
   config:
     import: classpath:/system-constant.yml
 
+  cache:
+    type: simple
+
 spring-doc:
   packages-to-scan: com.hunnit_beasts.kelog
   swagger-ui:

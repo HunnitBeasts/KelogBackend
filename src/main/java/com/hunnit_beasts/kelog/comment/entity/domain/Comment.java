@@ -16,6 +16,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "comment", indexes = {
+        @Index(name = "idx_reg_date", columnList = "reg_date")
+})
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

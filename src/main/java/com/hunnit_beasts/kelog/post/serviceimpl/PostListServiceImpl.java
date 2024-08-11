@@ -2,7 +2,7 @@ package com.hunnit_beasts.kelog.post.serviceimpl;
 
 import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.TrendPostRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.request.UserLikePostRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.UserRelatedPostRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.repository.querydsl.PostListQueryDSLRepository;
 import com.hunnit_beasts.kelog.post.service.PostListService;
@@ -23,12 +23,17 @@ public class PostListServiceImpl implements PostListService {
     }
 
     @Override
-    public PostPageResponseDTO readLikePosts(UserLikePostRequestDTO dto) {
+    public PostPageResponseDTO readLikePosts(UserRelatedPostRequestDTO dto) {
         return postListQueryDSLRepository.findByLikePostDTOs(dto);
     }
 
     @Override
     public PostPageResponseDTO trendPosts(TrendPostRequestDTO dto) {
         return trendCachingService.getCachedTrendPosts(dto);
+    }
+
+    @Override
+    public PostPageResponseDTO readRecentPosts(UserRelatedPostRequestDTO dto) {
+        return postListQueryDSLRepository.findByRecentPostDTOs(dto);
     }
 }

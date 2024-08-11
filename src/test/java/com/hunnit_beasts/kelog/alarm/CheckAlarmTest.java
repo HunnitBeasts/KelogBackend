@@ -207,7 +207,9 @@ class CheckAlarmTest {
                 .andExpect(jsonPath("$[2].check").value("true"))
                 .andReturn();
 
-        for (Alarm alarm : checkAlarms){
+        List<Alarm> updatedAlarms = alarmJpaRepository.findByUser_Id(userId);
+
+        for (Alarm alarm : updatedAlarms){
             Assertions.assertThat(alarm.getIsCheck()).isTrue();
         }
 

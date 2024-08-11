@@ -4,20 +4,19 @@ import com.hunnit_beasts.kelog.comment.entity.domain.QComment;
 import com.hunnit_beasts.kelog.post.dto.convert.PostPageConvert;
 import com.hunnit_beasts.kelog.post.dto.request.PostPageRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.request.TrendPostRequestDTO;
-import com.hunnit_beasts.kelog.post.dto.request.UserLikePostRequestDTO;
+import com.hunnit_beasts.kelog.post.dto.request.UserRelatedPostRequestDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostPageResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.superclass.PageRequestDTO;
-import com.hunnit_beasts.kelog.post.entity.domain.Post;
-import com.hunnit_beasts.kelog.post.entity.domain.QLikedPost;
-import com.hunnit_beasts.kelog.post.entity.domain.QPost;
-import com.hunnit_beasts.kelog.post.entity.domain.QPostViewCnt;
+import com.hunnit_beasts.kelog.post.entity.domain.*;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.enumeration.TrendType;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -41,7 +40,7 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
     }
 
     @Override
-    public PostPageResponseDTO findByLikePostDTOs(UserLikePostRequestDTO dto) {
+    public PostPageResponseDTO findByLikePostDTOs(UserRelatedPostRequestDTO dto) {
         return findPosts(dto, this::createUserLikeWhereConditions, this::getOrderSpecifier);
     }
 
@@ -50,10 +49,29 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
         return findPosts(dto, this::createTrendingWhereConditions, this::getTrendingOrderSpecifier);
     }
 
-    private <T extends PageRequestDTO> PostPageResponseDTO findPosts(T dto, Function<T, BooleanBuilder> whereConditionsBuilder, Function<T, OrderSpecifier<?>> orderSpecifierFunction) {
-        BooleanBuilder whereConditions = whereConditionsBuilder.apply(dto);
+    @Override
+    public PostPageResponseDTO findByRecentPostDTOs(UserRelatedPostRequestDTO dto) {
+        return findPosts(dto, this::createRecentPostWhereConditions, this::getRecentPostOrderSpecifier,
+                QRecentPost.recentPost, QRecentPost.recentPost.post);
+    }
 
-        List<Post> posts = fetchPosts(whereConditions, dto, orderSpecifierFunction.apply(dto));
+    private <T extends PageRequestDTO> PostPageResponseDTO findPosts(
+            T dto,
+            Function<T, BooleanBuilder> whereConditionsBuilder,
+            Function<T, OrderSpecifier<?>> orderSpecifierFunction) {
+        return findPosts(dto, whereConditionsBuilder, orderSpecifierFunction, null, null);
+    }
+
+    private <T extends PageRequestDTO> PostPageResponseDTO findPosts(
+            T dto,
+            Function<T, BooleanBuilder> whereConditionsBuilder,
+            Function<T, OrderSpecifier<?>> orderSpecifierFunction,
+            EntityPath<?> joinEntity,
+            QPost subPost) {
+        BooleanBuilder whereConditions = whereConditionsBuilder.apply(dto);
+        OrderSpecifier<?> orderSpecifier = orderSpecifierFunction.apply(dto);
+
+        List<Post> posts = fetchPosts(whereConditions, dto, orderSpecifier, joinEntity, subPost);
         List<Long> postIds = posts.stream().map(Post::getId).collect(Collectors.toList());
 
         Map<Long, Long> commentCounts = getEntityCounts(postIds, QComment.comment, QComment.comment.post.id, dto);
@@ -68,9 +86,20 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
         return new PostPageResponseDTO(totalCount, postConverts);
     }
 
-    private <T extends PageRequestDTO> List<Post> fetchPosts(BooleanBuilder whereConditions, T dto, OrderSpecifier<?> orderSpecifier) {
-        return jpaQueryFactory
-                .selectFrom(QPost.post)
+    private <T extends PageRequestDTO> List<Post> fetchPosts(
+            BooleanBuilder whereConditions,
+            T dto,
+            OrderSpecifier<?> orderSpecifier,
+            EntityPath<?> joinEntity,
+            QPost subPost) {
+
+        QPost post = QPost.post;
+        JPAQuery<Post> query = jpaQueryFactory.selectFrom(post);
+
+        if (joinEntity != null && subPost != null)
+            query.leftJoin(joinEntity).on(subPost.eq(post));
+
+        return query
                 .where(whereConditions)
                 .orderBy(orderSpecifier)
                 .offset((dto.getPage() - 1) * dto.getSize())
@@ -78,9 +107,6 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
                 .fetch();
     }
 
-    // TODO : 현재 사이트 규모가 작아서 1차적으로 모든 날자에 포함된 데이터를 갖고오지만 나중에 규모가 커진다면
-    //  몇백 몇천개의 데이터를 가져올수 있습니다. 따라서 나중에 이 조건을 좀더 까다롭게 (ex. 댓글 수 일정이상, 좋아요 수 일정 이상 등)
-    //  하여 가져오는 것이 서버 부하가 덜 할것으로 예상됩니다.
     private BooleanBuilder createTrendingWhereConditions(TrendPostRequestDTO dto) {
         QPost post = QPost.post;
         LocalDateTime startDate = getStartDateForPeriod(dto.getType());
@@ -102,10 +128,17 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
                 .build();
     }
 
-    private BooleanBuilder createUserLikeWhereConditions(UserLikePostRequestDTO dto) {
+    private BooleanBuilder createUserLikeWhereConditions(UserRelatedPostRequestDTO dto) {
         return new PostQueryBuilder()
                 .addPublicCondition(true)
                 .addLikedPostCondition(dto.getUserId())
+                .addSearchCondition(dto.getSearch())
+                .build();
+    }
+
+    private BooleanBuilder createRecentPostWhereConditions(UserRelatedPostRequestDTO dto) {
+        return new PostQueryBuilder()
+                .addRecentCondition(dto.getUserId())
                 .addSearchCondition(dto.getSearch())
                 .build();
     }
@@ -119,6 +152,11 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
         if (dto instanceof TrendPostRequestDTO trendDto)
             return calculateTrendScore(trendDto).desc();
         return QPost.post.regDate.desc();
+    }
+
+    private OrderSpecifier<?> getRecentPostOrderSpecifier(PageRequestDTO dto) {
+        QRecentPost recentPost = QRecentPost.recentPost;
+        return dto.getSort().equals("postId") ? recentPost.id.postId.desc() : recentPost.regDate.desc();
     }
 
     private <T extends EntityPathBase<?>> Map<Long, Long> getEntityCounts(List<Long> postIds, T entity, NumberPath<Long> postIdPath, PageRequestDTO dto) {
@@ -287,6 +325,16 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
 
         PostQueryBuilder addDateCondition(BooleanExpression dateExpression) {
             builder.and(dateExpression);
+            return this;
+        }
+
+        PostQueryBuilder addRecentCondition(Long userId) {
+            QRecentPost recentPost = QRecentPost.recentPost;
+            builder.and(post.id.in(
+                    JPAExpressions.select(recentPost.post.id)
+                            .from(recentPost)
+                            .where(recentPost.user.id.eq(userId))
+            ));
             return this;
         }
 

@@ -24,6 +24,7 @@ public enum ErrorCode {
     NO_SERIES_DATA_ERROR("CODE B-007"),
     NO_TAG_DATA_ERROR("CODE B-008"),
     NO_SOCIAL_DATA_ERROR("CODE B-009"),
+    NO_ALARM_DATA_ERROR("CODE B-010"),
 
     /*C error type: 잘못된 입력 에러, default status: 409*/
     FILE_SIZE_OVER_ERROR("CODE C-001",413),
@@ -40,6 +41,7 @@ public enum ErrorCode {
     NOT_SAME_COMMENT_ID_ERROR("CODE D-003"),
     NOT_SAME_SERIES_ID_ERROR("CODE D-004"),
     NOT_OPENED_POST_ERROR("CODE D-005"),
+    NOT_SAME_ALARM_ID_ERROR("CODE D-006"),
 
     /*E error type: 서비스 실패 에러, default status: 500*/
     FILE_UPLOAD_FAILURE_ERROR("CODE E-001"),

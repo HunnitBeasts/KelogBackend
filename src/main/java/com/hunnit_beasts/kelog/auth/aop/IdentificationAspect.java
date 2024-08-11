@@ -47,6 +47,7 @@ public class IdentificationAspect {
                 case "postId" -> validatePostId(id, value);
                 case "commentId" -> validateCommentId(id, value);
                 case "seriesId" -> validateSeriesId(id, value);
+                case "alarmId" -> validateAlarmId(id, value);
                 default -> throw new ExpectException(ErrorCode.NO_TARGET_TYPE_ERROR);
             }
         }
@@ -99,4 +100,6 @@ public class IdentificationAspect {
     private void validateSeriesId(Long id, Long seriesId) {
         validateService.userIdAndSeriesIdSameCheck(id, seriesId);
     }
+
+    private void validateAlarmId(Long id, Long alarmId) { validateService.userIdAndAlarmIdSameCheck(id, alarmId);}
 }

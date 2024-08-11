@@ -45,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-@Log4j2
 class CheckAlarmTest {
 
     @Autowired
@@ -82,10 +81,6 @@ class CheckAlarmTest {
     private Long followUserId;
     private String token;
     private String followUserToken;
-    private Long likeAlarmId;
-    private Long postAlarmId;
-    private Long commentAlarmId;
-    private Long followAlarmId;
 
     @BeforeEach
     void setUp() {
@@ -167,16 +162,16 @@ class CheckAlarmTest {
         User follower = userJpaRepository.findById(followUserId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(postId,userId);
         //좋아요 알람
-        likeAlarmId = alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE)).getId();
+        alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE)).getId();
 
         //게시물 알람
-        postAlarmId = alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE)).getId();
+        alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE)).getId();
 
         //팔로우 알람
-        followAlarmId = alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW)).getId();
+        alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW)).getId();
 
         //댓글 알람
-        commentAlarmId = alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT)).getId();
+        alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT)).getId();
 
     }
 

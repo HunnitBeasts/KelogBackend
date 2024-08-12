@@ -34,7 +34,7 @@ public class AlarmController {
         return ResponseEntity.status(HttpStatus.OK).body(alarmService.deleteAllAlarm(userId));
     }
 
-    @PatchMapping("/check/{alarm-id}")
+    @PatchMapping("/{alarm-id}")
     @Identification
     public ResponseEntity<Long> alarmCheck(@PathVariable(value = "alarm-id") Long alarmId,
                                                     Authentication authentication){
@@ -42,7 +42,7 @@ public class AlarmController {
         return ResponseEntity.status(HttpStatus.OK).body(alarmService.alarmCheck(alarmId));
     }
 
-    @PatchMapping("/all-check/{user-id}")
+    @PatchMapping("/{user-id}/check")
     @Identification
     public ResponseEntity<List<Long>> allAlarmCheck(@PathVariable(value = "user-id") Long userId,
                                                                     Authentication authentication){

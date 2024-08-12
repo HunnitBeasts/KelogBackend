@@ -184,7 +184,7 @@ class CheckAlarmTest {
             Assertions.assertThat(alarm.getIsCheck()).isFalse();
         }
 
-        mockMvc.perform(patch("/alarm/all-check/{user-id}", userId)
+        mockMvc.perform(patch("/alarm/{user-id}/check", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
@@ -225,7 +225,7 @@ class CheckAlarmTest {
 
         if(alarmId == -1L) throw new ExpectException(ErrorCode.NO_ALARM_DATA_ERROR);
 
-        mockMvc.perform(patch("/alarm/check/{alarm-id}", alarmId)
+        mockMvc.perform(patch("/alarm/{alarm-id}", alarmId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", followUserToken)
                         .accept(MediaType.APPLICATION_JSON))

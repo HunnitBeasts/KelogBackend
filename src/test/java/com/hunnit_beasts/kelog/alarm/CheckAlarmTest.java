@@ -24,7 +24,6 @@ import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -162,16 +161,16 @@ class CheckAlarmTest {
         User follower = userJpaRepository.findById(followUserId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(postId,userId);
         //좋아요 알람
-        alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE)).getId();
+        alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE));
 
         //게시물 알람
-        alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE)).getId();
+        alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE));
 
         //팔로우 알람
-        alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW)).getId();
+        alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW));
 
         //댓글 알람
-        alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT)).getId();
+        alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT));
 
     }
 

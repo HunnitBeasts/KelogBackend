@@ -102,7 +102,6 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public List<Long> allAlarmCheck(Long userId) {
-
         return alarmQueryDslRepository.updateAllAlarmCheck(userId);
     }
 

@@ -24,7 +24,6 @@ import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-@Log4j2
 class CheckAlarmTest {
 
     @Autowired
@@ -82,10 +80,6 @@ class CheckAlarmTest {
     private Long followUserId;
     private String token;
     private String followUserToken;
-    private Long likeAlarmId;
-    private Long postAlarmId;
-    private Long commentAlarmId;
-    private Long followAlarmId;
 
     @BeforeEach
     void setUp() {
@@ -167,16 +161,16 @@ class CheckAlarmTest {
         User follower = userJpaRepository.findById(followUserId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         LikedPost likedPost = likedPostJpaRepository.findByPost_IdAndUser_Id(postId,userId);
         //좋아요 알람
-        likeAlarmId = alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE)).getId();
+        alarmJpaRepository.save(new Alarm(user, likedPost.getId(), AlarmType.LIKE));
 
         //게시물 알람
-        postAlarmId = alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE)).getId();
+        alarmJpaRepository.save(new Alarm(follower, postId, AlarmType.SUBSCRIBE));
 
         //팔로우 알람
-        followAlarmId = alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW)).getId();
+        alarmJpaRepository.save(new Alarm(user, followUserId, AlarmType.FOLLOW));
 
         //댓글 알람
-        commentAlarmId = alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT)).getId();
+        alarmJpaRepository.save(new Alarm(user, commentId, AlarmType.COMMENT));
 
     }
 
@@ -190,7 +184,7 @@ class CheckAlarmTest {
             Assertions.assertThat(alarm.getIsCheck()).isFalse();
         }
 
-        mockMvc.perform(patch("/alarm/all-check/{user-id}", userId)
+        mockMvc.perform(patch("/alarm/{user-id}/check", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
@@ -207,7 +201,9 @@ class CheckAlarmTest {
                 .andExpect(jsonPath("$[2].check").value("true"))
                 .andReturn();
 
-        for (Alarm alarm : checkAlarms){
+        List<Alarm> updatedAlarms = alarmJpaRepository.findByUser_Id(userId);
+
+        for (Alarm alarm : updatedAlarms){
             Assertions.assertThat(alarm.getIsCheck()).isTrue();
         }
 
@@ -229,7 +225,7 @@ class CheckAlarmTest {
 
         if(alarmId == -1L) throw new ExpectException(ErrorCode.NO_ALARM_DATA_ERROR);
 
-        mockMvc.perform(patch("/alarm/check/{alarm-id}", alarmId)
+        mockMvc.perform(patch("/alarm/{alarm-id}", alarmId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", followUserToken)
                         .accept(MediaType.APPLICATION_JSON))

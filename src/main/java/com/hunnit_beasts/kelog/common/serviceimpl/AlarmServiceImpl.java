@@ -8,6 +8,7 @@ import com.hunnit_beasts.kelog.common.enumeration.AlarmType;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.common.repository.jpa.AlarmJpaRepository;
+import com.hunnit_beasts.kelog.common.repository.querydsl.AlarmQueryDslRepository;
 import com.hunnit_beasts.kelog.common.service.AlarmService;
 import com.hunnit_beasts.kelog.post.dto.response.PostCreateResponseDTO;
 import com.hunnit_beasts.kelog.post.dto.response.PostLikeResponseDTO;
@@ -38,6 +39,7 @@ public class AlarmServiceImpl implements AlarmService {
     private final LikedPostJpaRepository likedPostJpaRepository;
 
     private final FollowerQueryDSLRepository followerQueryDSLRepository;
+    private final AlarmQueryDslRepository alarmQueryDslRepository;
 
     private final AlarmDtoConverter converter;
 
@@ -100,14 +102,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public List<Long> allAlarmCheck(Long userId) {
-        List<Alarm> alarms = alarmJpaRepository.findByUser_IdAndIsCheck(userId, false);
-        List<Long> checkedAlarmIds = new ArrayList<>();
-        for (Alarm alarm : alarms) {
-            alarm.setIsCheck(true);
-            checkedAlarmIds.add(alarm.getId());
-        }
-
-        return checkedAlarmIds;
+        return alarmQueryDslRepository.updateAllAlarmCheck(userId);
     }
 
     @Override

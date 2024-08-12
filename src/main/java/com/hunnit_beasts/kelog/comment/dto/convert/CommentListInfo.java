@@ -12,7 +12,5 @@ public class CommentListInfo {
     private String nickname;
     private LocalDateTime regDate;
     private String content;
-    @Setter
-    private Long level;
     private Long replyCount;
 }

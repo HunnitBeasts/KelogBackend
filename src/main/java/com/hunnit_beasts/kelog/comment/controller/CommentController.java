@@ -32,7 +32,7 @@ public class CommentController {
         throw new UnsupportedOperationException();
     }
 
-    @GetMapping("/all-comment-read/{post-id}")
+    @GetMapping("/{post-id}/list")
     public ResponseEntity<CommentListReadResponseDTO> commentList(@PathVariable(value = "post-id") Long postId) {
 
         return ResponseEntity.status(HttpStatus.OK)

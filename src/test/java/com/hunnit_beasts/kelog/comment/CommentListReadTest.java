@@ -92,7 +92,7 @@ class CommentListReadTest {
     @Test
     void commentListTest() throws Exception{
 
-        mockMvc.perform(get("/comments/all-comment-read/{post-id}",postId)
+        mockMvc.perform(get("/comments/{post-id}/list",postId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", token)
                     .accept(MediaType.APPLICATION_JSON))

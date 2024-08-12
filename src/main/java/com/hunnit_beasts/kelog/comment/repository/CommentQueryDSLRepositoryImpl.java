@@ -55,11 +55,10 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
     public List<CommentListInfo> findCommentListInfosByPostId(Long postId) {
         QComment comment = QComment.comment;
         QCommentContent commentContent = QCommentContent.commentContent;
-        QPost post = QPost.post;
         QUser user = QUser.user;
 
-        List<CommentListInfo> results = jpaQueryFactory
-                .select(Projections.fields(CommentListInfo.class,
+        return jpaQueryFactory
+                .select(Projections.constructor(CommentListInfo.class,
                         comment.id,
                         user.thumbImage,
                         user.nickname,
@@ -70,36 +69,7 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
                 .from(comment)
                 .join(comment.commentContent,commentContent)
                 .join(comment.user,user)
-                .where(comment.post.id.eq(post.id))
+                .where(comment.post.id.eq(postId))
                 .fetch();
-
-        for(CommentListInfo commentListInfo : results) {
-            Long level = calculateLevel(commentListInfo.getId());
-            commentListInfo.setLevel(level);
-        }
-
-        return results;
-    }
-
-    private Long calculateLevel(Long commentId){
-        QComment comment = QComment.comment;
-        Long level = 0L;
-
-        Long parentId = jpaQueryFactory
-                .select(comment.parentReComment.id)
-                .from(comment)
-                .where(comment.id.eq(commentId))
-                .fetchOne();
-
-        while(parentId != null){
-            level++;
-            parentId = jpaQueryFactory
-                    .select(comment.parentReComment.id)
-                    .from(comment)
-                    .where(comment.id.eq(commentId))
-                    .fetchOne();
-        }
-
-        return level;
     }
 }

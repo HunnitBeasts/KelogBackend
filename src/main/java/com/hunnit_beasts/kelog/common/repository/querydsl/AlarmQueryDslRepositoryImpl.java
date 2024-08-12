@@ -31,7 +31,7 @@ public class AlarmQueryDslRepositoryImpl implements AlarmQueryDslRepository{
             jpaQueryFactory
                     .update(alarm)
                     .set(alarm.isCheck, true)
-                    .where(alarm.id.in(uncheckedAlarmIds))
+                    .where(alarm.user.id.eq(userId))
                     .execute();
         }
 

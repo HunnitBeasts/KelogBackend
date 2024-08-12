@@ -4,12 +4,7 @@ import com.hunnit_beasts.kelog.comment.dto.convert.CommentListInfo;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.entity.domain.QComment;
-import com.hunnit_beasts.kelog.comment.entity.domain.QCommentContent;
-import com.hunnit_beasts.kelog.post.entity.domain.QPost;
-import com.hunnit_beasts.kelog.user.entity.domain.QUser;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.NumberTemplate;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -54,22 +49,19 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
     @Override
     public List<CommentListInfo> findCommentListInfosByPostId(Long postId) {
         QComment comment = QComment.comment;
-        QCommentContent commentContent = QCommentContent.commentContent;
-        QUser user = QUser.user;
 
         return jpaQueryFactory
                 .select(Projections.constructor(CommentListInfo.class,
                         comment.id,
-                        user.thumbImage,
-                        user.nickname,
+                        comment.user.thumbImage,
+                        comment.user.nickname,
                         comment.regDate,
-                        commentContent.content,
-                        comment.childReComments.size().as("replyCount")
+                        comment.commentContent.content,
+                        comment.childReComments.size().castToNum(Long.class)
                         ))
                 .from(comment)
-                .join(comment.commentContent,commentContent)
-                .join(comment.user,user)
                 .where(comment.post.id.eq(postId))
+                .orderBy(comment.regDate.asc())
                 .fetch();
     }
 }

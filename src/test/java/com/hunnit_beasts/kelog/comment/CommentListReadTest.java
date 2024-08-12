@@ -5,6 +5,8 @@ import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
+import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
@@ -35,6 +37,9 @@ class CommentListReadTest {
 
     @Autowired
     PostService postService;
+
+    @Autowired
+    CommentService commentService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -87,6 +92,15 @@ class CommentListReadTest {
                 .build();
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+
+        for(int i=0; i<10; i++){
+            CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
+                    .postId(postId)
+                    .content("testCommentContent")
+                    .build();
+
+            commentService.commentCreate(userId, commentDto);
+        }
     }
 
     @Test
@@ -98,7 +112,13 @@ class CommentListReadTest {
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("infos").isArray())
-                .andExpect(jsonPath("count").value(0L));
+                .andExpect(jsonPath("infos[0].id").isNumber())
+                .andExpect(jsonPath("infos[0].thumbImage").isString())
+                .andExpect(jsonPath("infos[0].nickname").isString())
+                .andExpect(jsonPath("infos[0].regDate").isString())
+                .andExpect(jsonPath("infos[0].content").isString())
+                .andExpect(jsonPath("infos[0].replyCount").isNumber())
+                .andExpect(jsonPath("count").value(10L));
 
     }
 

@@ -1,11 +1,12 @@
 package com.hunnit_beasts.kelog.comment.dto.convert;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class CommentListInfo {
     private Long id;
     private String thumbImage;

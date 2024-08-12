@@ -7,8 +7,6 @@ import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentListReadResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 
-import java.util.List;
-
 public interface CommentService {
     CommentCreateResponseDTO commentCreate(Long userId, CommentCreateRequestDTO dto);
     CommentDeleteResponseDTO commentDelete(Long commentId);

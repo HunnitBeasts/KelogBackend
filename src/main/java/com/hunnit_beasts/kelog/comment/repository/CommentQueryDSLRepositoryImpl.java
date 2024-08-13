@@ -1,5 +1,6 @@
 package com.hunnit_beasts.kelog.comment.repository;
 
+import com.hunnit_beasts.kelog.comment.dto.convert.CommentListInfo;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.entity.domain.QComment;
@@ -7,6 +8,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,5 +44,24 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
                 .from(comment)
                 .where(comment.id.eq(id))
                 .fetchOne();
+    }
+
+    @Override
+    public List<CommentListInfo> findCommentListInfosByPostId(Long postId) {
+        QComment comment = QComment.comment;
+
+        return jpaQueryFactory
+                .select(Projections.constructor(CommentListInfo.class,
+                        comment.id,
+                        comment.user.thumbImage,
+                        comment.user.nickname,
+                        comment.regDate,
+                        comment.commentContent.content,
+                        comment.childReComments.size().castToNum(Long.class)
+                        ))
+                .from(comment)
+                .where(comment.post.id.eq(postId))
+                .orderBy(comment.regDate.asc())
+                .fetch();
     }
 }

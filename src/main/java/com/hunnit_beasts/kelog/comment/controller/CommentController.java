@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentUpdateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
+import com.hunnit_beasts.kelog.comment.dto.response.CommentListReadResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.common.event.CommentEvent;
@@ -31,9 +32,11 @@ public class CommentController {
         throw new UnsupportedOperationException();
     }
 
-    @GetMapping("/{post-id}")
-    public void commentList(@PathVariable(value = "post-id") Long postId) {
-        throw new UnsupportedOperationException();
+    @GetMapping("/{post-id}/list")
+    public ResponseEntity<CommentListReadResponseDTO> commentList(@PathVariable(value = "post-id") Long postId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(commentService.commentListRead(postId));
     }
 
     @PostMapping

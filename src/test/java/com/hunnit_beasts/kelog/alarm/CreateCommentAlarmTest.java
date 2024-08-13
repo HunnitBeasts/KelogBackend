@@ -118,7 +118,6 @@ class CreateCommentAlarmTest {
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
-
     }
 
     @Test

@@ -1,9 +1,11 @@
 package com.hunnit_beasts.kelog.comment.serviceimpl;
 
+import com.hunnit_beasts.kelog.comment.dto.convert.CommentListInfo;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentUpdateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
+import com.hunnit_beasts.kelog.comment.dto.response.CommentListReadResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
 import com.hunnit_beasts.kelog.comment.entity.domain.CommentContent;
@@ -19,6 +21,9 @@ import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +60,15 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
         commentContentJpaRepository.save(commentContent.commentContentUpdate(dto));
         return commentQueryDSLRepository.findCommentUpdateResponseDTOById(commentId);
+    }
+
+    @Override
+    public CommentListReadResponseDTO commentListRead(Long postId) {
+
+        Long count = commentJpaRepository.countByPost_Id(postId);
+        List<CommentListInfo> infos = new ArrayList<>();
+        if(count != 0L)
+            infos = commentQueryDSLRepository.findCommentListInfosByPostId(postId);
+        return new CommentListReadResponseDTO(count,infos);
     }
 }

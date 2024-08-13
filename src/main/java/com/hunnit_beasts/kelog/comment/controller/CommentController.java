@@ -4,10 +4,7 @@ import com.hunnit_beasts.kelog.auth.aop.Identification;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentUpdateRequestDTO;
-import com.hunnit_beasts.kelog.comment.dto.response.CommentCreateResponseDTO;
-import com.hunnit_beasts.kelog.comment.dto.response.CommentDeleteResponseDTO;
-import com.hunnit_beasts.kelog.comment.dto.response.CommentListReadResponseDTO;
-import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
+import com.hunnit_beasts.kelog.comment.dto.response.*;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.common.event.CommentEvent;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +25,10 @@ public class CommentController {
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/{comment-id}")
-    public void readComment(@PathVariable(value = "comment-id") Long commentId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<CommentReadResponseDTO> readComment(@PathVariable(value = "comment-id") Long commentId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(commentService.commentRead(commentId));
     }
 
     @GetMapping("/{post-id}/list")

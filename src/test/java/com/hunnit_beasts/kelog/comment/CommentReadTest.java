@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class CommentListReadTest {
+class CommentReadTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -47,11 +47,11 @@ class CommentListReadTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private Long postId;
+    private Long commentId;
     private String token;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         UserCreateRequestDTO userDto = UserCreateRequestDTO.builder()
                 .userId("testUserId")
                 .password("testPassword")
@@ -72,7 +72,7 @@ class CommentListReadTest {
                 .content("testContent")
                 .build();
 
-        postId = postService.postCreate(userId, postDto).getId();
+        Long postId = postService.postCreate(userId, postDto).getId();
 
         UserCreateRequestDTO commentWriter = UserCreateRequestDTO.builder()
                 .userId("testCommentWriterId")
@@ -93,32 +93,28 @@ class CommentListReadTest {
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
 
-        for(int i=0; i<10; i++){
-            CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
-                    .postId(postId)
-                    .content("testCommentContent")
-                    .build();
+        CommentCreateRequestDTO commentDto = CommentCreateRequestDTO.builder()
+                .postId(postId)
+                .content("testCommentContent")
+                .build();
 
-            commentService.commentCreate(commentWriterId, commentDto);
-        }
+        commentId = commentService.commentCreate(commentWriterId, commentDto).getId();
     }
 
     @Test
-    void commentListTest() throws Exception{
+    void commentListTest() throws Exception {
 
-        mockMvc.perform(get("/comments/{post-id}/list",postId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", token)
-                    .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/comments/{comment-id}", commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("infos").isArray())
-                .andExpect(jsonPath("infos[0].id").isNumber())
-                .andExpect(jsonPath("infos[0].thumbImage").isString())
-                .andExpect(jsonPath("infos[0].nickname").value("testCommentWriterNickname"))
-                .andExpect(jsonPath("infos[0].regDate").isString())
-                .andExpect(jsonPath("infos[0].content").value("testCommentContent"))
-                .andExpect(jsonPath("infos[0].replyCount").isNumber())
-                .andExpect(jsonPath("count").value(10L));
+                .andExpect(jsonPath("id").isNumber())
+                .andExpect(jsonPath("thumbImage").isString())
+                .andExpect(jsonPath("nickname").value("testCommentWriterNickname"))
+                .andExpect(jsonPath("regDate").isString())
+                .andExpect(jsonPath("content").value("testCommentContent"))
+                .andExpect(jsonPath("replyCount").value(0L));
 
     }
 }

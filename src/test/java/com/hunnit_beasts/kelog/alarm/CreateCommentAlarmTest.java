@@ -197,7 +197,6 @@ class CreateCommentAlarmTest {
         //댓글 작성자 삭제
         authService.withDraw(commentWriterId);
 
-
     }
 
 }

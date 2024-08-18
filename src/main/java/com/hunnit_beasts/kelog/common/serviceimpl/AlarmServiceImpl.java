@@ -51,7 +51,6 @@ public class AlarmServiceImpl implements AlarmService {
         LikedPost likedPost = findLikedPost(dto.getPostId(), dto.getUserId());
 
         alarmJpaRepository.save(new Alarm(receiver, likedPost.getId(), AlarmType.LIKE));
-
     }
 
     @Async

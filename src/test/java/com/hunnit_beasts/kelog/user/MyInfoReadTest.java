@@ -58,7 +58,6 @@ class MyInfoReadTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private Long userId;
     private String token;
 
     @BeforeEach
@@ -71,7 +70,7 @@ class MyInfoReadTest {
                 .email("testEmail")
                 .build();
 
-        userId = authService.signUp(dto).getId();
+        Long userId = authService.signUp(dto).getId();
 
         UserCreateRequestDTO followUserDTO = UserCreateRequestDTO.builder()
                 .userId("testUserId1")

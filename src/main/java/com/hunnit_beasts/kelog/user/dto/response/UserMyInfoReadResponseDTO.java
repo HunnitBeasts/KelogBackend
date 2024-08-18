@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 public class UserMyInfoReadResponseDTO extends UserMyInfo {
-    private List<SocialInfos> socials;
+    private final List<SocialInfos> socials;
 
     public UserMyInfoReadResponseDTO(UserMyInfo myInfo, List<SocialInfos> socials) {
         super(myInfo.getNickname(),

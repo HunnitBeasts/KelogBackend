@@ -3,7 +3,9 @@ package com.hunnit_beasts.kelog.user.repository.querydsl;
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.convert.FollowerInfos;
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
+import com.hunnit_beasts.kelog.user.dto.convert.UserMyInfo;
 import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.entity.domain.QFollower;
 import com.hunnit_beasts.kelog.user.entity.domain.QSocial;
 import com.hunnit_beasts.kelog.user.entity.domain.QUser;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -51,15 +54,8 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
 
     @Override
     public SocialUpdateResponseDTO findUserSocialsById(Long id) {
-        QSocial social = QSocial.social;
-        List<SocialInfos> socialInfos = jpaQueryFactory
-                .select(Projections.constructor(SocialInfos.class,
-                        social.link,
-                        social.id.socialType))
-                .from(social)
-                .where(social.id.userId.eq(id))
-                .fetch();
-        return new SocialUpdateResponseDTO(id,socialInfos);
+
+        return new SocialUpdateResponseDTO(id,createSocials(id));
     }
 
     @Override
@@ -136,4 +132,41 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
                 .where(follow.followee.id.eq(userId))
                 .fetchOne();
     }
+
+    @Override
+    public UserMyInfoReadResponseDTO findUserMyInfoReadResponseDTO(Long userId) {
+        QUser user = QUser.user;
+
+        List<SocialInfos> socialInfos = createSocials(userId);
+
+        UserMyInfo myInfo =  jpaQueryFactory
+                .select(Projections.constructor(UserMyInfo.class,
+                        user.nickname,
+                        user.thumbImage,
+                        user.briefIntro,
+                        user.userIntro.intro,
+                        user.email,
+                        user.emailSetting,
+                        user.alarmSetting,
+                        user.kelogName,
+                        user.alarmUsers.size().castToNum(Long.class)))
+                .from(user)
+                .where(user.id.eq(userId))
+                .fetchOne();
+
+        return new UserMyInfoReadResponseDTO(Objects.requireNonNull(myInfo), socialInfos);
+    }
+
+    private List<SocialInfos> createSocials(Long userId){
+        QSocial social = QSocial.social;
+
+        return jpaQueryFactory
+                .select(Projections.constructor(SocialInfos.class,
+                        social.link,
+                        social.id.socialType))
+                .from(social)
+                .where(social.id.userId.eq(userId))
+                .fetch();
+    }
+
 }

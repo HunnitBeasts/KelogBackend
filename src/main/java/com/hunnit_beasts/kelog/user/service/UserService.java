@@ -2,10 +2,7 @@ package com.hunnit_beasts.kelog.user.service;
 
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
-import com.hunnit_beasts.kelog.user.dto.response.FollowDeleteResponseDTO;
-import com.hunnit_beasts.kelog.user.dto.response.FollowIngResponseDTO;
-import com.hunnit_beasts.kelog.user.dto.response.FollowerReadResponseDTO;
-import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.*;
 
 import java.util.List;
 
@@ -15,4 +12,5 @@ public interface UserService {
     SocialUpdateResponseDTO socialUpdate(Long userId, List<SocialInfos> socials);
     FollowerReadResponseDTO readFollower(Long userId);
     FollowerReadResponseDTO readFollowee(Long userId);
+    UserMyInfoReadResponseDTO readMyInfo(Long userId);
 }

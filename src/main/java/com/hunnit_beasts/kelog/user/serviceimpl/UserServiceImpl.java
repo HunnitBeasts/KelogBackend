@@ -85,6 +85,16 @@ public class UserServiceImpl implements UserService {
         return userQueryDSLRepository.findUserMyInfoReadResponseDTO(userId);
     }
 
+    @Override
+    public UserInfoReadResponseDTO readUserInfo(Long userId) {
+        return userQueryDSLRepository.findUserInfoReadResponseDTO(userId);
+    }
+
+    @Override
+    public UserInfoReadResponseDTO readUserInfo(Long userId, Long currentUserId) {
+        return userQueryDSLRepository.findUserInfoReadResponseDTO(userId, currentUserId);
+    }
+
     private void processSocialInfo(SocialInfos social, SocialInfoId id, User user) {
         if (social.getUrl().isEmpty()) {
             if (socialJpaRepository.existsById(id))

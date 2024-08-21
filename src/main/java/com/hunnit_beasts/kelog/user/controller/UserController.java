@@ -44,7 +44,8 @@ public class UserController {
                     .body(userService.readUserInfo(userId,
                             authenticatedService.getId(authentication)));
 
-        return ResponseEntity.status(HttpStatus.OK)
+        else
+            return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.readUserInfo(userId));
     }
 

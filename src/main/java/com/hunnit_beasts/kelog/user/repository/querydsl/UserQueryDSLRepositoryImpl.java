@@ -17,6 +17,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import com.querydsl.core.support.FetchableSubQueryBase;
 
 import java.util.List;
 import java.util.Objects;
@@ -167,16 +168,20 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
     public UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId, Long currentUserId) {
         QFollower follower = QFollower.follower1;
 
-        Integer followCheck = jpaQueryFactory
-                .selectOne()
+        Boolean followCheck = jpaQueryFactory
+                .select(JPAExpressions
+                        .selectOne()
+                        .from(follower)
+                        .where(follower.id.follower.eq(currentUserId)
+                                .and(follower.id.followee.eq(userId)))
+                        .exists())
                 .from(follower)
-                .where(follower.id.follower.eq(currentUserId).and(follower.id.followee.eq(userId)))
-                .fetchFirst();
+                .fetchOne();
 
         return new UserInfoReadResponseDTO(
                 Objects.requireNonNull(createUserInfo(userId)),
                 createSocials(userId),
-                followCheck != null);
+                followCheck != null ? followCheck : false);
     }
 
     private List<SocialInfos> createSocials(Long userId){

@@ -26,8 +26,6 @@ public class QTagPost extends EntityPathBase<TagPost> {
 
     public final com.hunnit_beasts.kelog.post.entity.domain.QPost post;
 
-    public final QTag tag;
-
     public QTagPost(String variable) {
         this(TagPost.class, forVariable(variable), INITS);
     }
@@ -48,7 +46,6 @@ public class QTagPost extends EntityPathBase<TagPost> {
         super(type, metadata, inits);
         this.id = inits.isInitialized("id") ? new com.hunnit_beasts.kelog.postassist.entity.compositekey.QTagPostId(forProperty("id")) : null;
         this.post = inits.isInitialized("post") ? new com.hunnit_beasts.kelog.post.entity.domain.QPost(forProperty("post"), inits.get("post")) : null;
-        this.tag = inits.isInitialized("tag") ? new QTag(forProperty("tag")) : null;
     }
 
 }

@@ -14,8 +14,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class TagPostId implements Serializable {
 
-    @Column(length = 32,nullable = false)
-    private String tagName;
+    @Column(length = 32, nullable = false)
+    private String tag;
 
     @Column(nullable = false)
     private Long postId;

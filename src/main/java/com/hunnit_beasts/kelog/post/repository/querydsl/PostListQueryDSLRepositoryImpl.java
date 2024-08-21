@@ -295,7 +295,7 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
                 builder.and(post.id.in(
                         JPAExpressions.select(tagPost.post.id)
                                 .from(tagPost)
-                                .where(tagPost.tag.tagName.eq(tag))
+                                .where(tagPost.id.tag.eq(tag))
                 ));
             });
             return this;

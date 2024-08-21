@@ -21,7 +21,7 @@ public class QTagPostId extends BeanPath<TagPostId> {
 
     public final NumberPath<Long> postId = createNumber("postId", Long.class);
 
-    public final StringPath tagName = createString("tagName");
+    public final StringPath tag = createString("tag");
 
     public QTagPostId(String variable) {
         super(TagPostId.class, forVariable(variable));

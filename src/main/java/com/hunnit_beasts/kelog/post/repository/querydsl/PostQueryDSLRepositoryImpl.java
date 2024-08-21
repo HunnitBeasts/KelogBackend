@@ -49,7 +49,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .where(post.id.eq(id))
                 .fetchOne();
         List<String> tags = jpaQueryFactory
-                .select(tagPost.tag.tagName)
+                .select(tagPost.id.tag)
                 .from(tagPost)
                 .where(tagPost.id.postId.eq(id))
                 .fetch();
@@ -83,7 +83,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
                 .where(post.id.eq(id))
                 .fetchOne();
         List<String> tags = jpaQueryFactory
-                .select(tagPost.tag.tagName)
+                .select(tagPost.id.tag)
                 .from(tagPost)
                 .where(tagPost.id.postId.eq(id))
                 .fetch();
@@ -142,7 +142,7 @@ public class PostQueryDSLRepositoryImpl implements PostQueryDSLRepository {
     public List<String> findTagsByPostId(Long postId) {
         QTagPost tagPost = QTagPost.tagPost;
         return jpaQueryFactory
-                .select(tagPost.tag.tagName)
+                .select(tagPost.id.tag)
                 .from(tagPost)
                 .where(tagPost.post.id.eq(postId))
                 .fetch();

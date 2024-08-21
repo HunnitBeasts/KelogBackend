@@ -15,19 +15,13 @@ public class TagPost {
     @EmbeddedId
     private TagPostId id;
 
-    @MapsId("tagName")
-    @ManyToOne
-    @JoinColumn(name = "tag_name")
-    private Tag tag;
-
     @MapsId("postId")
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public TagPost(Tag tag, Post post){
-        this.id = new TagPostId(tag.getTagName(),post.getId());
-        this.tag = tag;
+    public TagPost(String tag, Post post){
+        this.id = new TagPostId(tag, post.getId());
         this.post = post;
     }
 }

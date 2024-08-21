@@ -15,6 +15,7 @@ public class PostReadResponseDTO {
     private String kelogName;
     private String title;
     private String nickname;
+    private String userId;
     private Boolean isFollow;
     private Boolean isLike;
     private Long likeCount;

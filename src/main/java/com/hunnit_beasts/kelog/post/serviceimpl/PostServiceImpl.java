@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -54,9 +55,12 @@ public class PostServiceImpl implements PostService {
         User creator = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
 
+        if (postJpaRepository.existsByUrl(dto.getUrl()))
+            dto.setUrl(dto.getUrl() + "-" + UUID.randomUUID().toString().substring(0, 12));
+
         Post createdPost = postJpaRepository.save(new Post(dto, creator));
 
-        if(dto.getTags() != null)
+        if (dto.getTags() != null)
             tagService.createTagPost(dto.getTags(), createdPost);
 
         return postQueryDSLRepository.findPostCreateResponseDTOById(createdPost.getId());
@@ -173,6 +177,7 @@ public class PostServiceImpl implements PostService {
                 .kelogName(user.getKelogName())
                 .title(post.getTitle())
                 .nickname(user.getNickname())
+                .userId(user.getUserId())
                 .isFollow(isUserLoggedIn && isFollowing(userId, user.getId()))
                 .isLike(isUserLoggedIn && isLiked(userId, postId))
                 .likeCount(getLikeCount(postId))

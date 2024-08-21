@@ -16,5 +16,6 @@ public class PostPageConvert {
     private Long commentCount;
     private String userThumbImage;
     private String nickname;
+    private String loginId;
     private Long likeCount;
 }

@@ -3,8 +3,10 @@ package com.hunnit_beasts.kelog.user.repository.querydsl;
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.convert.FollowerInfos;
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
+import com.hunnit_beasts.kelog.user.dto.convert.UserInfo;
 import com.hunnit_beasts.kelog.user.dto.convert.UserMyInfo;
 import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.UserInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.entity.domain.QFollower;
 import com.hunnit_beasts.kelog.user.entity.domain.QSocial;
@@ -137,9 +139,7 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
     public UserMyInfoReadResponseDTO findUserMyInfoReadResponseDTO(Long userId) {
         QUser user = QUser.user;
 
-        List<SocialInfos> socialInfos = createSocials(userId);
-
-        UserMyInfo myInfo =  jpaQueryFactory
+        UserMyInfo myInfo = jpaQueryFactory
                 .select(Projections.constructor(UserMyInfo.class,
                         user.nickname,
                         user.thumbImage,
@@ -149,12 +149,38 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
                         user.emailSetting,
                         user.alarmSetting,
                         user.kelogName,
-                        user.alarmUsers.size().castToNum(Long.class)))
+                        user.alarmUsers.size().count()))
                 .from(user)
                 .where(user.id.eq(userId))
                 .fetchOne();
 
-        return new UserMyInfoReadResponseDTO(Objects.requireNonNull(myInfo), socialInfos);
+        return new UserMyInfoReadResponseDTO(Objects.requireNonNull(myInfo), createSocials(userId));
+    }
+
+    @Override
+    public UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId) {
+
+        return new UserInfoReadResponseDTO(Objects.requireNonNull(createUserInfo(userId)), createSocials(userId));
+    }
+
+    @Override
+    public UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId, Long currentUserId) {
+        QFollower follower = QFollower.follower1;
+
+        Boolean followCheck = jpaQueryFactory
+                .select(JPAExpressions
+                        .selectOne()
+                        .from(follower)
+                        .where(follower.id.follower.eq(currentUserId)
+                                .and(follower.id.followee.eq(userId)))
+                        .exists())
+                .from(follower)
+                .fetchOne();
+
+        return new UserInfoReadResponseDTO(
+                Objects.requireNonNull(createUserInfo(userId)),
+                createSocials(userId),
+                followCheck != null ? followCheck : false);
     }
 
     private List<SocialInfos> createSocials(Long userId){
@@ -167,6 +193,27 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
                 .from(social)
                 .where(social.id.userId.eq(userId))
                 .fetch();
+    }
+
+    private UserInfo createUserInfo(Long userId){
+        QUser user = QUser.user;
+        QFollower follower = QFollower.follower1;
+
+        return jpaQueryFactory
+                .select(Projections.constructor(UserInfo.class,
+                        user.nickname,
+                        user.thumbImage,
+                        user.briefIntro,
+                        user.kelogName,
+                        JPAExpressions.select(follower.id.follower.count())
+                                .from(follower)
+                                .where(follower.id.followee.eq(userId)),   // 팔로워 수
+                        JPAExpressions.select(follower.id.followee.count())
+                                .from(follower)
+                                .where(follower.id.follower.eq(userId))))  // 팔로잉 수
+                .from(user)
+                .where(user.id.eq(userId))
+                .fetchOne();
     }
 
 }

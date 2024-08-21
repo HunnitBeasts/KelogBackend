@@ -13,4 +13,6 @@ public interface UserService {
     FollowerReadResponseDTO readFollower(Long userId);
     FollowerReadResponseDTO readFollowee(Long userId);
     UserMyInfoReadResponseDTO readMyInfo(Long userId);
+    UserInfoReadResponseDTO readUserInfo(Long userId);
+    UserInfoReadResponseDTO readUserInfo(Long userId, Long currentUserId);
 }

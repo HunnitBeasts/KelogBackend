@@ -3,6 +3,7 @@ package com.hunnit_beasts.kelog.user.repository.querydsl;
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.convert.FollowerInfos;
 import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.UserInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface UserQueryDSLRepository {
     Long followerCountByUserId(Long userId);
     Long followeeCountByUserId(Long userId);
     UserMyInfoReadResponseDTO findUserMyInfoReadResponseDTO(Long userId);
+    UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId);
+    UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId, Long currentUserId);
 }

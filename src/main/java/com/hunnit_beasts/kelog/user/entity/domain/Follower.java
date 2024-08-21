@@ -27,7 +27,7 @@ public class Follower extends RegEntity {
     private User followee;
 
     public Follower(User follower, User followee){
-        this.id = new FollowerId(follower.getId(), follower.getId());
+        this.id = new FollowerId(follower.getId(), followee.getId());
         this.follower = follower;
         this.followee = followee;
     }

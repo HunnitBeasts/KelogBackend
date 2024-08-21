@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
+import com.hunnit_beasts.kelog.user.dto.response.UserInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,16 @@ public class UserController {
     }
 
     @GetMapping("/{user-id}")
-    public void searchUser(@PathVariable(value = "user-id") Long userId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<UserInfoReadResponseDTO> searchUser(@PathVariable(value = "user-id") Long userId,
+                                                              Authentication authentication) {
+        if(authentication != null)
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(userService.readUserInfo(userId,
+                            authenticatedService.getId(authentication)));
+
+        else
+            return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.readUserInfo(userId));
     }
 
     @DeleteMapping("/{user-id}")

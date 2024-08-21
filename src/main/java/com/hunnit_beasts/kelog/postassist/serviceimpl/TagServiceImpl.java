@@ -8,9 +8,7 @@ import com.hunnit_beasts.kelog.postassist.dto.convert.TagInfos;
 import com.hunnit_beasts.kelog.postassist.dto.response.TagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.dto.response.UserTagsResponseDTO;
 import com.hunnit_beasts.kelog.postassist.entity.compositekey.TagPostId;
-import com.hunnit_beasts.kelog.postassist.entity.domain.Tag;
 import com.hunnit_beasts.kelog.postassist.entity.domain.TagPost;
-import com.hunnit_beasts.kelog.postassist.repository.TagJpaRepository;
 import com.hunnit_beasts.kelog.postassist.repository.TagPostJpaRepository;
 import com.hunnit_beasts.kelog.postassist.repository.TagQueryDSLRepository;
 import com.hunnit_beasts.kelog.postassist.service.TagService;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +28,6 @@ import java.util.stream.StreamSupport;
 @Log4j2
 public class TagServiceImpl implements TagService {
 
-    private final TagJpaRepository tagJpaRepository;
     private final TagPostJpaRepository tagPostJpaRepository;
 
     private final PostQueryDSLRepository postQueryDSLRepository;
@@ -40,10 +36,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public void createTagPost(List<String> tags, Post createdPost) {
         List<TagPost> tagPosts = new ArrayList<>();
-        for (String tagName : tags) {
-            Tag tag = tagJpaRepository.findById(tagName)
-                    .orElseGet(() -> tagJpaRepository.save(new Tag(tagName)));
-
+        for (String tag : tags) {
             TagPost tagPost = new TagPost(tag, createdPost);
             tagPosts.add(tagPost);
         }
@@ -53,13 +46,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagsResponseDTO allTags() {
-        Iterable<Tag> allTags = tagJpaRepository.findAll();
-
-        Set<String> tagNames = StreamSupport.stream(allTags.spliterator(), false)
-                .map(Tag::getTagName)
-                .collect(Collectors.toSet());
-
-        return new TagsResponseDTO(tagNames);
+        return new TagsResponseDTO(tagQueryDSLRepository.findAllTags());
     }
 
     @Override
@@ -88,17 +75,9 @@ public class TagServiceImpl implements TagService {
         newTags.stream()
                 .filter(tag -> !existingTags.contains(tag))
                 .forEach(tag -> {
-                    Tag tagEntity = tagJpaRepository.findById(tag)
-                            .orElseGet(() -> tagJpaRepository.save(new Tag(tag)));
-                    TagPost newTagPost = new TagPost(tagEntity, post);
+                    TagPost newTagPost = new TagPost(tag, post);
                     tagPostJpaRepository.save(newTagPost);
                 });
-    }
-
-    @Override
-    public void removeUnusedTags() {
-        List<Tag> unusedTags = tagQueryDSLRepository.findUnusedTags();
-        tagJpaRepository.deleteAll(unusedTags);
     }
 
     @Override

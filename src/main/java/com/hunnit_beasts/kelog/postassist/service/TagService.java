@@ -12,7 +12,6 @@ public interface TagService {
     TagsResponseDTO allTags();
     void removeDeletedTags(Long postId, Set<String> existingTags, Set<String> newTags);
     void addNewTags(Post post, Set<String> existingTags, Set<String> newTags);
-    void removeUnusedTags();
     Set<String> getExistingTags(Long postId);
     UserTagsResponseDTO userTags(Long userId);
 }

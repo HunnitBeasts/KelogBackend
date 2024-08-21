@@ -10,5 +10,6 @@ public interface PostListQueryDSLRepository {
     PostPageResponseDTO findByLikePostDTOs(UserRelatedPostRequestDTO dto);
     PostPageResponseDTO findByTrendPostDTOs(TrendPostRequestDTO dto);
     PostPageResponseDTO findByRecentPostDTOs(UserRelatedPostRequestDTO dto);
+    PostPageResponseDTO findByFeedPostDTOs(UserRelatedPostRequestDTO dto);
 }
 

@@ -17,7 +17,6 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import com.querydsl.core.support.FetchableSubQueryBase;
 
 import java.util.List;
 import java.util.Objects;

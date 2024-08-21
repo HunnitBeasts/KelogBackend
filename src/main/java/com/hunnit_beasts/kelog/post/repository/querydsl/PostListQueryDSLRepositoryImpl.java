@@ -205,6 +205,7 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
                 commentCount != null ? commentCount : 0L,
                 post.getUser().getThumbImage(),
                 post.getUser().getNickname(),
+                post.getUser().getUserId(),
                 likeCount != null ? likeCount : 0L
         );
     }

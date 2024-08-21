@@ -144,6 +144,7 @@ class PostPageTest {
                 .andExpect(jsonPath("$.posts[0].commentCount").isNumber())
                 .andExpect(jsonPath("$.posts[0].userThumbImage").isString())
                 .andExpect(jsonPath("$.posts[0].nickname").isString())
+                .andExpect(jsonPath("$.posts[0].loginId").isString())
                 .andExpect(jsonPath("$.posts[0].likeCount").isNumber())
                 .andReturn();
     }

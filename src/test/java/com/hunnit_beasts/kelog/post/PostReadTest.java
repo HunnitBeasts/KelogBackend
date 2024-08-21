@@ -102,6 +102,7 @@ class PostReadTest {
                 .andExpect(jsonPath("$.kelogName").value("testUserId"))
                 .andExpect(jsonPath("$.title").value("originalTitle"))
                 .andExpect(jsonPath("$.nickname").value("testNickname"))
+                .andExpect(jsonPath("$.userId").value("testUserId"))
                 .andExpect(jsonPath("$.isFollow").value(false))
                 .andExpect(jsonPath("$.isLike").value(false))
                 .andExpect(jsonPath("$.likeCount").value(0))

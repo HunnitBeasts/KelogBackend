@@ -180,7 +180,7 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
         return new UserInfoReadResponseDTO(
                 Objects.requireNonNull(createUserInfo(userId)),
                 createSocials(userId),
-                followCheck != null ? followCheck : false);
+                followCheck != null && followCheck);
     }
 
     private List<SocialInfos> createSocials(Long userId){

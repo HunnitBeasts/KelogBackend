@@ -1,10 +1,7 @@
 package com.hunnit_beasts.kelog.post.dto.request;
 
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -18,6 +15,7 @@ public class PostCreateRequestDTO {
     private String thumbImage;
     private Boolean isPublic;
     private String shortContent;
+    @Setter
     private String url;
     private String content;
     private List<String> tags;

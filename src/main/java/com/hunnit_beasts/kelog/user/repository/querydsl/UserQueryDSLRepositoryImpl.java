@@ -1,12 +1,10 @@
 package com.hunnit_beasts.kelog.user.repository.querydsl;
 
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
-import com.hunnit_beasts.kelog.user.dto.convert.FollowerInfos;
-import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
-import com.hunnit_beasts.kelog.user.dto.convert.UserInfo;
-import com.hunnit_beasts.kelog.user.dto.convert.UserMyInfo;
+import com.hunnit_beasts.kelog.user.dto.convert.*;
 import com.hunnit_beasts.kelog.user.dto.response.SocialUpdateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserInfoReadResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.UserInfoUpdateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.entity.domain.QFollower;
 import com.hunnit_beasts.kelog.user.entity.domain.QSocial;
@@ -136,7 +134,7 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
     }
 
     @Override
-    public UserMyInfoReadResponseDTO findUserMyInfoReadResponseDTO(Long userId) {
+    public UserMyInfoReadResponseDTO findUserMyInfoReadResponseDTOByUserId(Long userId) {
         QUser user = QUser.user;
 
         UserMyInfo myInfo = jpaQueryFactory
@@ -158,13 +156,13 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
     }
 
     @Override
-    public UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId) {
+    public UserInfoReadResponseDTO findUserInfoReadResponseDTOByUserId(Long userId) {
 
         return new UserInfoReadResponseDTO(Objects.requireNonNull(createUserInfo(userId)), createSocials(userId));
     }
 
     @Override
-    public UserInfoReadResponseDTO findUserInfoReadResponseDTO(Long userId, Long currentUserId) {
+    public UserInfoReadResponseDTO findUserInfoReadResponseDTOByUserId(Long userId, Long currentUserId) {
         QFollower follower = QFollower.follower1;
 
         Boolean followCheck = jpaQueryFactory
@@ -181,6 +179,26 @@ public class UserQueryDSLRepositoryImpl implements UserQueryDSLRepository {
                 Objects.requireNonNull(createUserInfo(userId)),
                 createSocials(userId),
                 followCheck != null && followCheck);
+    }
+
+    @Override
+    public UserInfoUpdateResponseDTO findUserInfoUpdateResponseDTOByUserId(Long userId) {
+        QUser user = QUser.user;
+
+        UserUpdateInfo updateInfo = jpaQueryFactory
+                .select(Projections.constructor(UserUpdateInfo.class,
+                        user.nickname,
+                        user.thumbImage,
+                        user.briefIntro,
+                        user.email,
+                        user.emailSetting,
+                        user.alarmSetting,
+                        user.kelogName))
+                .from(user)
+                .where(user.id.eq(userId))
+                .fetchOne();
+
+        return new UserInfoUpdateResponseDTO(Objects.requireNonNull(updateInfo),createSocials(userId));
     }
 
     private List<SocialInfos> createSocials(Long userId){

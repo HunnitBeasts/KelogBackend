@@ -5,7 +5,9 @@ import com.hunnit_beasts.kelog.auth.dto.request.UserCreateRequestDTO;
 import com.hunnit_beasts.kelog.auth.dto.response.UserCreateResponseDTO;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.auth.service.AuthenticatedService;
+import com.hunnit_beasts.kelog.user.dto.request.UserInfoUpdateRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserInfoReadResponseDTO;
+import com.hunnit_beasts.kelog.user.dto.response.UserInfoUpdateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -58,8 +60,12 @@ public class UserController {
     }
 
     @PatchMapping("/{user-id}")
-    public void updateUserInfo(@PathVariable(value = "user-id") Long userId) {
-        throw new UnsupportedOperationException();
+    @Identification
+    public ResponseEntity<UserInfoUpdateResponseDTO> updateUserInfo(@PathVariable(value = "user-id") Long userId,
+                                                                    @RequestBody UserInfoUpdateRequestDTO dto,
+                                                                    Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.updateUserInfo(userId,dto));
     }
 
     @DeleteMapping("/{user-id}/thumbnail")

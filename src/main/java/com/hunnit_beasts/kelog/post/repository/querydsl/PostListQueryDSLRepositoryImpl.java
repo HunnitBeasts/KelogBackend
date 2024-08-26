@@ -11,6 +11,7 @@ import com.hunnit_beasts.kelog.post.entity.domain.*;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.enumeration.TrendType;
 import com.hunnit_beasts.kelog.postassist.entity.domain.QTagPost;
+import com.hunnit_beasts.kelog.user.entity.domain.QFollower;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.OrderSpecifier;
@@ -53,6 +54,11 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
     public PostPageResponseDTO findByRecentPostDTOs(UserRelatedPostRequestDTO dto) {
         return findPosts(dto, this::createRecentPostWhereConditions, this::getRecentPostOrderSpecifier,
                 QRecentPost.recentPost, QRecentPost.recentPost.post);
+    }
+
+    @Override
+    public PostPageResponseDTO findByFeedPostDTOs(UserRelatedPostRequestDTO dto) {
+        return findPosts(dto, this::createFeedWhereConditions, this::getOrderSpecifier);
     }
 
     private <T extends PageRequestDTO> PostPageResponseDTO findPosts(
@@ -139,6 +145,15 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
     private BooleanBuilder createRecentPostWhereConditions(UserRelatedPostRequestDTO dto) {
         return new PostQueryBuilder()
                 .addRecentCondition(dto.getUserId())
+                .addSearchCondition(dto.getSearch())
+                .build();
+    }
+
+    private BooleanBuilder createFeedWhereConditions(UserRelatedPostRequestDTO dto) {
+        return new PostQueryBuilder()
+                .addPublicCondition(true)
+                .addTypeCondition(PostType.NORMAL)
+                .addFolloweeCondition(dto.getUserId())
                 .addSearchCondition(dto.getSearch())
                 .build();
     }
@@ -336,6 +351,18 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
                             .from(recentPost)
                             .where(recentPost.user.id.eq(userId))
             ));
+            return this;
+        }
+
+        PostQueryBuilder addFolloweeCondition(Long userId) {
+            QFollower follower = QFollower.follower1;
+            Optional.ofNullable(userId).ifPresent(id ->
+                    builder.and(post.user.id.in(
+                            JPAExpressions.select(follower.followee.id)
+                                    .from(follower)
+                                    .where(follower.follower.id.eq(id))
+                    ))
+            );
             return this;
         }
 

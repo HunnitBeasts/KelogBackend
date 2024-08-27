@@ -36,4 +36,9 @@ public class PostListServiceImpl implements PostListService {
     public PostPageResponseDTO readRecentPosts(UserRelatedPostRequestDTO dto) {
         return postListQueryDSLRepository.findByRecentPostDTOs(dto);
     }
+
+    @Override
+    public PostPageResponseDTO readFeedPosts(UserRelatedPostRequestDTO dto) {
+        return postListQueryDSLRepository.findByFeedPostDTOs(dto);
+    }
 }

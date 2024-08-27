@@ -11,4 +11,5 @@ public interface PostListService {
     PostPageResponseDTO trendPosts(TrendPostRequestDTO dto);
     PostPageResponseDTO readRecentPosts(UserRelatedPostRequestDTO dto);
     PostPageResponseDTO readFeedPosts(UserRelatedPostRequestDTO dto);
+    PostPageResponseDTO readIncompletePosts(UserRelatedPostRequestDTO dto);
 }

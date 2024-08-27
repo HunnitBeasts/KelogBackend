@@ -41,4 +41,9 @@ public class PostListServiceImpl implements PostListService {
     public PostPageResponseDTO readFeedPosts(UserRelatedPostRequestDTO dto) {
         return postListQueryDSLRepository.findByFeedPostDTOs(dto);
     }
+
+    @Override
+    public PostPageResponseDTO readIncompletePosts(UserRelatedPostRequestDTO dto) {
+        return postListQueryDSLRepository.findByIncompletePostDTOs(dto);
+    }
 }

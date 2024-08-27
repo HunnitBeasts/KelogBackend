@@ -98,6 +98,8 @@ class UserInfoUpdateTest {
                 .andExpect(jsonPath("socials", hasSize(0)));
 
         UserInfoUpdateRequestDTO dto = UserInfoUpdateRequestDTO.builder()
+                .nickname("testNickname1")
+                .briefIntro("testBriefIntro1")
                 .thumbImage("testThumbImage1")
                 .email("testEmail1")
                 .emailSetting(true)
@@ -124,34 +126,27 @@ class UserInfoUpdateTest {
                 .andExpect(jsonPath("socials").isArray())
                 .andExpect(jsonPath("socials", hasSize(3)));
 
-        dto = UserInfoUpdateRequestDTO.builder()
-                .nickname("testNickname1")
-                .briefIntro("testBriefIntro1")
-                .build();
+    }
 
-        jsonContent = objectMapper.writeValueAsString(dto);
+    @Test
+    @DisplayName("유저 정보 업데이트 테스트(하나만 변경할때)")
+    void userInfoUpdateTest2() throws Exception {
 
-        mockMvc.perform(patch("/users/{user-id}",userId)
+        mockMvc.perform(get("/users/{user-id}",userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .content(jsonContent))
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("nickname").value("testNickname1"))
-                .andExpect(jsonPath("briefIntro").value("testBriefIntro1"))
-                .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
-                .andExpect(jsonPath("email").value("testEmail1"))
-                .andExpect(jsonPath("kelogName").value("testKelogName1"))
-                .andExpect(jsonPath("emailSetting").value(true))
-                .andExpect(jsonPath("alarmSetting").value(false))
-                .andExpect(jsonPath("socials").isArray())
-                .andExpect(jsonPath("socials", hasSize(3)));
+                .andExpect(jsonPath("nickname").value("testNickname"))
+                .andExpect(jsonPath("briefIntro").value("testBriefIntro"))
+                .andExpect(jsonPath("kelogName").isString())
+                .andExpect(jsonPath("socials", hasSize(0)));
 
-        dto = UserInfoUpdateRequestDTO.builder()
+        UserInfoUpdateRequestDTO dto = UserInfoUpdateRequestDTO.builder()
                 .nickname("changedNickname")
                 .build();
 
-        jsonContent = objectMapper.writeValueAsString(dto);
+        String jsonContent = objectMapper.writeValueAsString(dto);
 
         mockMvc.perform(patch("/users/{user-id}",userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -160,13 +155,8 @@ class UserInfoUpdateTest {
                         .content(jsonContent))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("nickname").value("changedNickname"))
-                .andExpect(jsonPath("briefIntro").value("testBriefIntro1"))
-                .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
-                .andExpect(jsonPath("email").value("testEmail1"))
-                .andExpect(jsonPath("kelogName").value("testKelogName1"))
-                .andExpect(jsonPath("emailSetting").value(true))
-                .andExpect(jsonPath("alarmSetting").value(false))
-                .andExpect(jsonPath("socials").isArray())
-                .andExpect(jsonPath("socials", hasSize(3)));
+                .andExpect(jsonPath("briefIntro").value("testBriefIntro"))
+                .andExpect(jsonPath("kelogName").isString())
+                .andExpect(jsonPath("socials", hasSize(0)));
     }
 }

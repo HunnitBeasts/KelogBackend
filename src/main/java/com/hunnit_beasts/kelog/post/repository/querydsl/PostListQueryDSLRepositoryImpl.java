@@ -61,6 +61,11 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
         return findPosts(dto, this::createFeedWhereConditions, this::getOrderSpecifier);
     }
 
+    @Override
+    public PostPageResponseDTO findByIncompletePostDTOs(UserRelatedPostRequestDTO dto) {
+        return findPosts(dto, this::createIncompleteWhereConditions, this::getOrderSpecifier);
+    }
+
     private <T extends PageRequestDTO> PostPageResponseDTO findPosts(
             T dto,
             Function<T, BooleanBuilder> whereConditionsBuilder,
@@ -155,6 +160,13 @@ public class PostListQueryDSLRepositoryImpl implements PostListQueryDSLRepositor
                 .addTypeCondition(PostType.NORMAL)
                 .addFolloweeCondition(dto.getUserId())
                 .addSearchCondition(dto.getSearch())
+                .build();
+    }
+
+    private BooleanBuilder createIncompleteWhereConditions(UserRelatedPostRequestDTO dto) {
+        return new PostQueryBuilder()
+                .addTypeCondition(PostType.INCOMPLETE)
+                .addUserIdCondition(dto.getUserId())
                 .build();
     }
 

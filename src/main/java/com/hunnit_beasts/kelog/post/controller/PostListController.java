@@ -89,4 +89,18 @@ public class PostListController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postListService.readFeedPosts(dto));
     }
+
+    @GetMapping("/{user-id}/incomplete")
+    public ResponseEntity<PostPageResponseDTO> incompletePosts(
+            @PathVariable(name = "user-id") Long userId,
+            @RequestParam(value = "sort", defaultValue = "reg-date", required = false) String sort,
+            @RequestParam(value = "page", defaultValue = "1", required = false) Long page,
+            @RequestParam(value = "size", defaultValue = "20", required = false) Long size,
+            @RequestParam(value = "search", required = false) String search,
+            Authentication authentication){
+        UserRelatedPostRequestDTO dto =
+                new UserRelatedPostRequestDTO(authenticatedService.getId(authentication),sort,page,size,search);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(postListService.readIncompletePosts(dto));
+    }
 }

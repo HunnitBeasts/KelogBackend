@@ -5,6 +5,7 @@ import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.user.dto.convert.FollowerInfos;
 import com.hunnit_beasts.kelog.user.dto.convert.SocialInfos;
 import com.hunnit_beasts.kelog.user.dto.request.FollowIngRequestDTO;
+import com.hunnit_beasts.kelog.user.dto.request.UserInfoUpdateRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.*;
 import com.hunnit_beasts.kelog.user.entity.compositekey.FollowerId;
 import com.hunnit_beasts.kelog.user.entity.compositekey.SocialInfoId;
@@ -82,17 +83,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserMyInfoReadResponseDTO readMyInfo(Long userId) {
-        return userQueryDSLRepository.findUserMyInfoReadResponseDTO(userId);
+        return userQueryDSLRepository.findUserMyInfoReadResponseDTOByUserId(userId);
     }
 
     @Override
     public UserInfoReadResponseDTO readUserInfo(Long userId) {
-        return userQueryDSLRepository.findUserInfoReadResponseDTO(userId);
+        return userQueryDSLRepository.findUserInfoReadResponseDTOByUserId(userId);
     }
 
     @Override
     public UserInfoReadResponseDTO readUserInfo(Long userId, Long currentUserId) {
-        return userQueryDSLRepository.findUserInfoReadResponseDTO(userId, currentUserId);
+        return userQueryDSLRepository.findUserInfoReadResponseDTOByUserId(userId, currentUserId);
+    }
+
+    @Override
+    public UserInfoUpdateResponseDTO updateUserInfo(Long userId, UserInfoUpdateRequestDTO dto) {
+        User updateUser = userJpaRepository.findById(userId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
+        updateUser.changeUserInfo(dto);
+
+        if(dto.getSoicals() != null){
+            for (SocialInfos social : dto.getSoicals()) {
+                SocialInfoId id = new SocialInfoId(userId, social.getSocialType());
+                processSocialInfo(social, id, updateUser);
+            }
+        }
+
+        return userQueryDSLRepository.findUserInfoUpdateResponseDTOByUserId(userId);
     }
 
     private void processSocialInfo(SocialInfos social, SocialInfoId id, User user) {

@@ -10,6 +10,7 @@ import com.hunnit_beasts.kelog.post.entity.domain.LikedPost;
 import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.entity.domain.RecentPost;
 import com.hunnit_beasts.kelog.postassist.entity.domain.Series;
+import com.hunnit_beasts.kelog.user.dto.request.UserInfoUpdateRequestDTO;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -117,6 +118,16 @@ public class User extends BaseEntity {
                 .password(password)
                 .userType(userType)
                 .build();
+    }
+
+    public void changeUserInfo(UserInfoUpdateRequestDTO dto){
+        this.nickname = dto.getNickname() != null ? dto.getNickname() : this.nickname;
+        this.thumbImage = dto.getThumbImage() != null ? dto.getThumbImage() : this.thumbImage;
+        this.briefIntro = dto.getBriefIntro() != null ? dto.getBriefIntro() : this.briefIntro;
+        this.email = dto.getEmail() != null ? dto.getEmail() : this.email;
+        this.emailSetting = dto.getEmailSetting() != null ? dto.getEmailSetting() : this.emailSetting;
+        this.alarmSetting = dto.getAlarmSetting() != null ? dto.getAlarmSetting() : this.alarmSetting;
+        this.kelogName = dto.getKelogName() != null ? dto.getKelogName() : this.kelogName;
     }
 
 }

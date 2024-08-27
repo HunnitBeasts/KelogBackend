@@ -101,9 +101,11 @@ public class UserServiceImpl implements UserService {
         User updateUser = userJpaRepository.findById(userId).orElseThrow(() -> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         updateUser.changeUserInfo(dto);
 
-        for (SocialInfos social : dto.getSoicals()) {
-            SocialInfoId id = new SocialInfoId(userId, social.getSocialType());
-            processSocialInfo(social, id, updateUser);
+        if(dto.getSoicals() != null){
+            for (SocialInfos social : dto.getSoicals()) {
+                SocialInfoId id = new SocialInfoId(userId, social.getSocialType());
+                processSocialInfo(social, id, updateUser);
+            }
         }
 
         return userQueryDSLRepository.findUserInfoUpdateResponseDTOByUserId(userId);

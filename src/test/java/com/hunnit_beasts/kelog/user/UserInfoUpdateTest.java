@@ -98,9 +98,7 @@ class UserInfoUpdateTest {
                 .andExpect(jsonPath("socials", hasSize(0)));
 
         UserInfoUpdateRequestDTO dto = UserInfoUpdateRequestDTO.builder()
-                .nickname("testNickname1")
                 .thumbImage("testThumbImage1")
-                .briefIntro("testBriefIntro1")
                 .email("testEmail1")
                 .emailSetting(true)
                 .alarmSetting(false)
@@ -116,7 +114,52 @@ class UserInfoUpdateTest {
                         .header("Authorization", token)
                         .content(jsonContent))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("nickname").value("testNickname"))
+                .andExpect(jsonPath("briefIntro").value("testBriefIntro"))
+                .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
+                .andExpect(jsonPath("email").value("testEmail1"))
+                .andExpect(jsonPath("kelogName").value("testKelogName1"))
+                .andExpect(jsonPath("emailSetting").value(true))
+                .andExpect(jsonPath("alarmSetting").value(false))
+                .andExpect(jsonPath("socials").isArray())
+                .andExpect(jsonPath("socials", hasSize(3)));
+
+        dto = UserInfoUpdateRequestDTO.builder()
+                .nickname("testNickname1")
+                .briefIntro("testBriefIntro1")
+                .build();
+
+        jsonContent = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(patch("/users/{user-id}",userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .content(jsonContent))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("nickname").value("testNickname1"))
+                .andExpect(jsonPath("briefIntro").value("testBriefIntro1"))
+                .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
+                .andExpect(jsonPath("email").value("testEmail1"))
+                .andExpect(jsonPath("kelogName").value("testKelogName1"))
+                .andExpect(jsonPath("emailSetting").value(true))
+                .andExpect(jsonPath("alarmSetting").value(false))
+                .andExpect(jsonPath("socials").isArray())
+                .andExpect(jsonPath("socials", hasSize(3)));
+
+        dto = UserInfoUpdateRequestDTO.builder()
+                .nickname("changedNickname")
+                .build();
+
+        jsonContent = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(patch("/users/{user-id}",userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .content(jsonContent))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("nickname").value("changedNickname"))
                 .andExpect(jsonPath("briefIntro").value("testBriefIntro1"))
                 .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
                 .andExpect(jsonPath("email").value("testEmail1"))

@@ -121,13 +121,13 @@ public class User extends BaseEntity {
     }
 
     public void changeUserInfo(UserInfoUpdateRequestDTO dto){
-        this.nickname = dto.getNickname();
-        this.thumbImage = dto.getThumbImage();
-        this.briefIntro = dto.getBriefIntro();
-        this.email = dto.getEmail();
-        this.emailSetting = dto.getEmailSetting();
-        this.alarmSetting = dto.getAlarmSetting();
-        this.kelogName = dto.getKelogName();
+        this.nickname = dto.getNickname() != null ? dto.getNickname() : this.nickname;
+        this.thumbImage = dto.getThumbImage() != null ? dto.getThumbImage() : this.thumbImage;
+        this.briefIntro = dto.getBriefIntro() != null ? dto.getBriefIntro() : this.briefIntro;
+        this.email = dto.getEmail() != null ? dto.getEmail() : this.email;
+        this.emailSetting = dto.getEmailSetting() != null ? dto.getEmailSetting() : this.emailSetting;
+        this.alarmSetting = dto.getAlarmSetting() != null ? dto.getAlarmSetting() : this.alarmSetting;
+        this.kelogName = dto.getKelogName() != null ? dto.getKelogName() : this.kelogName;
     }
 
 }

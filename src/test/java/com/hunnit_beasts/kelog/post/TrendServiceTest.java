@@ -200,7 +200,7 @@ class TrendServiceTest {
     void testTrendPostCacheUpdate() throws Exception {
         Long trendyPostId = postIds.getFirst();
         for (int i = 0; i < 20; i++) {
-            commentService.commentCreate(userIds.get(i % userIds.size()), new CommentCreateRequestDTO(trendyPostId, "Trendy comment"));
+            commentService.commentCreate(userIds.get(i % userIds.size()), new CommentCreateRequestDTO(trendyPostId, null,"Trendy comment"));
         }
 
         trendCachingService.updateTrendCache();

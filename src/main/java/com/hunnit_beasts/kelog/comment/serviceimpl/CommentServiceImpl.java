@@ -38,7 +38,17 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         Post commentedPost = postJpaRepository.findById(dto.getPostId())
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        Comment createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
+
+        Comment createdCommentEntity;
+
+        if (dto.getCommentId() == null)
+            createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
+        else {
+            Comment parentComment = commentJpaRepository.findById(dto.getCommentId())
+                    .orElseThrow(()-> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
+            createdCommentEntity = new Comment(dto,commentedPost,commentWriter,parentComment);
+        }
+
         Comment createdComment = commentJpaRepository.save(createdCommentEntity);
 
         return commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
@@ -73,5 +83,12 @@ public class CommentServiceImpl implements CommentService {
         if(!commentJpaRepository.existsById(commentId))
             throw new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR);
         return commentQueryDSLRepository.findCommentReadResponseDTOByCommentId(commentId);
+    }
+
+    @Override
+    public CommentReplyListReadResponseDTO commentReplyListRead(Long commentId) {
+        if(!commentJpaRepository.existsById(commentId))
+            throw new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR);
+        return commentQueryDSLRepository.findCommentReplyListReadResponseDTOByCommentId(commentId);
     }
 }

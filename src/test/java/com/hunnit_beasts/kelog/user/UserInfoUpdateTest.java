@@ -116,7 +116,7 @@ class UserInfoUpdateTest {
                         .header("Authorization", token)
                         .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("nickname").value("testNickname"))
+                .andExpect(jsonPath("nickname").value("testNickname1"))
                 .andExpect(jsonPath("briefIntro").value("testBriefIntro"))
                 .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
                 .andExpect(jsonPath("email").value("testEmail1"))

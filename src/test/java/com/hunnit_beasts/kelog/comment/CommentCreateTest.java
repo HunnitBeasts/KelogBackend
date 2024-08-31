@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
@@ -42,9 +43,13 @@ class CommentCreateTest {
     ObjectMapper objectMapper;
 
     @Autowired
+    CommentService commentService;
+
+    @Autowired
     JwtUtil jwtUtil;
 
     private Long postId;
+    private Long commentId;
     private String token;
 
     @BeforeEach
@@ -89,6 +94,13 @@ class CommentCreateTest {
                 .build();
 
         token = "Bearer " + jwtUtil.createToken(userInfoDTO);
+
+        CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
+                .postId(postId)
+                .content("testCommentContent")
+                .build();
+
+        commentId = commentService.commentCreate(userId,dto).getId();
     }
 
     @Test
@@ -110,7 +122,35 @@ class CommentCreateTest {
                 .andExpect(jsonPath("id").isNumber())
                 .andExpect(jsonPath("userId").isNumber())
                 .andExpect(jsonPath("postId").isNumber())
+                .andExpect(jsonPath("parentCommentId").value((Long) null))
                 .andExpect(jsonPath(".content").value("testCommentContent"))
+                .andExpect(jsonPath("regDate").isString())
+                .andExpect(jsonPath("modDate").isString());
+
+    }
+
+    @Test
+    @DisplayName("대댓글 생성")
+    void createReComment() throws Exception {
+        CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
+                .postId(postId)
+                .commentId(commentId)
+                .content("testCommentContent")
+                .build();
+
+        String jsonContent = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(post("/comments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").isNumber())
+                .andExpect(jsonPath("userId").isNumber())
+                .andExpect(jsonPath("postId").isNumber())
+                .andExpect(jsonPath("parentCommentId").value(commentId))
+                .andExpect(jsonPath("content").value("testCommentContent"))
                 .andExpect(jsonPath("regDate").isString())
                 .andExpect(jsonPath("modDate").isString());
 

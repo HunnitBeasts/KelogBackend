@@ -31,6 +31,13 @@ public class CommentController {
                 .body(commentService.commentRead(commentId));
     }
 
+    @GetMapping("/{comment-id}/reply")
+    public ResponseEntity<CommentReplyListReadResponseDTO> readReCommentList(@PathVariable(value = "comment-id") Long commentId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(commentService.commentReplyListRead(commentId));
+    }
+
     @GetMapping("/{post-id}/list")
     public ResponseEntity<CommentListReadResponseDTO> commentList(@PathVariable(value = "post-id") Long postId) {
 

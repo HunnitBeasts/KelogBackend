@@ -15,6 +15,7 @@ import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentQueryDSLRepository commentQueryDSLRepository;
 
     @Override
+    @Transactional
     public CommentCreateResponseDTO commentCreate(Long userId, CommentCreateRequestDTO dto) {
         User commentWriter = userJpaRepository.findById(userId)
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));

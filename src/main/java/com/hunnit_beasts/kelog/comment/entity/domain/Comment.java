@@ -37,7 +37,7 @@ public class Comment extends BaseEntity {
 
     //Recomment
     @OneToMany(mappedBy = "parentReComment",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final List<Comment> childReComments = new ArrayList<>();;
+    private final List<Comment> childReComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")

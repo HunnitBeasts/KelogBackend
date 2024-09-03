@@ -98,8 +98,6 @@ class UserInfoUpdateTest {
                 .andExpect(jsonPath("socials", hasSize(0)));
 
         UserInfoUpdateRequestDTO dto = UserInfoUpdateRequestDTO.builder()
-                .nickname("testNickname1")
-                .briefIntro("testBriefIntro1")
                 .thumbImage("testThumbImage1")
                 .email("testEmail1")
                 .emailSetting(true)
@@ -116,7 +114,7 @@ class UserInfoUpdateTest {
                         .header("Authorization", token)
                         .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("nickname").value("testNickname1"))
+                .andExpect(jsonPath("nickname").value("testNickname"))
                 .andExpect(jsonPath("briefIntro").value("testBriefIntro"))
                 .andExpect(jsonPath("thumbImage").value("testThumbImage1"))
                 .andExpect(jsonPath("email").value("testEmail1"))

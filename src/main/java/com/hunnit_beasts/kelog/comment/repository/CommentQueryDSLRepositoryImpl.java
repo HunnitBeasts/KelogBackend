@@ -5,11 +5,8 @@ import com.hunnit_beasts.kelog.comment.dto.response.CommentReadResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentReplyListReadResponseDTO;
 import com.hunnit_beasts.kelog.comment.dto.response.CommentUpdateResponseDTO;
 import com.hunnit_beasts.kelog.comment.entity.domain.QComment;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -70,7 +67,7 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
                         comment.childReComments.size().castToNum(Long.class)
                         ))
                 .from(comment)
-                .where(comment.post.id.eq(postId))
+                .where(comment.post.id.eq(postId).and(comment.parentReComment.isNull()))
                 .orderBy(comment.regDate.asc())
                 .fetch();
     }
@@ -78,6 +75,7 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
     @Override
     public CommentReadResponseDTO findCommentReadResponseDTOByCommentId(Long commentId) {
         QComment comment = QComment.comment;
+        QComment childComment = QComment.comment;
 
         return jpaQueryFactory
                 .select(Projections.constructor(CommentReadResponseDTO.class,
@@ -86,7 +84,7 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
                         comment.user.nickname,
                         comment.regDate,
                         comment.commentContent.content,
-                        comment.childReComments.size().count()
+                        comment.childReComments.size().castToNum(Long.class)
                 ))
                 .from(comment)
                 .where(comment.id.eq(commentId))
@@ -96,6 +94,7 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
     @Override
     public CommentReplyListReadResponseDTO findCommentReplyListReadResponseDTOByCommentId(Long commentId) {
         QComment comment = QComment.comment;
+        QComment childComment = QComment.comment;
 
         List<CommentReadResponseDTO> infos =  jpaQueryFactory
                 .select(Projections.constructor(CommentReadResponseDTO.class,
@@ -104,7 +103,7 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
                         comment.user.nickname,
                         comment.regDate,
                         comment.commentContent.content,
-                        comment.childReComments.size().count()
+                        comment.childReComments.size().castToNum(Long.class)
                 ))
                 .from(comment)
                 .where(comment.parentReComment.id.eq(commentId))

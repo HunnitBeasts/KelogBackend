@@ -9,6 +9,7 @@ import com.hunnit_beasts.kelog.user.dto.request.UserInfoUpdateRequestDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserInfoReadResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserInfoUpdateResponseDTO;
 import com.hunnit_beasts.kelog.user.dto.response.UserMyInfoReadResponseDTO;
+import com.hunnit_beasts.kelog.user.enumeration.KeywordType;
 import com.hunnit_beasts.kelog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,13 @@ public class UserController {
     @DeleteMapping("/{user-id}/thumbnail")
     public void deleteThumbnail(@PathVariable(value = "user-id") Long userId){
         throw new UnsupportedOperationException();
+    }
+
+    @GetMapping("/duplicate")
+    public ResponseEntity<Boolean> duplicateCheck(@RequestParam(value = "keyword") String keyword,
+                                                  @RequestParam(value = "keywordType") KeywordType type){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(authService.duplicateCheck(keyword,type));
     }
 
 }

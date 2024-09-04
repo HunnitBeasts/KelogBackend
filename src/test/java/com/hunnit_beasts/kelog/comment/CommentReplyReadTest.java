@@ -6,7 +6,6 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
-import com.hunnit_beasts.kelog.comment.entity.domain.Comment;
 import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
@@ -14,7 +13,6 @@ import com.hunnit_beasts.kelog.post.enumeration.PostType;
 import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-@Log4j2
 class CommentReplyReadTest {
 
     @Autowired
@@ -58,7 +55,6 @@ class CommentReplyReadTest {
 
     private Long commentId;
     private Long commentId1;
-    private Long commentId2;
     private String token;
 
     @BeforeEach
@@ -121,17 +117,11 @@ class CommentReplyReadTest {
 
         CommentCreateRequestDTO reCommentDto2 = CommentCreateRequestDTO.builder()
                 .postId(postId)
-                .commentId(commentId)
+                .commentId(commentId1)
                 .content("testCommentContent2")
                 .build();
 
-        commentId2 = commentService.commentCreate(commentWriterId,reCommentDto2).getId();
-
-        Comment comment = commentJpaRepository.findById(commentId).get();
-        Comment comment1 = commentJpaRepository.findById(commentId1).get();
-        Comment comment2 = commentJpaRepository.findById(commentId2).get();
-
-        log.info(comment.getChildReComments());
+        commentService.commentCreate(commentWriterId,reCommentDto2);
     }
 
     @Test
@@ -144,7 +134,7 @@ class CommentReplyReadTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("replyCount").value(2L));
+                .andExpect(jsonPath("replyCount").value(1L));
 
         mockMvc.perform(get("/comments/{comment-id}/reply", commentId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,9 +146,22 @@ class CommentReplyReadTest {
                 .andExpect(jsonPath("infos[0].nickname").value("testCommentWriterNickname"))
                 .andExpect(jsonPath("infos[0].regDate").isString())
                 .andExpect(jsonPath("infos[0].content").value("testCommentContent1"))
+                .andExpect(jsonPath("infos[0].replyCount").value(1L))
+                .andExpect(jsonPath("infos").isArray())
+                .andExpect(jsonPath("infos",hasSize(1)));
+
+        mockMvc.perform(get("/comments/{comment-id}/reply", commentId1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("infos[0].id").isNumber())
+                .andExpect(jsonPath("infos[0].thumbImage").isString())
+                .andExpect(jsonPath("infos[0].nickname").value("testCommentWriterNickname"))
+                .andExpect(jsonPath("infos[0].regDate").isString())
                 .andExpect(jsonPath("infos[0].content").value("testCommentContent2"))
                 .andExpect(jsonPath("infos[0].replyCount").value(0L))
                 .andExpect(jsonPath("infos").isArray())
-                .andExpect(jsonPath("infos",hasSize(2)));
+                .andExpect(jsonPath("infos",hasSize(1)));
     }
 }

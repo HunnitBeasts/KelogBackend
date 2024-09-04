@@ -75,7 +75,6 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
     @Override
     public CommentReadResponseDTO findCommentReadResponseDTOByCommentId(Long commentId) {
         QComment comment = QComment.comment;
-        QComment childComment = QComment.comment;
 
         return jpaQueryFactory
                 .select(Projections.constructor(CommentReadResponseDTO.class,
@@ -94,7 +93,6 @@ public class CommentQueryDSLRepositoryImpl implements CommentQueryDSLRepository 
     @Override
     public CommentReplyListReadResponseDTO findCommentReplyListReadResponseDTOByCommentId(Long commentId) {
         QComment comment = QComment.comment;
-        QComment childComment = QComment.comment;
 
         List<CommentReadResponseDTO> infos =  jpaQueryFactory
                 .select(Projections.constructor(CommentReadResponseDTO.class,

@@ -120,7 +120,7 @@ class CommentUpdateTest {
                         .content(jsonContent))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.commentId").value(commentId))
-                .andExpect(jsonPath(".content").value("updateContent"))
+                .andExpect(jsonPath("content").value("updateContent"))
                 .andExpect(jsonPath("modDate").isString());
     }
 }

@@ -98,6 +98,8 @@ class UserInfoUpdateTest {
                 .andExpect(jsonPath("socials", hasSize(0)));
 
         UserInfoUpdateRequestDTO dto = UserInfoUpdateRequestDTO.builder()
+                .nickname("testNickname1")
+                .briefIntro("testBriefIntro1")
                 .thumbImage("testThumbImage1")
                 .email("testEmail1")
                 .emailSetting(true)

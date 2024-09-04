@@ -123,7 +123,7 @@ class CommentCreateTest {
                 .andExpect(jsonPath("userId").isNumber())
                 .andExpect(jsonPath("postId").isNumber())
                 .andExpect(jsonPath("parentCommentId").value((Long) null))
-                .andExpect(jsonPath(".content").value("testCommentContent"))
+                .andExpect(jsonPath("content").value("testCommentContent"))
                 .andExpect(jsonPath("regDate").isString())
                 .andExpect(jsonPath("modDate").isString());
 

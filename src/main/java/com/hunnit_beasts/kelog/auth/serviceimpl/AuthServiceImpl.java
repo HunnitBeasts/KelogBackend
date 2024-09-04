@@ -9,6 +9,7 @@ import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.common.enumeration.ErrorCode;
 import com.hunnit_beasts.kelog.common.handler.exception.ExpectException;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
+import com.hunnit_beasts.kelog.user.enumeration.KeywordType;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
 import com.hunnit_beasts.kelog.user.repository.querydsl.UserQueryDSLRepository;
 import jakarta.transaction.Transactional;
@@ -53,4 +54,13 @@ public class AuthServiceImpl implements AuthService {
         return id;
     }
 
+    @Override
+    public Boolean duplicateCheck(String keyword, KeywordType type) {
+        if (type.equals(KeywordType.USER_ID))
+            return userJpaRepository.existsByUserId(keyword);
+        else if (type.equals(KeywordType.EMAIL))
+            return userJpaRepository.existsByEmail(keyword);
+        else
+            throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
+    }
 }

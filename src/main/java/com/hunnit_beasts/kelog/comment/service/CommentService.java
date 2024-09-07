@@ -10,4 +10,6 @@ public interface CommentService {
     CommentUpdateResponseDTO commentUpdate(Long commentId, CommentUpdateRequestDTO dto);
     CommentListReadResponseDTO commentListRead(Long postId);
     CommentReadResponseDTO commentRead(Long commentId);
+    CommentReplyListReadResponseDTO commentReplyListRead(Long commentId);
+
 }

@@ -61,6 +61,6 @@ public class AuthServiceImpl implements AuthService {
         else if (type.equals(KeywordType.EMAIL))
             return userJpaRepository.existsByEmail(keyword);
         else
-            throw new ExpectException(ErrorCode.NO_USER_DATA_ERROR);
+            throw new ExpectException(ErrorCode.NOT_KEYWORD_TYPE_ERROR);
     }
 }

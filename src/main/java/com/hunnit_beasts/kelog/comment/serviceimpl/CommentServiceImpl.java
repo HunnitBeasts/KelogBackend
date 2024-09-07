@@ -15,6 +15,7 @@ import com.hunnit_beasts.kelog.post.entity.domain.Post;
 import com.hunnit_beasts.kelog.post.repository.jpa.PostJpaRepository;
 import com.hunnit_beasts.kelog.user.entity.domain.User;
 import com.hunnit_beasts.kelog.user.repository.jpa.UserJpaRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +34,23 @@ public class CommentServiceImpl implements CommentService {
     private final CommentQueryDSLRepository commentQueryDSLRepository;
 
     @Override
+    @Transactional
     public CommentCreateResponseDTO commentCreate(Long userId, CommentCreateRequestDTO dto) {
         User commentWriter = userJpaRepository.findById(userId)
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_USER_DATA_ERROR));
         Post commentedPost = postJpaRepository.findById(dto.getPostId())
                 .orElseThrow(()-> new ExpectException(ErrorCode.NO_POST_DATA_ERROR));
-        Comment createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
+
+        Comment createdCommentEntity;
+
+        if (dto.getCommentId() == null)
+            createdCommentEntity = new Comment(dto,commentedPost,commentWriter);
+        else {
+            Comment parentComment = commentJpaRepository.findById(dto.getCommentId())
+                    .orElseThrow(()-> new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR));
+            createdCommentEntity = new Comment(dto,commentedPost,commentWriter,parentComment);
+        }
+
         Comment createdComment = commentJpaRepository.save(createdCommentEntity);
 
         return commentQueryDSLRepository.findCommentCreateResponseDTOById(createdComment.getId());
@@ -73,5 +85,12 @@ public class CommentServiceImpl implements CommentService {
         if(!commentJpaRepository.existsById(commentId))
             throw new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR);
         return commentQueryDSLRepository.findCommentReadResponseDTOByCommentId(commentId);
+    }
+
+    @Override
+    public CommentReplyListReadResponseDTO commentReplyListRead(Long commentId) {
+        if(!commentJpaRepository.existsById(commentId))
+            throw new ExpectException(ErrorCode.NO_COMMENT_DATA_ERROR);
+        return commentQueryDSLRepository.findCommentReplyListReadResponseDTOByCommentId(commentId);
     }
 }

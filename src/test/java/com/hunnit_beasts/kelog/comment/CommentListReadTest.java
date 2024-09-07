@@ -117,7 +117,7 @@ class CommentListReadTest {
                 .andExpect(jsonPath("infos[0].nickname").value("testCommentWriterNickname"))
                 .andExpect(jsonPath("infos[0].regDate").isString())
                 .andExpect(jsonPath("infos[0].content").value("testCommentContent"))
-                .andExpect(jsonPath("infos[0].replyCount").isNumber())
+                .andExpect(jsonPath("infos[0].replyCount").value(0L))
                 .andExpect(jsonPath("count").value(10L));
 
     }

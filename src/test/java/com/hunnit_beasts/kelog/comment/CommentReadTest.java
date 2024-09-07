@@ -13,6 +13,7 @@ import com.hunnit_beasts.kelog.post.service.PostService;
 import com.hunnit_beasts.kelog.user.enumeration.UserType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -99,10 +100,12 @@ class CommentReadTest {
                 .build();
 
         commentId = commentService.commentCreate(commentWriterId, commentDto).getId();
+
     }
 
     @Test
-    void commentListTest() throws Exception {
+    @DisplayName("댓글 읽기 테스트")
+    void commentTest() throws Exception {
 
         mockMvc.perform(get("/comments/{comment-id}", commentId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -115,6 +118,5 @@ class CommentReadTest {
                 .andExpect(jsonPath("regDate").isString())
                 .andExpect(jsonPath("content").value("testCommentContent"))
                 .andExpect(jsonPath("replyCount").value(0L));
-
     }
 }

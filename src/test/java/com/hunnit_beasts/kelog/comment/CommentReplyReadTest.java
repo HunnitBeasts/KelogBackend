@@ -6,6 +6,7 @@ import com.hunnit_beasts.kelog.auth.etc.CustomUserInfoDTO;
 import com.hunnit_beasts.kelog.auth.jwt.JwtUtil;
 import com.hunnit_beasts.kelog.auth.service.AuthService;
 import com.hunnit_beasts.kelog.comment.dto.request.CommentCreateRequestDTO;
+import com.hunnit_beasts.kelog.comment.repository.CommentJpaRepository;
 import com.hunnit_beasts.kelog.comment.service.CommentService;
 import com.hunnit_beasts.kelog.post.dto.request.PostCreateRequestDTO;
 import com.hunnit_beasts.kelog.post.enumeration.PostType;
@@ -21,14 +22,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class CommentCreateTest {
+class CommentReplyReadTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -46,10 +48,13 @@ class CommentCreateTest {
     CommentService commentService;
 
     @Autowired
+    CommentJpaRepository commentJpaRepository;
+
+    @Autowired
     JwtUtil jwtUtil;
 
-    private Long postId;
     private Long commentId;
+    private Long commentId1;
     private String token;
 
     @BeforeEach
@@ -74,7 +79,7 @@ class CommentCreateTest {
                 .content("testContent")
                 .build();
 
-        postId = postService.postCreate(userId, postDto).getId();
+        Long postId = postService.postCreate(userId, postDto).getId();
 
         UserCreateRequestDTO commentWriter = UserCreateRequestDTO.builder()
                 .userId("testCommentWriterId")
@@ -101,58 +106,62 @@ class CommentCreateTest {
                 .build();
 
         commentId = commentService.commentCreate(userId,dto).getId();
-    }
 
-    @Test
-    @DisplayName("댓글 생성")
-    void createComment() throws Exception {
-        CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
-                .postId(postId)
-                .content("testCommentContent")
-                .build();
-
-        String jsonContent = objectMapper.writeValueAsString(dto);
-
-        mockMvc.perform(post("/comments")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath("parentCommentId").value((Long) null))
-                .andExpect(jsonPath("content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
-
-    }
-
-    @Test
-    @DisplayName("대댓글 생성")
-    void createReComment() throws Exception {
-        CommentCreateRequestDTO dto = CommentCreateRequestDTO.builder()
+        CommentCreateRequestDTO reCommentDto1 = CommentCreateRequestDTO.builder()
                 .postId(postId)
                 .commentId(commentId)
-                .content("testCommentContent")
+                .content("testCommentContent1")
                 .build();
 
-        String jsonContent = objectMapper.writeValueAsString(dto);
+        commentId1 = commentService.commentCreate(commentWriterId,reCommentDto1).getId();
 
-        mockMvc.perform(post("/comments")
+        CommentCreateRequestDTO reCommentDto2 = CommentCreateRequestDTO.builder()
+                .postId(postId)
+                .commentId(commentId1)
+                .content("testCommentContent2")
+                .build();
+
+        commentService.commentCreate(commentWriterId,reCommentDto2);
+    }
+
+    @Test
+    @DisplayName("대댓글 읽기")
+    void readReComment() throws Exception {
+
+        mockMvc.perform(get("/comments/{comment-id}", commentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").isNumber())
-                .andExpect(jsonPath("userId").isNumber())
-                .andExpect(jsonPath("postId").isNumber())
-                .andExpect(jsonPath("parentCommentId").value(commentId))
-                .andExpect(jsonPath("content").value("testCommentContent"))
-                .andExpect(jsonPath("regDate").isString())
-                .andExpect(jsonPath("modDate").isString());
+                .andExpect(jsonPath("replyCount").value(1L));
 
+        mockMvc.perform(get("/comments/{comment-id}/reply", commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("infos[0].id").isNumber())
+                .andExpect(jsonPath("infos[0].thumbImage").isString())
+                .andExpect(jsonPath("infos[0].nickname").value("testCommentWriterNickname"))
+                .andExpect(jsonPath("infos[0].regDate").isString())
+                .andExpect(jsonPath("infos[0].content").value("testCommentContent1"))
+                .andExpect(jsonPath("infos[0].replyCount").value(1L))
+                .andExpect(jsonPath("infos").isArray())
+                .andExpect(jsonPath("infos",hasSize(1)));
+
+        mockMvc.perform(get("/comments/{comment-id}/reply", commentId1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("infos[0].id").isNumber())
+                .andExpect(jsonPath("infos[0].thumbImage").isString())
+                .andExpect(jsonPath("infos[0].nickname").value("testCommentWriterNickname"))
+                .andExpect(jsonPath("infos[0].regDate").isString())
+                .andExpect(jsonPath("infos[0].content").value("testCommentContent2"))
+                .andExpect(jsonPath("infos[0].replyCount").value(0L))
+                .andExpect(jsonPath("infos").isArray())
+                .andExpect(jsonPath("infos",hasSize(1)));
     }
 }
